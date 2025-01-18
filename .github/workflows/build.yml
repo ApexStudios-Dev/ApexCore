@@ -54,7 +54,7 @@ jobs:
               run: ./gradlew :immaculateCheck
 
     build:
-        name: Publish - ${{ needs.vars.outputs.version }}
+        name: Build - ${{ needs.vars.outputs.version }}
         needs: [ vars, test ]
         runs-on: apexstudios
         env:
