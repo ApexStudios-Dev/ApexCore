@@ -21,6 +21,7 @@ neoForge.accessTransformers {
 
 dependencies {
     implementation(libs.mixinextras.expressions)
+    "dataImplementation"(libs.mixinextras.expressions)
     annotationProcessor(libs.mixinextras.expressions)
     jarJar(libs.mixinextras.expressions) {
         artifact {
