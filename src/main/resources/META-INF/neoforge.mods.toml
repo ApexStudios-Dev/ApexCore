@@ -1,0 +1,16 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="AllRightsReserved"
+
+[[mods]]
+    modId="apexcore"
+    version="${file.jarVersion}"
+    displayName="ApexCore"
+    credits="Apex - Programming"
+    authors="ApexStudios"
+    description="ApexCore"
+
+[[accessTransformers]]
+    file="META-INF/accesstransformer.cfg"
+[[mixins]]
+   config="META-INF/apexcore.mixins.json"

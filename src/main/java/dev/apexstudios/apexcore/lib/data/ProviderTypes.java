@@ -1,0 +1,41 @@
+package dev.apexstudios.apexcore.lib.data;
+
+import dev.apexstudios.apexcore.core.ApexCore;
+import dev.apexstudios.apexcore.lib.data.provider.LanguageProvider;
+import dev.apexstudios.apexcore.lib.data.provider.ModelProvider;
+import dev.apexstudios.apexcore.lib.data.provider.RecipeProvider;
+import dev.apexstudios.apexcore.lib.data.provider.datamap.DataMapProvider;
+import dev.apexstudios.apexcore.lib.data.provider.loot.LootTableProvider;
+import dev.apexstudios.apexcore.lib.data.provider.tag.IntrusiveTagProvider;
+import dev.apexstudios.apexcore.lib.data.provider.tag.SimpleTagProvider;
+import dev.apexstudios.apexcore.lib.data.provider.tag.TagProvider;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.material.Fluid;
+
+public interface ProviderTypes {
+    ProviderType<LanguageProvider> LANGUAGE = LanguageProvider.PROVIDER_TYPE;
+    ProviderType<ModelProvider> MODELS = ModelProvider.PROVIDER_TYPE;
+    ProviderType<RecipeProvider> RECIPES = RecipeProvider.PROVIDER_TYPE;
+
+    ProviderType<IntrusiveTagProvider<Item>> ITEM_TAGS = TagProvider.registerIntrusiveForHolder(ApexCore.ID, Registries.ITEM, Item::builtInRegistryHolder);
+    ProviderType<IntrusiveTagProvider<Block>> BLOCK_TAGS = TagProvider.registerIntrusiveForHolder(ApexCore.ID, Registries.BLOCK, Block::builtInRegistryHolder);
+    ProviderType<IntrusiveTagProvider<EntityType<?>>> ENTITY_TYPE_TAGS = TagProvider.registerIntrusiveForHolder(ApexCore.ID, Registries.ENTITY_TYPE, EntityType::builtInRegistryHolder);
+    ProviderType<IntrusiveTagProvider<Fluid>> FLUID_TAGS = TagProvider.registerIntrusiveForHolder(ApexCore.ID, Registries.FLUID, Fluid::builtInRegistryHolder);
+
+    ProviderType<SimpleTagProvider<Enchantment>> ENCHANTMENT_TAGS = TagProvider.registerSimple(ApexCore.ID, Registries.ENCHANTMENT);
+    ProviderType<SimpleTagProvider<Biome>> BIOME_TAGS = TagProvider.registerSimple(ApexCore.ID, Registries.BIOME);
+    ProviderType<SimpleTagProvider<Structure>> STRUCTURE_TAGS = TagProvider.registerSimple(ApexCore.ID, Registries.STRUCTURE);
+    ProviderType<SimpleTagProvider<DamageType>> DAMAGE_TYPE_TAGS = TagProvider.registerSimple(ApexCore.ID, Registries.DAMAGE_TYPE);
+    ProviderType<SimpleTagProvider<Potion>> POTION_TAGS = TagProvider.registerSimple(ApexCore.ID, Registries.POTION);
+
+    ProviderType<DataMapProvider> DATA_MAP = DataMapProvider.PROVIDER_TYPE;
+    ProviderType<LootTableProvider> LOOT_TABLE = LootTableProvider.PROVIDER_TYPE;
+}
