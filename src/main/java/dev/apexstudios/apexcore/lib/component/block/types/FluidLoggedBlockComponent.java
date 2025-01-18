@@ -14,15 +14,19 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlockContainer;
@@ -80,7 +84,15 @@ public final class FluidLoggedBlockComponent extends BaseBlockComponent implemen
 
     public BlockState setFor(BlockPlaceContext context, BlockState blockState) {
         var fluidState = context.getLevel().getFluidState(context.getClickedPos());
-        return set(blockState, isMatchingFluid.test(fluidState));
+        return set(blockState, matches(fluidState));
+    }
+
+    public boolean matches(FluidState fluidState) {
+        return fluidState.isSourceOfType(fluid) && isMatchingFluid.test(fluidState);
+    }
+
+    public boolean matches(Fluid fluid) {
+        return matches(fluid.defaultFluidState());
     }
 
     @Override
@@ -104,8 +116,8 @@ public final class FluidLoggedBlockComponent extends BaseBlockComponent implemen
     }
 
     @Override
-    public boolean canPlaceLiquid(@Nullable Player player, BlockGetter level, BlockPos pos, BlockState state, Fluid fluid) {
-        return fluid.isSame(this.fluid);
+    public boolean canPlaceLiquid(@Nullable Player player, BlockGetter level, BlockPos pos, BlockState blockState, Fluid fluid) {
+        return matches(fluid);
     }
 
     @Override
@@ -144,6 +156,14 @@ public final class FluidLoggedBlockComponent extends BaseBlockComponent implemen
             return fluidState;
 
         return fluid instanceof FlowingFluid flowing ? flowing.getSource(false) : fluid.defaultFluidState();
+    }
+
+    @Override
+    public BlockState updateShape(BlockState blockState, LevelReader level, ScheduledTickAccess tickAccess, BlockPos pos, Direction facing, BlockPos neighborPos, BlockState neighborBlockState, RandomSource random) {
+        if(get(blockState))
+            tickAccess.scheduleTick(pos, fluid, fluid.getTickDelay(level));
+
+        return super.updateShape(blockState, level, tickAccess, pos, facing, neighborPos, neighborBlockState, random);
     }
 
     public static void registerWater(ComponentRegistrar<BlockComponent> registrar) {
