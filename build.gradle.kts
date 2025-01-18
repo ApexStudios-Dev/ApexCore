@@ -3,6 +3,7 @@ import dev.apexstudios.gradle.single.ApexSingleExtension
 plugins {
     id("apex-conventions.neoforge")
     id("apex-conventions.immaculate")
+    id("apex-conventions.maven-publishing")
 }
 
 group = "dev.apexstudios"

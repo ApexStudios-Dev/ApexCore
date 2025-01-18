@@ -1,8 +1,8 @@
 on:
     workflow_dispatch:
     push:
-        branches: [ "main" ]
-        paths: [ "src/**" ]
+        branches: [ "**/main" ]
+        paths: [ "**/src/**" ]
 
 jobs:
     vars:
@@ -53,8 +53,8 @@ jobs:
             - name: Test
               run: ./gradlew :immaculateCheck
 
-    build:
-        name: Build - ${{ needs.vars.outputs.version }}
+    publish:
+        name: Publish - ${{ needs.vars.outputs.version }}
         needs: [ vars, test ]
         runs-on: apexstudios
         env:
@@ -77,5 +77,9 @@ jobs:
             - name: Mark Gradle as Executable
               run: chmod +x ./gradlew
 
-            - name: build
-              run: ./gradlew :build
+            - name: Publish
+              if: ${{ ! env.ACT }}
+              run: ./gradlew :publish
+              env:
+                  MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+                  MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
