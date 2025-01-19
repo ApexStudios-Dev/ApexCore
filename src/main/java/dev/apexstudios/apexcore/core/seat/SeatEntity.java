@@ -39,7 +39,8 @@ public final class SeatEntity extends Entity {
 
     @Override
     public void onRemoval(RemovalReason reason) {
-        Seat.setOccupied(level(), blockPosition(), false);
+        if(reason.shouldDestroy())
+            Seat.setOccupied(level(), blockPosition(), false);
     }
 
     @Override
