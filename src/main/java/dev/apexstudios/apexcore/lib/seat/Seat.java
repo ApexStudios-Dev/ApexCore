@@ -45,6 +45,22 @@ public interface Seat {
 
         if(newBlockState != blockState)
             level.setBlock(pos, newBlockState, Block.UPDATE_ALL);
+
+        BlockComponentHelper.runForComponent(newBlockState, BlockComponentTypes.MULTI_BLOCK, component -> {
+            var multiBlockType = component.getMultiBlockType();
+            var index = multiBlockType.indexOf(newBlockState);
+
+            if(newBlockState.is(SeatSetup.ORIGIN_ONLY)) {
+                var origin = multiBlockType.getOrigin(pos, newBlockState);
+
+                for(var i = 0; i < multiBlockType.size(); i++) {
+                    if(i != index) {
+                        var otherBlockState = multiBlockType.withIndex(newBlockState, i);
+                        level.setBlock(multiBlockType.getPos(origin, otherBlockState), setOccupiedState(otherBlockState, occupied), Block.UPDATE_ALL);
+                    }
+                }
+            }
+        });
     }
 
     static void setOccupied(Level level, BlockPos pos, boolean occupied) {

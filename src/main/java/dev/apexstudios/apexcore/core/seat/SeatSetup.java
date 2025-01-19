@@ -10,6 +10,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
@@ -18,6 +19,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 public interface SeatSetup {
     TagKey<EntityType<?>> BLACKLIST = ApexCore.REGISTREE.tag(Registries.ENTITY_TYPE, "seat_blacklist");
+    TagKey<Block> ORIGIN_ONLY = ApexCore.REGISTREE.tag(Registries.BLOCK, "seat_origin_only");
     DeferredEntity<SeatEntity> ENTITY = ApexCore.REGISTREE.registerEntity("seat", SeatEntity::new, MobCategory.MISC, builder -> builder.sized(1F, 1F).noLootTable());
 
     static void register(IEventBus modBus) {
