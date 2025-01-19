@@ -36,7 +36,7 @@ public class SimpleMenuScreen extends AbstractContainerScreen<SimpleMenu> {
         imageHeight += 8;
 
         inventoryLabelY = itemHandlerHeight + AbstractContainerMenu.SLOT_SIZE - 3;
-        titleLabelY = 2;
+        titleLabelY = 3;
 
         super.init();
     }
