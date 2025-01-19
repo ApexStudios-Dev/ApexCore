@@ -321,7 +321,7 @@ public class Registree {
     }
 
     public final <TItem extends Item, TBlock extends Block> DeferredItem<TItem> registerBlockItem(String registryName, Supplier<TBlock> block, BiFunction<TBlock, Item.Properties, TItem> factory, Supplier<Item.Properties> propertiesFactory) {
-        return registerItem(registryName, properties -> factory.apply(block.get(), properties), propertiesFactory);
+        return registerItem(registryName, properties -> factory.apply(block.get(), properties.useBlockDescriptionPrefix()), propertiesFactory);
     }
 
     public final <TItem extends Item, TBlock extends Block> DeferredItem<TItem> registerBlockItem(String registryName, Supplier<TBlock> block, BiFunction<TBlock, Item.Properties, TItem> factory, UnaryOperator<Item.Properties> propertiesMutator) {
