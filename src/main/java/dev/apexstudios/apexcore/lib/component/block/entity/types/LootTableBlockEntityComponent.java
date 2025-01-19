@@ -127,7 +127,7 @@ public final class LootTableBlockEntityComponent extends BaseBlockEntityComponen
         var seed = lootTable.getSeed();
         lootTable.setLootTable(null, -1L);
 
-        ApexUtil.unpackLootTable(blockEntity.getLevel(), blockEntity.getBlockPos(), player, lootTableId, seed, inventory);
+        ApexUtil.unpackLootTable(blockEntity.getLevel(), blockEntity.getBlockPos(), player, lootTableId, seed, inventory.getItemHandler());
     }
 
     public static void setLootTable(BlockGetter level, BlockPos pos, @Nullable ResourceKey<LootTable> lootTableId, LongSupplier seed) {

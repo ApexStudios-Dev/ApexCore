@@ -8,10 +8,9 @@ import dev.apexstudios.apexcore.lib.component.block.entity.BaseBlockEntityCompon
 import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponent;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.ObjIntConsumer;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -33,60 +32,49 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
 import org.apache.commons.lang3.function.Consumers;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 
-public final class InventoryBlockEntityComponent extends BaseBlockEntityComponent implements IItemHandlerModifiable {
+public final class InventoryBlockEntityComponent extends BaseBlockEntityComponent {
     public static final ComponentType<BlockEntityComponent, InventoryBlockEntityComponent, Builder> COMPONENT_TYPE = ComponentType.registerBlockEntity(
             ApexCore.identifier("inventory"),
             Builder::new,
             InventoryBlockEntityComponent::new
     );
 
-    private static final ICapabilityProvider<? extends ComponentHolder<BlockEntityComponent>, @Nullable Direction, IItemHandler> CAPABILITY_PROVIDER = (holder, context) -> holder.getComponent(COMPONENT_TYPE);
+    public static final String NBT_INVENTORY = "Inventory";
 
-    private final Slot[] slots;
-    private final int limit;
+    private static final ICapabilityProvider<? extends ComponentHolder<BlockEntityComponent>, @Nullable Direction, IItemHandler> CAPABILITY_PROVIDER = (holder, context) -> {
+        var component = holder.getComponent(COMPONENT_TYPE);
+        return component == null ? EmptyItemHandler.INSTANCE : component.getItemHandler();
+    };
+
     private final boolean saveToItem;
+    private final Inventory inventory;
 
     private InventoryBlockEntityComponent(ComponentHolder<BlockEntityComponent> holder, Builder builder) {
         super(holder);
 
-        limit = Math.max(builder.limit, 0);
         saveToItem = builder.saveToItem;
+        inventory = new Inventory(builder);
+    }
 
-        slots = new Slot[builder.slots.size()];
-
-        for(var i = 0; i < slots.length; i++) {
-            var slotBuilder = new SlotBuilder();
-            var action = builder.slots.get(i);
-
-            if(action != null)
-                action.accept(slotBuilder);
-
-            slots[i] = new Slot(i, slotBuilder);
-        }
+    public IItemHandlerModifiable getItemHandler() {
+        return inventory;
     }
 
     @Override
     public void saveNbt(CompoundTag tag, HolderLookup.Provider registries) {
-        for(var slot : slots) {
-            if(!slot.existing.isEmpty())
-                tag.put(String.valueOf(slot.index), slot.existing.save(registries));
-        }
+        tag.put(NBT_INVENTORY, inventory.serializeNBT(registries));
     }
 
     @Override
     public void loadNbt(CompoundTag tag, HolderLookup.Provider registries) {
-        for(var slot : slots) {
-            var key = String.valueOf(slot.index);
-
-            if(tag.contains(key, Tag.TAG_COMPOUND))
-                slot.existing = ItemStack.parseOptional(registries, tag.getCompound(key));
-            else
-                slot.existing = ItemStack.EMPTY;
-        }
+        if(tag.contains(NBT_INVENTORY, Tag.TAG_COMPOUND))
+            inventory.deserializeNBT(registries, tag.getCompound(NBT_INVENTORY));
     }
 
     @Override
@@ -96,8 +84,8 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
         if(!saveToItem || contents == null)
             return;
 
-        for(var slot : slots) {
-            slot.existing = contents.getStackInSlot(slot.index);
+        for(var i = 0; i < contents.getSlots() && i < inventory.getSlots(); i++) {
+            inventory.setStackInSlot(i, contents.getStackInSlot(i));
         }
     }
 
@@ -106,18 +94,14 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
         if(!saveToItem)
             return;
 
-        var items = Stream.of(slots).map(slot -> slot.existing).map(ItemStack::copy).toList();
+        var items = IntStream.range(0, inventory.getSlots()).mapToObj(inventory::getStackInSlot).map(ItemStack::copy).toList();
         builder.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(items));
     }
 
     @Override
     public void removeComponentsFromTag(CompoundTag tag) {
-        if(!saveToItem)
-            return;
-
-        for(var slot : slots) {
-            tag.remove(String.valueOf(slot.index));
-        }
+        if(saveToItem)
+            tag.remove(NBT_INVENTORY);
     }
 
     @Override
@@ -131,8 +115,8 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
         var y = pos.getY();
         var z = pos.getZ();
 
-        for(var stack : slots) {
-            Containers.dropItemStack(level, x, y, z, stack.existing);
+        for(var i = 0; i < inventory.getSlots(); i++) {
+            Containers.dropItemStack(level, x, y, z, inventory.getStackInSlot(i));
         }
 
         level.updateNeighbourForOutputSignal(pos, block);
@@ -140,52 +124,7 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
 
     @Override
     public int getAnalogOutputSignal(BlockState blockState, Level level, BlockPos pos) {
-        return ItemHandlerHelper.calcRedstoneFromInventory(this);
-    }
-
-    @Override
-    public void setStackInSlot(int index, ItemStack stack) {
-        LootTableBlockEntityComponent.unpack(asBlockEntity(), null);
-        validateSlotIndex(index).set(stack);
-    }
-
-    @Override
-    public int getSlots() {
-        return slots.length;
-    }
-
-    @Override
-    public ItemStack getStackInSlot(int index) {
-        LootTableBlockEntityComponent.unpack(asBlockEntity(), null);
-        return validateSlotIndex(index).existing.copy();
-    }
-
-    @Override
-    public ItemStack insertItem(int index, ItemStack stack, boolean simulate) {
-        LootTableBlockEntityComponent.unpack(asBlockEntity(), null);
-        return validateSlotIndex(index).insert(stack, simulate);
-    }
-
-    @Override
-    public ItemStack extractItem(int index, int amount, boolean simulate) {
-        LootTableBlockEntityComponent.unpack(asBlockEntity(), null);
-        return validateSlotIndex(index).extract(amount, simulate);
-    }
-
-    @Override
-    public int getSlotLimit(int index) {
-        return limit;
-    }
-
-    @Override
-    public boolean isItemValid(int index, ItemStack stack) {
-        LootTableBlockEntityComponent.unpack(asBlockEntity(), null);
-        return validateSlotIndex(index).isValid(stack);
-    }
-
-    private Slot validateSlotIndex(int index) {
-        Objects.checkIndex(index, slots.length);
-        return slots[index];
+        return ItemHandlerHelper.calcRedstoneFromInventory(inventory);
     }
 
     public static <TBlockEntity extends BlockEntity & ComponentHolder<BlockEntityComponent>> void registerCapability(BlockEntityType<TBlockEntity> blockEntityType, RegisterCapabilitiesEvent event) {
@@ -194,95 +133,6 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
 
     public static <TBlockEntity extends BlockEntity & ComponentHolder<BlockEntityComponent>> ICapabilityProvider<TBlockEntity, @Nullable Direction, IItemHandler> capability() {
         return (ICapabilityProvider<TBlockEntity, Direction, IItemHandler>) CAPABILITY_PROVIDER;
-    }
-
-    private final class Slot {
-        private final int index;
-        private final SlotBuilder.Limit limit;
-        private final SlotBuilder.Validator validator;
-        private final SlotBuilder.Listener listener;
-
-        private ItemStack existing = ItemStack.EMPTY;
-
-        private Slot(int index, SlotBuilder builder) {
-            this.index = index;
-
-            limit = builder.limit;
-            validator = builder.validator;
-            listener = builder.listener;
-        }
-
-        public void fireListener() {
-            listener.invoke(index, InventoryBlockEntityComponent.this);
-            asBlockEntity().setChanged();
-        }
-
-        public void set(ItemStack stack) {
-            existing = stack.copy();
-            fireListener();
-        }
-
-        public ItemStack insert(ItemStack stack, boolean simulate) {
-            if(stack.isEmpty() || !isValid(stack))
-                return ItemStack.EMPTY;
-
-            var limit = Math.min(InventoryBlockEntityComponent.this.getSlotLimit(index), getLimit(stack));
-
-            if(!existing.isEmpty()) {
-                if(!ItemStack.isSameItemSameComponents(stack, existing))
-                    return stack;
-
-                limit -= existing.getCount();
-            }
-
-            if(limit <= 0)
-                return stack;
-
-            var reachedLimit = stack.getCount() > limit;
-
-            if(!simulate) {
-                if(existing.isEmpty())
-                    existing = reachedLimit ? stack.copyWithCount(limit) : stack;
-                else
-                    existing.grow(reachedLimit ? limit : stack.getCount());
-
-                fireListener();
-            }
-
-            return reachedLimit ? stack.copyWithCount(stack.getCount() - limit) : ItemStack.EMPTY;
-        }
-
-        public ItemStack extract(int amount, boolean simulate) {
-            if(amount <= 0 || existing.isEmpty())
-                return ItemStack.EMPTY;
-
-            var toExtract = Math.min(amount, existing.getMaxStackSize());
-            var copy = existing.copy();
-
-            if(existing.getCount() <= toExtract) {
-                if(!simulate) {
-                    existing = ItemStack.EMPTY;
-                    fireListener();
-                }
-
-                return copy;
-            }
-
-            if(!simulate) {
-                existing = existing.copyWithCount(existing.getCount() - toExtract);
-                fireListener();
-            }
-
-            return copy.copyWithCount(toExtract);
-        }
-
-        public int getLimit(ItemStack stack) {
-            return limit.limit(index, InventoryBlockEntityComponent.this, stack);
-        }
-
-        public boolean isValid(ItemStack stack) {
-            return validator.isValid(index, InventoryBlockEntityComponent.this, stack);
-        }
     }
 
     public static final class Builder implements ComponentBuilder {
@@ -316,9 +166,17 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
             return slots(row * col);
         }
 
-        public Builder slots(int count) {
-            IntStream.range(0, count).forEach(this::slot);
+        public Builder slots(int count, ObjIntConsumer<SlotBuilder> consumer) {
+            IntStream.range(0, count).forEach(index -> slot(index, builder -> consumer.accept(builder, index)));
             return this;
+        }
+
+        public Builder slots(int count, Consumer<SlotBuilder> consumer) {
+            return slots(count, (builder, index) -> consumer.accept(builder));
+        }
+
+        public Builder slots(int count) {
+            return slot(count, Consumers.nop());
         }
 
         public Builder saveToItem() {
@@ -392,6 +250,54 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
                     listener.invoke(index, inventory);
                 };
             }
+        }
+    }
+
+    private static final class Inventory extends ItemStackHandler {
+        private final int limit;
+        private final Int2ObjectMap<SlotBuilder.Limit> slotLimit = new Int2ObjectOpenHashMap<>();
+        private final Int2ObjectMap<SlotBuilder.Validator> slotValidator = new Int2ObjectOpenHashMap<>();
+        private final Int2ObjectMap<SlotBuilder.Listener> slotListener = new Int2ObjectOpenHashMap<>();
+
+        private Inventory(Builder builder) {
+            super(builder.slots.size());
+
+            limit = Math.max(builder.limit, Item.ABSOLUTE_MAX_STACK_SIZE);
+
+            builder.slots.forEach((index, consumer) -> {
+                var slotBuilder = new SlotBuilder();
+                consumer.accept(slotBuilder);
+
+                slotLimit.put(index, slotBuilder.limit);
+                slotValidator.put(index, slotBuilder.validator);
+                slotListener.put(index, slotBuilder.listener);
+            });
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return limit;
+        }
+
+        @Override
+        protected int getStackLimit(int slot, ItemStack stack) {
+            var limit = slotLimit.get(slot);
+            var baseLimit = super.getStackLimit(slot, stack);
+            return limit == null ? baseLimit : Math.min(baseLimit, limit.limit(slot, this, stack));
+        }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            var test = slotValidator.get(slot);
+            return test == null || test.isValid(slot, this, stack);
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            var listener = slotListener.get(slot);
+
+            if(listener != null)
+                listener.invoke(slot, this);
         }
     }
 }
