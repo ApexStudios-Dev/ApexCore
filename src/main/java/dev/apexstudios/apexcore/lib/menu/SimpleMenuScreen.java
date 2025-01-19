@@ -8,7 +8,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import org.joml.Math;
 
 public class SimpleMenuScreen extends AbstractContainerScreen<SimpleMenu> {
     public static final ResourceLocation WINDOW_SPRITE = ApexCore.identifier("window");
@@ -20,24 +19,8 @@ public class SimpleMenuScreen extends AbstractContainerScreen<SimpleMenu> {
 
     @Override
     protected void init() {
-        var cols = AbstractContainerMenu.SLOTS_PER_ROW;
-        var rows = menu.slotCount() / cols;
-        var itemHandlerHeight = rows * AbstractContainerMenu.SLOT_SIZE;
-
-        imageWidth = AbstractContainerMenu.SLOT_SIZE;
-        imageHeight = AbstractContainerMenu.SLOT_SIZE;
-
-        for(var slot : menu.slots) {
-            imageWidth = Math.max(imageWidth, slot.x + AbstractContainerMenu.SLOT_SIZE - 1);
-            imageHeight = Math.max(imageHeight, slot.y + AbstractContainerMenu.SLOT_SIZE - 1);
-        }
-
-        imageWidth += 8;
-        imageHeight += 8;
-
-        inventoryLabelY = itemHandlerHeight + AbstractContainerMenu.SLOT_SIZE - 3;
-        titleLabelY = 3;
-
+        imageHeight = 114 + menu.rowCount() * 18;
+        inventoryLabelY = imageHeight - 94;
         super.init();
     }
 

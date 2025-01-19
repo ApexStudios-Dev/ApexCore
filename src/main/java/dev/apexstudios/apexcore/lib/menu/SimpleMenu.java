@@ -10,47 +10,31 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class SimpleMenu extends AbstractContainerMenu {
-    private final int slotCount;
+    private final int rowCount;
 
-    public SimpleMenu(MenuType<? extends SimpleMenu> menuType, int containerId, Inventory inventory, IItemHandler itemHandler) {
+    public SimpleMenu(MenuType<? extends SimpleMenu> menuType, int containerId, Inventory inventory, IItemHandler itemHandler, int rowCount) {
         super(menuType, containerId);
 
-        slotCount = itemHandler.getSlots();
+        this.rowCount = rowCount;
 
         addItemHandlerSlots(itemHandler);
-        addInventorySlots(inventory);
+        addStandardInventorySlots(inventory, 8, 18 + rowCount * SLOT_SIZE + 13);
     }
 
-    public SimpleMenu(MenuType<? extends SimpleMenu> menuType, int containerId, Inventory inventory, int slotCount) {
-        this(menuType, containerId, inventory, new ItemStackHandler(slotCount));
+    public SimpleMenu(MenuType<? extends SimpleMenu> menuType, int containerId, Inventory inventory, int rowCount) {
+        this(menuType, containerId, inventory, new ItemStackHandler(rowCount * SLOTS_PER_ROW), rowCount);
     }
 
-    public int slotCount() {
-        return slotCount;
+    public int rowCount() {
+        return rowCount;
     }
 
-    // assumes chest-like slot placement
-    // overriders may also need to update (image)width/height in the matching screen
     protected void addItemHandlerSlots(IItemHandler itemHandler) {
-        var cols = SLOTS_PER_ROW;
-        var rows = slotCount / cols;
-
-        var x = 8;
-        var y = SLOT_SIZE - 4;
-
-        for(var i = 0; i < rows; i++) {
-            for(var j = 0; j < cols; j++) {
-                addSlot(new SlotItemHandler(itemHandler, j + i * SLOTS_PER_ROW, x + j * SLOT_SIZE, y + i * SLOT_SIZE));
+        for(var i = 0; i < rowCount; i++) {
+            for(var j = 0; j < SLOTS_PER_ROW; j++) {
+                addSlot(new SlotItemHandler(itemHandler, j + i * SLOTS_PER_ROW, 8 + j * SLOT_SIZE, 18 + i * SLOT_SIZE));
             }
         }
-    }
-
-    protected void addInventorySlots(Inventory inventory) {
-        var cols = SLOTS_PER_ROW;
-        var rows = slotCount / cols;
-        var itemHandlerHeight = rows * SLOT_SIZE;
-
-       addStandardInventorySlots(inventory, 8, itemHandlerHeight + SLOT_SIZE + 8);
     }
 
     @Override
@@ -63,10 +47,10 @@ public class SimpleMenu extends AbstractContainerMenu {
         var stack = slot.getItem();
         var stack1 = stack.copy();
 
-        if(index < slotCount) {
-            if(!moveItemStackTo(stack1, slotCount, slots.size(), true))
+        if(index < rowCount * SLOTS_PER_ROW) {
+            if(!moveItemStackTo(stack1, rowCount * SLOTS_PER_ROW, slots.size(), true))
                 return ItemStack.EMPTY;
-        } else if(!moveItemStackTo(stack1, 0, slotCount, false))
+        } else if(!moveItemStackTo(stack1, 0, rowCount * SLOTS_PER_ROW, false))
             return ItemStack.EMPTY;
 
         if(stack1.isEmpty())
