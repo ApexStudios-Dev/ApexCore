@@ -1,5 +1,6 @@
 package dev.apexstudios.apexcore.lib.util;
 
+import com.google.common.base.Predicates;
 import dev.apexstudios.apexcore.mixin.BlockAccessor;
 import dev.apexstudios.apexcore.mixin.LootTableAccessor;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -8,13 +9,16 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.CollisionGetter;
@@ -35,6 +39,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.registries.GameData;
 import org.jetbrains.annotations.Nullable;
 
 public interface ApexUtil {
@@ -213,5 +218,21 @@ public interface ApexUtil {
 
         Util.shuffle(slots, random);
         return slots;
+    }
+
+    static void registerPoiBlockState(ResourceKey<PoiType> poiType, BlockState blockState) {
+        var holder = BuiltInRegistries.POINT_OF_INTEREST_TYPE.getOrThrow(poiType);
+        GameData.getBlockStatePointOfInterestTypeMap().put(blockState, holder);
+    }
+
+    static void registerPoiBlockStates(ResourceKey<PoiType> poiType, Block block, Predicate<BlockState> filter) {
+        for(var blockState : block.getStateDefinition().getPossibleStates()) {
+            if(filter.test(blockState))
+                registerPoiBlockState(poiType, blockState);
+        }
+    }
+
+    static void registerPoiBlockStates(ResourceKey<PoiType> poiType, Block block) {
+        registerPoiBlockStates(poiType, block, Predicates.alwaysTrue());
     }
 }

@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.ApiStatus;
 
 public interface ComponentHelper {
@@ -36,5 +38,16 @@ public interface ComponentHelper {
         }
 
         return Collections.unmodifiableMap(map);
+    }
+
+    static <TValue extends Comparable<TValue>> void validateCompatibilities(Property<TValue> property, Iterable<? extends Property<TValue>> compatibilities) {
+        var possibleValues = property.getPossibleValues();
+
+        for(var compatibility : compatibilities) {
+            if(!compatibility.getPossibleValues().containsAll(possibleValues)) {
+                var names = possibleValues.stream().map(compatibility::getName).collect(Collectors.joining(",", "[", "]"));
+                throw new IllegalStateException("Compatibility Property['" + compatibility.getName() + "'] does not support all possible values: " + names);
+            }
+        }
     }
 }

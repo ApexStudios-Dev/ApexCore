@@ -1,7 +1,9 @@
 package dev.apexstudios.apexcore.lib.component.block.types;
 
+import com.google.common.collect.Sets;
 import dev.apexstudios.apexcore.core.ApexCore;
 import dev.apexstudios.apexcore.lib.component.ComponentBuilder;
+import dev.apexstudios.apexcore.lib.component.ComponentHelper;
 import dev.apexstudios.apexcore.lib.component.ComponentHolder;
 import dev.apexstudios.apexcore.lib.component.ComponentRegistrar;
 import dev.apexstudios.apexcore.lib.component.ComponentType;
@@ -20,6 +22,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.Nullable;
@@ -34,13 +37,16 @@ public final class FacingBlockComponent extends BaseBlockComponent {
     private final EnumProperty<Direction> property;
     private final Direction defaultFacing;
     private final Function<BlockPlaceContext, Direction> facingForPlacement;
+    private final Set<Property<Direction>> compatibilities;
 
     private FacingBlockComponent(ComponentHolder<BlockComponent> holder, Builder builder) {
         super(holder);
 
-        property = EnumProperty.create("facing", Direction.class, builder.directions.toArray(Direction[]::new));
+        property = EnumProperty.create("facing_component", Direction.class, builder.directions.toArray(Direction[]::new));
         defaultFacing = Objects.requireNonNullElseGet(builder.defaultFacing, () -> property.getPossibleValues().getFirst());
         facingForPlacement = Objects.requireNonNullElseGet(builder.facingForPlacement, () -> context -> getDefaultFacing());
+        compatibilities = Set.copyOf(builder.compatibilities);
+        ComponentHelper.validateCompatibilities(property, compatibilities);
     }
 
     public EnumProperty<Direction> getProperty() {
@@ -56,6 +62,10 @@ public final class FacingBlockComponent extends BaseBlockComponent {
     }
 
     public BlockState set(BlockState blockState, Direction facing) {
+        for(var compatibility : compatibilities) {
+            blockState = blockState.setValue(compatibility, facing);
+        }
+
         return blockState.setValue(property, facing);
     }
 
@@ -66,12 +76,17 @@ public final class FacingBlockComponent extends BaseBlockComponent {
 
     @Override
     public BlockState registerDefaultBlockState(BlockState blockState) {
+        for(var compatibility : compatibilities) {
+            blockState = blockState.setValue(compatibility, defaultFacing);
+        }
+
         return set(blockState, defaultFacing);
     }
 
     @Override
     public void createBlockStateDefinition(Consumer<Property<?>> consumer) {
         consumer.accept(property);
+        compatibilities.forEach(consumer);
     }
 
     @Override
@@ -94,6 +109,7 @@ public final class FacingBlockComponent extends BaseBlockComponent {
                 .allowing(Direction.Plane.HORIZONTAL)
                 .defaultFacing(Direction.NORTH)
                 .facingForPlacement(context -> context.getHorizontalDirection().getOpposite())
+                .supporting(BlockStateProperties.HORIZONTAL_FACING)
         ));
     }
 
@@ -105,6 +121,7 @@ public final class FacingBlockComponent extends BaseBlockComponent {
         private final Set<Direction> directions = EnumSet.noneOf(Direction.class);
         @Nullable private Direction defaultFacing = null;
         @Nullable private Function<BlockPlaceContext, Direction> facingForPlacement;
+        private final Set<Property<Direction>> compatibilities = Sets.newHashSet();
 
         public Builder allowing(Direction... directions) {
             Collections.addAll(this.directions, directions);
@@ -133,6 +150,16 @@ public final class FacingBlockComponent extends BaseBlockComponent {
 
         public Builder facingForPlacement(Function<BlockPlaceContext, Direction> facingForPlacement) {
             this.facingForPlacement = facingForPlacement;
+            return this;
+        }
+
+        public Builder supporting(Property<Direction> property, Property<Direction>... properties) {
+            Collections.addAll(compatibilities, properties);
+            return supporting(property);
+        }
+
+        public Builder supporting(Property<Direction> property) {
+            compatibilities.add(property);
             return this;
         }
     }

@@ -289,4 +289,22 @@ public class BaseBlockComponentHolder extends Block implements ComponentHolder<B
         return component != null && component.placeLiquid(level, pos, blockState, fluidState);
     }
     // endregion
+
+    // region: NeoForgeExtensions
+    @Override
+    public final boolean isBed(BlockState blockState, BlockGetter level, BlockPos pos, LivingEntity sleeper) {
+        return hasComponent(BlockComponentTypes.BED);
+    }
+
+    @Override
+    public final void setBedOccupied(BlockState blockState, Level level, BlockPos pos, LivingEntity sleeper, boolean occupied) {
+        runForComponent(BlockComponentTypes.BED, component -> component.setOccupied(level, pos, blockState, occupied));
+    }
+
+    @Override
+    public final Direction getBedDirection(BlockState blockState, LevelReader level, BlockPos pos) {
+        var facing = getComponent(BlockComponentTypes.FACING);
+        return facing == null ? Direction.NORTH : facing.get(blockState).getOpposite();
+    }
+    // endregion
 }
