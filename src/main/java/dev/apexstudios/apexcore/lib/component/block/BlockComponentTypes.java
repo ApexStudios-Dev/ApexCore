@@ -19,7 +19,7 @@ public interface BlockComponentTypes {
     ComponentType<BlockComponent, FacingBlockComponent, FacingBlockComponent.Builder> FACING = FacingBlockComponent.COMPONENT_TYPE;
     ComponentType<BlockComponent, RotationBlockComponent, RotationBlockComponent.Builder> ROTATION = RotationBlockComponent.COMPONENT_TYPE;
     ComponentType<BlockComponent, FluidLoggedBlockComponent, FluidLoggedBlockComponent.Builder> FLUID_LOGGED = FluidLoggedBlockComponent.COMPONENT_TYPE;
-    ComponentType<BlockComponent, SeatBlockComponent, ComponentBuilder> SEAT = SeatBlockComponent.BLOCK_COMPONENT_TYPE;
+    ComponentType<BlockComponent, SeatBlockComponent, ComponentBuilder> SEAT = SeatBlockComponent.COMPONENT_TYPE;
 
     @ApiStatus.Internal
     static void register() {

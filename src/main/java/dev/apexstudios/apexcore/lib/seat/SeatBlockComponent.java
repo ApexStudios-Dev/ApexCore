@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.BlockHitResult;
 
 public final class SeatBlockComponent extends BaseBlockComponent implements Seat {
-    public static final ComponentType<BlockComponent, SeatBlockComponent, ComponentBuilder> BLOCK_COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final ComponentType<BlockComponent, SeatBlockComponent, ComponentBuilder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("seat"),
             SeatBlockComponent::new
     );
