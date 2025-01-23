@@ -1,8 +1,8 @@
 package dev.apexstudios.apexcore.core.seat;
 
 import dev.apexstudios.apexcore.core.ApexCore;
+import dev.apexstudios.apexcore.lib.component.block.types.SeatBlockComponent;
 import dev.apexstudios.apexcore.lib.registree.holder.DeferredEntity;
-import dev.apexstudios.apexcore.lib.seat.Seat;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
@@ -26,10 +26,10 @@ public interface SeatSetup {
         modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event -> event.registerEntityRenderer(ENTITY.value(), NoopRenderer::new));
 
         modBus.addListener(RegisterCapabilitiesEvent.class, event -> {
-            Seat.registerCapabilities(event, EntityType.CAMEL, (camel, pos, blockState) -> camel.sitDown(), (camel, pos, blockState) -> camel.standUp());
-            Seat.registerCapabilities(event, EntityType.FOX, (fox, pos, blockState) -> fox.setSitting(true), (fox, pos, blockState) -> fox.setSitting(false));
+            SeatBlockComponent.registerCapabilities(event, EntityType.CAMEL, (camel, pos, blockState) -> camel.sitDown(), (camel, pos, blockState) -> camel.standUp());
+            SeatBlockComponent.registerCapabilities(event, EntityType.FOX, (fox, pos, blockState) -> fox.setSitting(true), (fox, pos, blockState) -> fox.setSitting(false));
 
-            Seat.registerCapabilities(
+            SeatBlockComponent.registerCapabilities(
                     event,
                     (tameable, pos, blockState) -> {
                         tameable.setOrderedToSit(true);

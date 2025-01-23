@@ -10,7 +10,7 @@ import dev.apexstudios.apexcore.lib.component.block.types.FluidLoggedBlockCompon
 import dev.apexstudios.apexcore.lib.component.block.types.LayeredCauldronBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.types.MultiBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.types.RotationBlockComponent;
-import dev.apexstudios.apexcore.lib.seat.SeatBlockComponent;
+import dev.apexstudios.apexcore.lib.component.block.types.SeatBlockComponent;
 import org.jetbrains.annotations.ApiStatus;
 
 public interface BlockComponentTypes {

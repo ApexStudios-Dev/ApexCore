@@ -1,7 +1,7 @@
 package dev.apexstudios.apexcore.core.seat;
 
 import com.google.common.base.Predicates;
-import dev.apexstudios.apexcore.lib.seat.Seat;
+import dev.apexstudios.apexcore.lib.component.block.types.SeatBlockComponent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -33,14 +33,14 @@ public final class SeatEntity extends Entity {
 
         var blockState = getInBlockState();
 
-        if(!Seat.isOccupied(blockState) || getPassengers().size() != 1)
+        if(!SeatBlockComponent.isOccupied(blockState) || getPassengers().size() != 1)
             discard();
     }
 
     @Override
     public void onRemoval(RemovalReason reason) {
         if(reason.shouldDestroy())
-            Seat.setOccupied(level(), blockPosition(), false);
+            SeatBlockComponent.setOccupied(level(), blockPosition(), false);
     }
 
     @Override
@@ -70,20 +70,20 @@ public final class SeatEntity extends Entity {
 
     @Override
     protected boolean canAddPassenger(Entity passenger) {
-        return super.canAddPassenger(passenger) && Seat.maySit(passenger);
+        return super.canAddPassenger(passenger) && SeatBlockComponent.maySit(passenger);
     }
 
     @Override
     protected void addPassenger(Entity passenger) {
         passenger.setPose(Pose.SITTING);
-        Seat.notifyCapabilityListeners(passenger, blockPosition(), getInBlockState(), true);
+        SeatBlockComponent.notifyCapabilityListeners(passenger, blockPosition(), getInBlockState(), true);
         super.addPassenger(passenger);
     }
 
     @Override
     protected void removePassenger(Entity passenger) {
         passenger.setPose(Pose.STANDING);
-        Seat.notifyCapabilityListeners(passenger, blockPosition(), getInBlockState(), false);
+        SeatBlockComponent.notifyCapabilityListeners(passenger, blockPosition(), getInBlockState(), false);
         super.removePassenger(passenger);
     }
 
@@ -103,7 +103,7 @@ public final class SeatEntity extends Entity {
     public static boolean sit(Level level, BlockPos pos, LivingEntity sitter) {
         var blockState = level.getBlockState(pos);
 
-        if(Seat.isOccupied(blockState))
+        if(SeatBlockComponent.isOccupied(blockState))
             return false;
 
         if(!level.isClientSide) {
@@ -122,14 +122,14 @@ public final class SeatEntity extends Entity {
 
             for(var toSit : leashed) {
                 if(toSit.startRiding(entity)) {
-                    Seat.setOccupied(level, pos, true);
+                    SeatBlockComponent.setOccupied(level, pos, true);
                     level.addFreshEntity(entity);
                     return true;
                 }
             }
 
             if(sitter.startRiding(entity)) {
-                Seat.setOccupied(level, pos, true);
+                SeatBlockComponent.setOccupied(level, pos, true);
                 level.addFreshEntity(entity);
                 return true;
             }
@@ -143,7 +143,7 @@ public final class SeatEntity extends Entity {
     public static boolean unsit(Level level, BlockPos pos) {
         var blockState = level.getBlockState(pos);
 
-        if(!Seat.isOccupied(blockState))
+        if(!SeatBlockComponent.isOccupied(blockState))
             return false;
 
         if(!level.isClientSide) {
