@@ -3,8 +3,10 @@ package dev.apexstudios.apexcore.lib.util;
 import com.google.common.base.Predicates;
 import dev.apexstudios.apexcore.mixin.BlockAccessor;
 import dev.apexstudios.apexcore.mixin.LootTableAccessor;
+import dev.apexstudios.apexcore.mixin.StateDefinitionBuilderAccessor;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -61,7 +63,7 @@ public interface ApexUtil {
         );
     }
 
-    static void replaceBlockStateDefinition(Block block, Consumer<Consumer<Property<?>>> propertyRegistrar, UnaryOperator<BlockState> defaultBlockStateRegistrar) {
+    static void replaceBlockStateDefinition(Block block, Iterable<Property<?>> deprecatedProperties, Consumer<Consumer<Property<?>>> propertyRegistrar, UnaryOperator<BlockState> defaultBlockStateRegistrar) {
         var accessor = (BlockAccessor) block;
 
         // pull the current default block state
@@ -76,6 +78,7 @@ public interface ApexUtil {
                 BlockState::new,
                 builder -> {
                     accessor.ApexCore$createBlockStateDefinition(builder);
+                    deprecatedProperties.forEach(property -> ((StateDefinitionBuilderAccessor) builder).ApexCore$getProperties().remove(property.getName()));
                     propertyRegistrar.accept(builder::add);
                 },
                 defaultBlockState -> {
@@ -95,6 +98,7 @@ public interface ApexUtil {
     static <TProperty extends Comparable<TProperty>> void replaceBlockStateDefinition(Block block, Property<TProperty> property, TProperty defaultValue) {
         replaceBlockStateDefinition(
                 block,
+                Collections.emptyList(),
                 registrar -> registrar.accept(property),
                 defaultBlockState -> defaultBlockState.setValue(property, defaultValue)
         );

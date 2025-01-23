@@ -5,7 +5,6 @@ import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.types.BaseCauldronBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.types.BedBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.types.CauldronBlockComponent;
-import dev.apexstudios.apexcore.lib.component.block.types.DoorBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.types.FacingBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.types.FluidLoggedBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.types.LayeredCauldronBlockComponent;
@@ -23,7 +22,6 @@ public interface BlockComponentTypes {
     ComponentType<BlockComponent, FluidLoggedBlockComponent, FluidLoggedBlockComponent.Builder> FLUID_LOGGED = FluidLoggedBlockComponent.COMPONENT_TYPE;
     ComponentType<BlockComponent, SeatBlockComponent, ComponentBuilder> SEAT = SeatBlockComponent.COMPONENT_TYPE;
     ComponentType<BlockComponent, BedBlockComponent, BedBlockComponent.Builder> BED = BedBlockComponent.COMPONENT_TYPE;
-    ComponentType<BlockComponent, DoorBlockComponent, DoorBlockComponent.Builder> DOOR = DoorBlockComponent.COMPONENT_TYPE;
 
     @ApiStatus.Internal
     static void register() {

@@ -32,6 +32,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.level.redstone.Orientation;
@@ -42,7 +43,7 @@ import org.jetbrains.annotations.Nullable;
 public interface BlockComponentHelper {
     // region: Callbacks
     @ApiStatus.Internal
-    static <THolder extends Block & ComponentHolder<BlockComponent>> Map<ComponentType<BlockComponent, ?, ?>, BlockComponent> registerComponents(THolder holder, BiConsumer<THolder, ComponentRegistrar<BlockComponent>> consumer) {
+    static <THolder extends Block & ComponentHolder<BlockComponent>> Map<ComponentType<BlockComponent, ?, ?>, BlockComponent> registerComponents(THolder holder, BiConsumer<THolder, ComponentRegistrar<BlockComponent>> consumer, Iterable<Property<?>> deprecatedProperties) {
         var map = ComponentHelper.registerComponents(holder, consumer);
 
         // patch the state definition
@@ -50,6 +51,7 @@ public interface BlockComponentHelper {
         // and define their own default state values
         ApexUtil.replaceBlockStateDefinition(
                 holder,
+                deprecatedProperties,
                 properties -> map.values().forEach(component -> component.createBlockStateDefinition(properties)),
                 defaultBlockState -> {
                     for(var component : map.values()) {
@@ -61,6 +63,10 @@ public interface BlockComponentHelper {
         );
 
         return map;
+    }
+
+    static <THolder extends Block & ComponentHolder<BlockComponent>> Map<ComponentType<BlockComponent, ?, ?>, BlockComponent> registerComponents(THolder holder, BiConsumer<THolder, ComponentRegistrar<BlockComponent>> consumer, Property<?>... deprecatedProperties) {
+        return registerComponents(holder, consumer, Set.of(deprecatedProperties));
     }
 
     @Nullable

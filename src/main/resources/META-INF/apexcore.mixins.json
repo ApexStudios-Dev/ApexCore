@@ -8,6 +8,8 @@
         "BlockItemAccessor",
         "BucketItemAccessor",
         "DiscreteVoxelShapeMixin",
+        "DoorBlockMixin",
+        "DoublePlantBlockMixin",
         "EntityMixin",
         "ItemCooldownsMixin",
         "ItemStackMixin",
@@ -15,6 +17,7 @@
         "LevelMixin",
         "LootTableAccessor",
         "OctahedralGroupMixin",
+        "StateDefinitionBuilderAccessor",
         "StructureTemplateMixin"
     ],
     "client": [],
