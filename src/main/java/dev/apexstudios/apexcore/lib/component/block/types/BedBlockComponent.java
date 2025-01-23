@@ -70,9 +70,15 @@ public final class BedBlockComponent extends BaseBlockComponent {
     public void runForOpposite(BlockPos pos, BlockState blockState, BiConsumer<BlockPos, BlockState> consumer) {
         var multiBlockType = getComponentOrThrow(BlockComponentTypes.MULTI_BLOCK).getMultiBlockType();
         var index = multiBlockType.indexOf(blockState);
-        var origin = multiBlockType.getOrigin(pos, blockState);
-        var otherBlockState = multiBlockType.withIndex(blockState, indices.get(index));
-        var otherPos = multiBlockType.getPos(origin, otherBlockState);
+        var otherPos = pos;
+        var otherBlockState = blockState;
+
+        if(indices.containsKey(index)) {
+            otherBlockState = multiBlockType.withIndex(blockState, indices.get(index));
+            var origin = multiBlockType.getOrigin(pos, blockState);
+            otherPos = multiBlockType.getPos(origin, otherBlockState);
+        }
+
         consumer.accept(otherPos, otherBlockState);
     }
 
