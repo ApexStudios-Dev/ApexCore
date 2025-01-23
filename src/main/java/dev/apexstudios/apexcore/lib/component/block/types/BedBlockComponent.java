@@ -10,7 +10,6 @@ import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.BaseBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponentTypes;
-import dev.apexstudios.apexcore.lib.multiblock.MultiBlockType;
 import dev.apexstudios.apexcore.lib.util.ApexUtil;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -54,12 +53,8 @@ public final class BedBlockComponent extends BaseBlockComponent {
         indices = ImmutableBiMap.copyOf(builder.indices);
     }
 
-    private MultiBlockType getMultiBlockType() {
-        return getComponentOrThrow(BlockComponentTypes.MULTI_BLOCK).getMultiBlockType();
-    }
-
     public boolean isHead(BlockState blockState) {
-        var index = getMultiBlockType().indexOf(blockState);
+        var index = getComponentOrThrow(BlockComponentTypes.MULTI_BLOCK).indexOf(blockState);
         return indices.containsKey(index);
     }
 
@@ -68,15 +63,15 @@ public final class BedBlockComponent extends BaseBlockComponent {
     }
 
     public void runForOpposite(BlockPos pos, BlockState blockState, BiConsumer<BlockPos, BlockState> consumer) {
-        var multiBlockType = getComponentOrThrow(BlockComponentTypes.MULTI_BLOCK).getMultiBlockType();
-        var index = multiBlockType.indexOf(blockState);
+        var multiBlock = getComponentOrThrow(BlockComponentTypes.MULTI_BLOCK);
+        var index = multiBlock.indexOf(blockState);
         var otherPos = pos;
         var otherBlockState = blockState;
 
         if(indices.containsKey(index)) {
-            otherBlockState = multiBlockType.withIndex(blockState, indices.get(index));
-            var origin = multiBlockType.getOrigin(pos, blockState);
-            otherPos = multiBlockType.getPos(origin, otherBlockState);
+            otherBlockState = multiBlock.withIndex(blockState, indices.get(index));
+            var origin = multiBlock.getOrigin(pos, blockState);
+            otherPos = multiBlock.getPos(origin, otherBlockState);
         }
 
         consumer.accept(otherPos, otherBlockState);
@@ -104,10 +99,10 @@ public final class BedBlockComponent extends BaseBlockComponent {
             var interactBlockState = blockState;
 
             if(!isHead(blockState)) {
-                var multiBlockType = getComponentOrThrow(BlockComponentTypes.MULTI_BLOCK).getMultiBlockType();
-                var origin = multiBlockType.getOrigin(pos, blockState);
-                interactBlockState = multiBlockType.withIndex(blockState, indices.inverse().get(multiBlockType.indexOf(blockState)));
-                interactPos = multiBlockType.getPos(origin, interactBlockState);
+                var multiBlock = getComponentOrThrow(BlockComponentTypes.MULTI_BLOCK);
+                var origin = multiBlock.getOrigin(pos, blockState);
+                interactBlockState = multiBlock.withIndex(blockState, indices.inverse().get(multiBlock.indexOf(blockState)));
+                interactPos = multiBlock.getPos(origin, interactBlockState);
             }
 
             if(!BedBlock.canSetSpawn(level)) {

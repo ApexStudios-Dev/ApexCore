@@ -46,17 +46,16 @@ public interface Seat {
         if(newBlockState != blockState)
             level.setBlock(pos, newBlockState, Block.UPDATE_ALL);
 
-        BlockComponentHelper.runForComponent(newBlockState, BlockComponentTypes.MULTI_BLOCK, component -> {
-            var multiBlockType = component.getMultiBlockType();
-            var index = multiBlockType.indexOf(newBlockState);
+        BlockComponentHelper.runForComponent(newBlockState, BlockComponentTypes.MULTI_BLOCK, multiBlock -> {
+            var index = multiBlock.indexOf(newBlockState);
 
             if(newBlockState.is(SeatSetup.ORIGIN_ONLY)) {
-                var origin = multiBlockType.getOrigin(pos, newBlockState);
+                var origin = multiBlock.getOrigin(pos, newBlockState);
 
-                for(var i = 0; i < multiBlockType.size(); i++) {
+                for(var i = 0; i < multiBlock.size(); i++) {
                     if(i != index) {
-                        var otherBlockState = multiBlockType.withIndex(newBlockState, i);
-                        level.setBlock(multiBlockType.getPos(origin, otherBlockState), setOccupiedState(otherBlockState, occupied), Block.UPDATE_ALL);
+                        var otherBlockState = multiBlock.withIndex(newBlockState, i);
+                        level.setBlock(multiBlock.getPos(origin, otherBlockState), setOccupiedState(otherBlockState, occupied), Block.UPDATE_ALL);
                     }
                 }
             }

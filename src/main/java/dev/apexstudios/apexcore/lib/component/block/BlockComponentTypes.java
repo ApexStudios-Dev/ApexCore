@@ -8,8 +8,8 @@ import dev.apexstudios.apexcore.lib.component.block.types.CauldronBlockComponent
 import dev.apexstudios.apexcore.lib.component.block.types.FacingBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.types.FluidLoggedBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.types.LayeredCauldronBlockComponent;
+import dev.apexstudios.apexcore.lib.component.block.types.MultiBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.types.RotationBlockComponent;
-import dev.apexstudios.apexcore.lib.multiblock.MultiBlockComponent;
 import dev.apexstudios.apexcore.lib.seat.SeatBlockComponent;
 import org.jetbrains.annotations.ApiStatus;
 

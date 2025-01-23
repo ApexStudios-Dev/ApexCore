@@ -5,7 +5,7 @@ import dev.apexstudios.apexcore.lib.component.ComponentHolder;
 import dev.apexstudios.apexcore.lib.component.ComponentRegistrar;
 import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.types.FacingBlockComponent;
-import dev.apexstudios.apexcore.lib.multiblock.MultiBlock;
+import dev.apexstudios.apexcore.lib.component.block.types.MultiBlockComponent;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -368,10 +368,8 @@ public class DoorBlockComponentHolder extends DoorBlock implements ComponentHold
         var isOrigin = true;
         var multiBlock = getComponent(BlockComponentTypes.MULTI_BLOCK);
 
-        if(multiBlock != null) {
-            var multiBlockType = multiBlock.getMultiBlockType();
-            isOrigin = multiBlockType.indexOf(blockState) == MultiBlock.ORIGIN_INDEX;
-        }
+        if(multiBlock != null)
+            isOrigin = multiBlock.indexOf(blockState) == MultiBlockComponent.ORIGIN_INDEX;
 
         if (explosion.canTriggerBlocks() && isOrigin && type().canOpenByWindCharge() && !blockState.getValue(POWERED))
             setOpen(null, level, blockState, pos, !isOpen(blockState));
@@ -401,17 +399,16 @@ public class DoorBlockComponentHolder extends DoorBlock implements ComponentHold
     public void setOpen(@Nullable Entity entity, Level level, BlockState blockState, BlockPos pos, boolean open) {
         super.setOpen(entity, level, blockState, pos, open);
 
-        runForComponent(BlockComponentTypes.MULTI_BLOCK, component -> {
-            var multiBlockType = component.getMultiBlockType();
-            var index = multiBlockType.indexOf(blockState);
-            var origin = multiBlockType.getOrigin(pos, blockState);
+        runForComponent(BlockComponentTypes.MULTI_BLOCK, multiBlock -> {
+            var index = multiBlock.indexOf(blockState);
+            var origin = multiBlock.getOrigin(pos, blockState);
 
-            for(var i = 0; i < multiBlockType.size(); i++) {
+            for(var i = 0; i < multiBlock.size(); i++) {
                 if(i == index)
                     continue;
 
-                var otherBlockState = multiBlockType.withIndex(blockState, i);
-                var otherPos = multiBlockType.getPos(origin, otherBlockState);
+                var otherBlockState = multiBlock.withIndex(blockState, i);
+                var otherPos = multiBlock.getPos(origin, otherBlockState);
 
                 if(isOpen(otherBlockState) != open) {
                     level.setBlock(otherPos, otherBlockState.setValue(OPEN, open), 10);
@@ -433,17 +430,16 @@ public class DoorBlockComponentHolder extends DoorBlock implements ComponentHold
 
             level.setBlock(pos, blockState.setValue(POWERED, hasPower).setValue(OPEN, hasPower), Block.UPDATE_CLIENTS);
 
-            runForComponent(BlockComponentTypes.MULTI_BLOCK, component -> {
-                var multiBlockType = component.getMultiBlockType();
-                var index = multiBlockType.indexOf(blockState);
-                var origin = multiBlockType.getOrigin(pos, blockState);
+            runForComponent(BlockComponentTypes.MULTI_BLOCK, multiBlock -> {
+                var index = multiBlock.indexOf(blockState);
+                var origin = multiBlock.getOrigin(pos, blockState);
 
-                for(var i = 0; i < multiBlockType.size(); i++) {
+                for(var i = 0; i < multiBlock.size(); i++) {
                     if(i == index)
                         continue;
 
-                    var otherBlockState = multiBlockType.withIndex(blockState, i);
-                    var otherPos = multiBlockType.getPos(origin, otherBlockState);
+                    var otherBlockState = multiBlock.withIndex(blockState, i);
+                    var otherPos = multiBlock.getPos(origin, otherBlockState);
 
                     if(isOpen(otherBlockState) != hasPower)
                         level.setBlock(otherPos, otherBlockState.setValue(POWERED, hasPower).setValue(OPEN, hasPower), 2);
@@ -456,16 +452,15 @@ public class DoorBlockComponentHolder extends DoorBlock implements ComponentHold
         var multiBlock = getComponent(BlockComponentTypes.MULTI_BLOCK);
 
         if(multiBlock != null) {
-            var multiBlockType = multiBlock.getMultiBlockType();
-            var index = multiBlockType.indexOf(blockState);
-            var origin = multiBlockType.getOrigin(pos, blockState);
+            var index = multiBlock.indexOf(blockState);
+            var origin = multiBlock.getOrigin(pos, blockState);
 
-            for(var i = 0; i < multiBlockType.size(); i++) {
+            for(var i = 0; i < multiBlock.size(); i++) {
                 if(i == index)
                     continue;
 
-                var otherBlockState = multiBlockType.withIndex(blockState, i);
-                var otherPos = multiBlockType.getPos(origin, otherBlockState);
+                var otherBlockState = multiBlock.withIndex(blockState, i);
+                var otherPos = multiBlock.getPos(origin, otherBlockState);
 
                 if(level.hasNeighborSignal(otherPos))
                     return true;
@@ -528,8 +523,7 @@ public class DoorBlockComponentHolder extends DoorBlock implements ComponentHold
         if(multiBlock == null)
             return true;
 
-        var multiBlockType = multiBlock.getMultiBlockType();
-        return multiBlockType.indexOf(blockState) == MultiBlock.ORIGIN_INDEX;
+        return multiBlock.indexOf(blockState) == MultiBlockComponent.ORIGIN_INDEX;
     }
     // endregion
 }
