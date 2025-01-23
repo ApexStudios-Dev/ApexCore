@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -22,6 +23,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
@@ -287,6 +289,13 @@ public class BaseBlockComponentHolder extends Block implements ComponentHolder<B
     public boolean placeLiquid(LevelAccessor level, BlockPos pos, BlockState blockState, FluidState fluidState) {
         var component = getComponent(BlockComponentTypes.FLUID_LOGGED);
         return component != null && component.placeLiquid(level, pos, blockState, fluidState);
+    }
+
+    @MustBeInvokedByOverriders
+    @Override
+    protected void onExplosionHit(BlockState blockState, ServerLevel level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> dropConsumer) {
+        BlockComponentHelper.onExplosionHit(this, blockState, level, pos, explosion, dropConsumer);
+        super.onExplosionHit(blockState, level, pos, explosion, dropConsumer);
     }
     // endregion
 

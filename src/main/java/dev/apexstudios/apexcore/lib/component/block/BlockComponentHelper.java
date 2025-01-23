@@ -23,6 +23,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
@@ -162,11 +163,11 @@ public interface BlockComponentHelper {
 
     static boolean isPathfindable(ComponentHolder<BlockComponent> holder, BlockState blockState, PathComputationType pathType) {
         for(var component : holder.getComponents()) {
-            if(component.isPathfindable(blockState, pathType))
-                return true;
+            if(!component.isPathfindable(blockState, pathType))
+                return false;
         }
 
-        return false;
+        return true;
     }
 
     static void tick(ComponentHolder<BlockComponent> holder, BlockState blockState, ServerLevel level, BlockPos pos, RandomSource random) {
@@ -213,6 +214,10 @@ public interface BlockComponentHelper {
         }
 
         return fluidState;
+    }
+
+    static void onExplosionHit(ComponentHolder<BlockComponent> holder, BlockState blockState, ServerLevel level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> dropsConsumer) {
+        holder.getComponents().forEach(component -> component.onExplosionHit(blockState, level, pos, explosion, dropsConsumer));
     }
     // endregion
 
