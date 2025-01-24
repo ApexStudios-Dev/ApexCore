@@ -14,6 +14,7 @@ import java.util.stream.IntStream;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -64,6 +65,10 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
 
     public IItemHandlerModifiable getItemHandler() {
         return inventory;
+    }
+
+    public NonNullList<ItemStack> getItems() {
+        return NonNullList.copyOf(inventory.getItems());
     }
 
     @Override
@@ -272,6 +277,10 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
                 slotValidator.put(index, slotBuilder.validator);
                 slotListener.put(index, slotBuilder.listener);
             });
+        }
+
+        public NonNullList<ItemStack> getItems() {
+            return stacks;
         }
 
         @Override
