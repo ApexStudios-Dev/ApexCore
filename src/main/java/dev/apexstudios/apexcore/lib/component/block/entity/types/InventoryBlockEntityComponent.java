@@ -176,7 +176,7 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
         }
 
         public Builder slots(int count) {
-            return slot(count, Consumers.nop());
+            return slots(count, Consumers.nop());
         }
 
         public Builder saveToItem() {
