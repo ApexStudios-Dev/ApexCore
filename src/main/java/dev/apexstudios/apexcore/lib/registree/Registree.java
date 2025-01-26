@@ -269,6 +269,16 @@ public class Registree {
         return register(registryType, registryName, $ -> factory.get());
     }
 
+    public final <TRegistry, TElement extends TRegistry> TElement registerElement(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<ResourceLocation, TElement> factory) {
+        var element = factory.apply(registryName(registryName));
+        register(registryType, registryName, () -> element);
+        return element;
+    }
+
+    public final <TRegistry, TElement extends TRegistry> TElement registerElement(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Supplier<TElement> factory) {
+        return registerElement(registryType, registryName, $ -> factory.get());
+    }
+
     public final <TRegistry, THolder extends Holder<TRegistry>> THolder registerForHolder(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<ResourceLocation, ? extends TRegistry> elementFactory, Function<ResourceKey<TRegistry>, THolder> holderFactory) {
         var registryKey = register(registryType, registryName, elementFactory);
         return holderFactory.apply(registryKey);
