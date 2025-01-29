@@ -12,7 +12,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.core.Registry;
 import net.minecraft.data.CachedOutput;
-import net.minecraft.data.DataProvider;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagFile;
@@ -53,7 +52,7 @@ sealed class TagProviderImpl<TRegistry, TBuilder extends TagBuilder<TRegistry, T
 
     @Override
     public CompletableFuture<?> generate(CachedOutput cache, ProviderOutputContext context) {
-        return DataProvider.saveAll(
+        return BaseProvider.saveAll(
                 cache,
                 TagFile.CODEC,
                 context.tagPathProvider(registryType),

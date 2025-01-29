@@ -23,6 +23,10 @@ public final class LanguageProviderImpl implements BaseProvider, LanguageProvide
     public CompletableFuture<?> generate(CachedOutput cache, ProviderOutputContext context) {
         var json = new JsonObject();
         translations.forEach(json::addProperty);
+
+        if(json.isEmpty())
+            return CompletableFuture.completedFuture(null);
+
         var path = context.outputPath(PackOutput.Target.RESOURCE_PACK, "lang", "en_us.json");
         return DataProvider.saveStable(cache, json, path);
     }

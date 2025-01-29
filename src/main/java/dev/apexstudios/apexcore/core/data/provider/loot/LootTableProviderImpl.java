@@ -32,7 +32,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
-import net.minecraft.data.DataProvider;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -104,7 +103,7 @@ public class LootTableProviderImpl implements BaseProvider, LootTableProvider {
 
         var pathProvider = context.elementPathProvider(Registries.LOOT_TABLE);
         var result = factoryContext.registry.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().location(), Map.Entry::getValue));
-        return DataProvider.saveAll(cache, LootTable.DIRECT_CODEC, pathProvider, result);
+        return BaseProvider.saveAll(cache, LootTable.DIRECT_CODEC, pathProvider, result);
     }
 
     @Override
