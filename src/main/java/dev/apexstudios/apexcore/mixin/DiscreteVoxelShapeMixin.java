@@ -1,6 +1,6 @@
 package dev.apexstudios.apexcore.mixin;
 
-import dev.apexstudios.apexcore.lib.util.shapes.ApexDiscreteVoxelShape;
+import dev.apexstudios.apexcore.extension.ApexDiscreteVoxelShape;
 import net.minecraft.world.phys.shapes.DiscreteVoxelShape;
 import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.asm.mixin.Mixin;

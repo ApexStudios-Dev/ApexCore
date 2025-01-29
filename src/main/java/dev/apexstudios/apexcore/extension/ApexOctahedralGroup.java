@@ -1,4 +1,4 @@
-package dev.apexstudios.apexcore.lib.util.shapes;
+package dev.apexstudios.apexcore.extension;
 
 import com.mojang.math.OctahedralGroup;
 import net.minecraft.core.Direction;

@@ -1,6 +1,6 @@
 package dev.apexstudios.apexcore.mixin;
 
-import dev.apexstudios.apexcore.lib.util.shapes.ApexAxis;
+import dev.apexstudios.apexcore.extension.ApexAxis;
 import net.minecraft.core.Direction;
 import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.asm.mixin.Mixin;

@@ -1,11 +1,11 @@
 {
     "com/mojang/math/OctahedralGroup": [
-        "dev/apexstudios/apexcore/lib/util/shapes/ApexOctahedralGroup"
+        "dev/apexstudios/apexcore/extension/ApexOctahedralGroup"
     ],
     "net/minecraft/world/phys/shapes/DiscreteVoxelShape": [
-        "dev/apexstudios/apexcore/lib/util/shapes/ApexDiscreteVoxelShape"
+        "dev/apexstudios/apexcore/extension/ApexDiscreteVoxelShape"
     ],
     "net/minecraft/core/Direction$Axis": [
-        "dev/apexstudios/apexcore/lib/util/shapes/ApexAxis"
+        "dev/apexstudios/apexcore/extension/ApexAxis"
     ]
 }

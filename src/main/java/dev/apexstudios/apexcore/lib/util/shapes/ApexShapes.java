@@ -2,6 +2,7 @@ package dev.apexstudios.apexcore.lib.util.shapes;
 
 import com.google.common.collect.Maps;
 import com.mojang.math.OctahedralGroup;
+import dev.apexstudios.apexcore.extension.ApexOctahedralGroup;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import java.util.Map;

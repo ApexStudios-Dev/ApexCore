@@ -1,7 +1,7 @@
 package dev.apexstudios.apexcore.mixin;
 
 import com.mojang.math.OctahedralGroup;
-import dev.apexstudios.apexcore.lib.util.shapes.ApexOctahedralGroup;
+import dev.apexstudios.apexcore.extension.ApexOctahedralGroup;
 import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.asm.mixin.Mixin;
 
