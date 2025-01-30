@@ -165,4 +165,17 @@ public interface ApexShapes {
                 AttachFace.CEILING, rotateHorizontal(rotate(shape, ApexOctahedralGroup.fromAngles(90, 180)))
         );
     }
+
+    static VoxelShape rotateHorizontal(VoxelShape shape, Vec3 center, Direction facing) {
+        return switch (facing) {
+            case EAST -> rotate(shape, ApexOctahedralGroup.fromAngles(0, 90), center);
+            case SOUTH -> rotate(shape, ApexOctahedralGroup.fromAngles(0, 180), center);
+            case WEST -> rotate(shape, ApexOctahedralGroup.fromAngles(0, 270), center);
+            default -> shape;
+        };
+    }
+
+    static VoxelShape rotateHorizontal(VoxelShape shape, Direction facing) {
+        return rotateHorizontal(shape, BLOCK_CENTER, facing);
+    }
 }
