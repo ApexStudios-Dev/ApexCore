@@ -329,6 +329,13 @@ public class DoorBlockComponentHolder extends DoorBlock implements ComponentHold
         super.onExplosionHit(blockState, level, pos, explosion, dropConsumer);
         onExplosionHitDoor(blockState, level, pos, explosion);
     }
+
+    @MustBeInvokedByOverriders
+    @Override
+    public void updateEntityMovementAfterFallOn(BlockGetter level, Entity entity) {
+        if(!BlockComponentHelper.updateEntityMovementAfterFallOn(this, level, entity))
+            super.updateEntityMovementAfterFallOn(level, entity);
+    }
     // endregion
 
     // region: NeoForgeExtensions

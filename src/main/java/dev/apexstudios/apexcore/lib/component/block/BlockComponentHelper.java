@@ -23,6 +23,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -224,6 +225,15 @@ public interface BlockComponentHelper {
 
     static void onExplosionHit(ComponentHolder<BlockComponent> holder, BlockState blockState, ServerLevel level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> dropsConsumer) {
         holder.getComponents().forEach(component -> component.onExplosionHit(blockState, level, pos, explosion, dropsConsumer));
+    }
+
+    static boolean updateEntityMovementAfterFallOn(ComponentHolder<BlockComponent> holder, BlockGetter level, Entity entity) {
+        for(var component : holder.getComponents()) {
+            if(component.updateEntityMovementAfterFallOn(level, entity))
+                return true;
+        }
+
+        return false;
     }
     // endregion
 

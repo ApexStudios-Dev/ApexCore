@@ -297,6 +297,13 @@ public class BaseBlockComponentHolder extends Block implements ComponentHolder<B
         BlockComponentHelper.onExplosionHit(this, blockState, level, pos, explosion, dropConsumer);
         super.onExplosionHit(blockState, level, pos, explosion, dropConsumer);
     }
+
+    @MustBeInvokedByOverriders
+    @Override
+    public void updateEntityMovementAfterFallOn(BlockGetter level, Entity entity) {
+        if(!BlockComponentHelper.updateEntityMovementAfterFallOn(this, level, entity))
+            super.updateEntityMovementAfterFallOn(level, entity);
+    }
     // endregion
 
     // region: NeoForgeExtensions

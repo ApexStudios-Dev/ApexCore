@@ -11,6 +11,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
@@ -160,5 +161,13 @@ public abstract class BaseEntityBlock extends net.minecraft.world.level.block.Ba
             blockEntity.stepOn(level, blockState, entity);
 
         super.stepOn(level, pos, blockState, entity);
+    }
+
+    @Override
+    public void updateEntityMovementAfterFallOn(BlockGetter level, Entity entity) {
+        if(level.getBlockEntity(entity.getOnPos()) instanceof BaseBlockEntity blockEntity && blockEntity.updateEntityMovementAfterFallOn(level, entity))
+            return;
+
+        super.updateEntityMovementAfterFallOn(level, entity);
     }
 }

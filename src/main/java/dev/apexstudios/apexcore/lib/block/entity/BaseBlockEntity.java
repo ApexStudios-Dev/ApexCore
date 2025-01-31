@@ -15,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
@@ -96,6 +97,11 @@ public class BaseBlockEntity extends BlockEntity {
     @ForOverride
     public void stepOn(Level level, BlockState blockState, Entity entity) {
 
+    }
+
+    @ForOverride
+    public boolean updateEntityMovementAfterFallOn(BlockGetter level, Entity entity) {
+        return false;
     }
     // endregion
 

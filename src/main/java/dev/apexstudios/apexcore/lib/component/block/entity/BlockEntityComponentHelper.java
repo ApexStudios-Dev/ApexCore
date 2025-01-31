@@ -196,6 +196,15 @@ public interface BlockEntityComponentHelper {
     static void stepOn(ComponentHolder<BlockEntityComponent> holder, Level level, BlockPos pos, BlockState blockState, Entity entity) {
         holder.getComponents().forEach(component -> component.stepOn(level, pos, blockState, entity));
     }
+
+    static boolean updateEntityMovementAfterFallOn(ComponentHolder<BlockEntityComponent> holder, BlockGetter level, Entity entity) {
+        for(var component : holder.getComponents()) {
+            if(component.updateEntityMovementAfterFallOn(level, entity))
+                return true;
+        }
+
+        return false;
+    }
     // endregion
 
     // region: BlockGetter
