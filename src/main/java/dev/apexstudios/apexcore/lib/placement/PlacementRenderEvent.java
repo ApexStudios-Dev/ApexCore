@@ -57,6 +57,46 @@ public sealed abstract class PlacementRenderEvent extends Event {
         }
     }
 
+    public static final class ModifyBlockState extends PlacementRenderEvent {
+        private final LevelReader realLevel;
+        private final BlockPlaceContext placeContext;
+        private final BlockState originalBlockState;
+        @Nullable private BlockState newBlockState;
+
+        private ModifyBlockState(LevelReader realLevel, BlockPlaceContext placeContext, BlockState originalBlockState) {
+            this.realLevel = realLevel;
+            this.placeContext = placeContext;
+            this.originalBlockState = originalBlockState;
+        }
+
+        public LevelReader level() {
+            return realLevel;
+        }
+
+        public BlockPos pos() {
+            return placeContext.getClickedPos();
+        }
+
+        public BlockPlaceContext placeContext() {
+            return placeContext;
+        }
+
+        public BlockState originalBlockState() {
+            return newBlockState == null ? originalBlockState : newBlockState;
+        }
+
+        public void setBlockState(BlockState blockState) {
+            newBlockState = blockState;
+        }
+
+        public <TProperty extends Comparable<TProperty>> void withProperty(Property<TProperty> property, Supplier<TProperty> value) {
+            var blockState = originalBlockState();
+
+            if(blockState.hasProperty(property))
+                setBlockState(blockState.trySetValue(property, value.get()));
+        }
+    }
+
     public static final class Register extends PlacementRenderEvent implements IModBusEvent {
         private final Consumer<BlockPlacementRenderer> registrar;
 
@@ -72,6 +112,11 @@ public sealed abstract class PlacementRenderEvent extends Event {
     @ApiStatus.Internal
     public static BlockState getDefaultBlockState(LevelReader realLevel, BlockPlaceContext placeContext, BlockState defaultBlockState) {
         return NeoForge.EVENT_BUS.post(new DefaultBlockState(realLevel, placeContext, defaultBlockState)).defaultBlockState();
+    }
+
+    @ApiStatus.Internal
+    public static BlockState modifyBlockState(LevelReader realLevel, BlockPlaceContext placeContext, BlockState originalBlockState) {
+        return NeoForge.EVENT_BUS.post(new ModifyBlockState(realLevel, placeContext, originalBlockState)).originalBlockState();
     }
 
     @ApiStatus.Internal

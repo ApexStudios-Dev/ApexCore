@@ -23,6 +23,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.CollisionGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelHeightAccessor;
@@ -126,6 +127,30 @@ public interface ApexUtil {
         var levelBlockState = level.getBlockState(pos);
 
         if(!blockState.isAir() && !levelBlockState.canBeReplaced())
+            return false;
+        if(!blockState.canSurvive(level, pos))
+            return false;
+        if(!level.isUnobstructed(blockState, pos, collisionContext))
+            return false;
+
+        if(placer instanceof Player player) {
+            if(!player.mayBuild())
+                return false;
+            if(level instanceof Level lvl && !lvl.mayInteract(player, pos))
+                return false;
+        }
+
+        return true;
+    }
+
+    static boolean canPlace(BlockPlaceContext context, BlockState blockState) {
+        var placer = context.getPlayer();
+        var level = context.getLevel();
+        var pos = context.getClickedPos();
+        var collisionContext = placer == null ? CollisionContext.empty() : CollisionContext.of(placer);
+        var levelBlockState = level.getBlockState(pos);
+
+        if(!blockState.isAir() && !levelBlockState.canBeReplaced(context))
             return false;
         if(!blockState.canSurvive(level, pos))
             return false;

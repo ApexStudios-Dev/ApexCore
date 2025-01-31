@@ -3,6 +3,7 @@ package dev.apexstudios.apexcore.core.placement;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.apexstudios.apexcore.lib.level.FakeLevel;
 import dev.apexstudios.apexcore.lib.placement.BlockPlacementRenderer;
+import dev.apexstudios.apexcore.lib.placement.PlacementRenderEvent;
 import dev.apexstudios.apexcore.lib.util.ApexUtil;
 import dev.apexstudios.apexcore.mixin.BlockItemAccessor;
 import java.util.List;
@@ -22,6 +23,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 
 final class BlockItemPlacementRenderer implements BlockPlacementRenderer {
@@ -82,10 +84,17 @@ final class BlockItemPlacementRenderer implements BlockPlacementRenderer {
             canBePlaced.set(false);
         }
 
+        blockState = PlacementRenderEvent.modifyBlockState(realLevel, context, blockState);
+
+        if(blockState.hasProperty(BlockStateProperties.WATERLOGGED))
+            blockState = blockState.setValue(BlockStateProperties.WATERLOGGED, false);
+
         // place the origin block as if it came from the block item
         accessor.ApexCore$placeBlock(context, blockState);
         var fBlockState = accessor.ApexCore$updateBlockStateFromTag(pos, level, stack, blockState);
-        accessor.ApexCore$updateCustomBlockEntityTag(pos, level, context.getPlayer(), stack, blockState);
+        level.runAsServerSide(() -> {
+            accessor.ApexCore$updateCustomBlockEntityTag(pos, level, context.getPlayer(), stack, fBlockState);
+        });
         BlockItem.updateBlockEntityComponents(level, pos, stack);
 
         // fire block events to trigger additional block placement/updates
@@ -137,7 +146,6 @@ final class BlockItemPlacementRenderer implements BlockPlacementRenderer {
     private void validatePlacement(BlockPlaceContext context, AtomicBoolean canBePlaced) {
         var level = context.getLevel();
         var origin = context.getClickedPos();
-        var player = context.getPlayer();
 
         var blockState = level.getBlockState(origin);
         var blockEntity = level.getBlockEntity(origin);
@@ -145,7 +153,7 @@ final class BlockItemPlacementRenderer implements BlockPlacementRenderer {
 
         if(!ApexUtil.isInBounds(level, origin))
             canBePlaced.set(false);
-        else if(!ApexUtil.canPlace(level, origin, blockState, player))
+        else if(!ApexUtil.canPlace(context, blockState))
             canBePlaced.set(false);
 
         level.setBlock(origin, blockState, Block.UPDATE_NONE);
