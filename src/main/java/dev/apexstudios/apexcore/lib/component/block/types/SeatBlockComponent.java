@@ -121,7 +121,7 @@ public final class SeatBlockComponent extends BaseBlockComponent {
     }
 
     public static boolean maySit(Entity entity) {
-        return maySit(entity.getType()) && entity instanceof LivingEntity;
+        return maySit(entity.getType()) && entity instanceof LivingEntity && !entity.hasControllingPassenger();
     }
 
     public static void notifyCapabilityListeners(Entity entity, BlockPos pos, BlockState blockState, boolean seated) {
