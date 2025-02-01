@@ -74,7 +74,7 @@ public final class LockBlockEntityComponent extends BaseBlockEntityComponent {
             return false;
 
         var component = ((ComponentHolder<BlockEntityComponent>) blockEntity).getComponent(BlockEntityComponentTypes.LOCK);
-        return component == null || !component.canAccess(player.getMainHandItem());
+        return component != null && !component.canAccess(player.getMainHandItem());
     }
 
     public static boolean isLocked(BlockGetter level, BlockPos pos, Player player) {
