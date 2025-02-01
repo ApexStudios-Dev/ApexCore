@@ -137,13 +137,11 @@ public final class BedBlockComponent extends BaseBlockComponent {
     }
 
     public static <TBlock extends Block & ComponentHolder<BlockComponent>> void registerPoi(IEventBus modBus, Supplier<TBlock> blockSupplier) {
-        modBus.addListener(FMLCommonSetupEvent.class, event -> event.enqueueWork(() -> {
-            var block = blockSupplier.get();
-            var component = block.getComponent(COMPONENT_TYPE);
+        modBus.addListener(FMLCommonSetupEvent.class, event -> event.enqueueWork(() -> registerPoi(blockSupplier.get())));
+    }
 
-            if(component != null)
-                ApexUtil.registerPoiBlockStates(PoiTypes.HOME, block, component::isHead);
-        }));
+    public static <TBlock extends Block & ComponentHolder<BlockComponent>> void registerPoi(TBlock block) {
+        block.runForComponent(COMPONENT_TYPE, component -> ApexUtil.registerPoiBlockStates(PoiTypes.HOME, block, component::isHead));
     }
 
     public static final class Builder implements ComponentBuilder {
