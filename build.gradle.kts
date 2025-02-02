@@ -4,6 +4,7 @@ plugins {
     id("apex-conventions.neoforge")
     id("apex-conventions.immaculate")
     id("apex-conventions.maven-publishing")
+    id("apex-conventions.mod-publishing")
 }
 
 group = "dev.apexstudios"
@@ -27,5 +28,16 @@ dependencies {
         artifact {
             classifier = "slim"
         }
+    }
+}
+
+publishMods {
+    modrinth {
+        projectId = "xl3myxch"
+    }
+
+    curseforge {
+        projectId = "550778"
+        projectSlug = "apexcore"
     }
 }
