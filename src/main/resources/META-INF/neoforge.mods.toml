@@ -1,6 +1,7 @@
 modLoader="javafml"
 loaderVersion="[4,)"
 license="AllRightsReserved"
+issueTrackerURL="https://github.com/ApexStudios-Dev/Issues/issues"
 
 [[mods]]
     modId="apexcore"
