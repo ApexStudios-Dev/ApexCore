@@ -8,7 +8,9 @@ license="AllRightsReserved"
     displayName="ApexCore"
     credits="Apex - Programming"
     authors="ApexStudios"
-    description="ApexCore"
+    description="ApexCore is a library mod required by all of ApexStudios' mods, such as Fantasy's Furniture, Fantasy's Dice and Infused Foods."
+    logoFile="logo.png"
+    displayURL="https://modrinth.com/mod/apexcore"
 
 [[accessTransformers]]
     file="META-INF/accesstransformer.cfg"
