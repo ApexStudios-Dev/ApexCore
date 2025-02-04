@@ -10,6 +10,7 @@ import dev.apexstudios.apexcore.lib.component.block.BaseBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponentHelper;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponentTypes;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
@@ -40,6 +41,7 @@ public final class SeatBlockComponent extends BaseBlockComponent {
 
     public static final EntityCapability<Runnable, @NotNull CapabilityContext> SEATED_CAPABILITY = EntityCapability.create(ApexCore.identifier("seated"), Runnable.class, CapabilityContext.class);
     public static final EntityCapability<Runnable, @NotNull CapabilityContext> UNSEATED_CAPABILITY = EntityCapability.create(ApexCore.identifier("unseated"), Runnable.class, CapabilityContext.class);
+    public static final EntityCapability<BooleanSupplier, @NotNull CapabilityContext> MAY_SIT_CAPABILITY = EntityCapability.create(ApexCore.identifier("may_sit"), BooleanSupplier.class, CapabilityContext.class);
 
     private SeatBlockComponent(ComponentHolder<BlockComponent> holder) {
         super(holder);
@@ -121,7 +123,15 @@ public final class SeatBlockComponent extends BaseBlockComponent {
     }
 
     public static boolean maySit(Entity entity) {
-        return maySit(entity.getType()) && entity instanceof LivingEntity && !entity.hasControllingPassenger();
+        if(!maySit(entity.getType()))
+            return false;
+        if(entity.hasControllingPassenger())
+            return false;
+        if(!(entity instanceof LivingEntity))
+            return false;
+
+        var maySit = entity.getCapability(MAY_SIT_CAPABILITY, new CapabilityContext(entity.getOnPos(), entity.getBlockStateOn()));
+        return maySit == null || maySit.getAsBoolean();
     }
 
     public static void notifyCapabilityListeners(Entity entity, BlockPos pos, BlockState blockState, boolean seated) {

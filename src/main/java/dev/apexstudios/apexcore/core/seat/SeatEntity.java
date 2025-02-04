@@ -33,8 +33,15 @@ public final class SeatEntity extends Entity {
 
         var blockState = getInBlockState();
 
-        if(!SeatBlockComponent.isOccupied(blockState) || getPassengers().size() != 1)
+        if(!SeatBlockComponent.isOccupied(blockState) || getPassengers().size() != 1) {
             discard();
+            return;
+        }
+
+        getPassengers().forEach(entity -> {
+            if(!SeatBlockComponent.maySit(entity))
+                entity.stopRiding();
+        });
     }
 
     @Override
