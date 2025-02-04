@@ -35,9 +35,9 @@ dependencies {
 publishMods {
     type = ReleaseType.ALPHA
 
-    modrinth {
-        projectId = "xl3myxch"
-    }
+//    modrinth {
+//        projectId = "xl3myxch"
+//    }
 
     curseforge {
         projectId = "550778"
