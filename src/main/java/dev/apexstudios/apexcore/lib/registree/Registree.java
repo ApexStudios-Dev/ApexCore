@@ -123,7 +123,7 @@ public class Registree {
         var registryType = registry.key();
 
         if(!registered.add(registryType))
-            throw new IllegalStateException("Duplicate registry registration: " + namespace + '#' + registryType.registry());
+            throw new IllegalStateException("Duplicate registry registration: " + namespace + '#' + registryType.location());
 
         factories.row(registryType).forEach((registryName, factory) -> {
             var fullName = registryName(registryName);
@@ -136,9 +136,9 @@ public class Registree {
         var registryType = registry.key();
 
         if(!registered.contains(registryType))
-            throw new IllegalStateException("Can not finalize registry before elements are registered: " + namespace + '#' + registryType.registry());
+            throw new IllegalStateException("Can not finalize registry before elements are registered: " + namespace + '#' + registryType.location());
         if(!finalized.add(registryType))
-            throw new IllegalStateException("Duplicate registry finalization: " + namespace + '#' + registryType.registry());
+            throw new IllegalStateException("Duplicate registry finalization: " + namespace + '#' + registryType.location());
 
         listeners.row(registryType).forEach((registryName, listener) -> {
             getOptional(registryType, registryName).ifPresent((Consumer<? super TRegistry>) listener);
@@ -171,7 +171,7 @@ public class Registree {
     }
 
     public final <TRegistry> Holder.Reference<TRegistry> getOrThrow(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName) {
-        return get(registryType, registryName).orElseThrow(() -> new NoSuchElementException("Missing key in '" + registryType.registry() + "': '" + namespace() + ':' + registryName + "'"));
+        return get(registryType, registryName).orElseThrow(() -> new NoSuchElementException("Missing key in '" + registryType.location() + "': '" + namespace() + ':' + registryName + "'"));
     }
 
     @Nullable
@@ -258,9 +258,9 @@ public class Registree {
     // region: Generic
     public final <TRegistry> ResourceKey<TRegistry> register(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName, Function<ResourceLocation, ? extends TRegistry> factory) {
         if(registered.contains(registryType))
-            throw new IllegalStateException("Registree is already frozen: " + namespace + '#' + registryType.registry());
+            throw new IllegalStateException("Registree is already frozen: " + namespace + '#' + registryType.location());
         if(factories.put(registryType, registryName, factory) != null)
-            throw new IllegalStateException("Duplicate registration: " + registryName + " in registry: " + namespace + '#' + registryType.registry());
+            throw new IllegalStateException("Duplicate registration: " + registryName + " in registry: " + namespace + '#' + registryType.location());
 
         return registryKey(registryType, registryName);
     }

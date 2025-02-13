@@ -68,8 +68,6 @@ public final class LockBlockEntityComponent extends BaseBlockEntityComponent {
     }
 
     public static boolean isLocked(BlockEntity blockEntity, Player player) {
-        if(player.isSpectator())
-            return true;
         if(!(blockEntity instanceof ComponentHolder))
             return false;
 

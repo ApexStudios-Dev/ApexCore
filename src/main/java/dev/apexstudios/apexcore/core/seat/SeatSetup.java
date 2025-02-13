@@ -9,6 +9,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.IEventBus;
@@ -41,6 +42,12 @@ public interface SeatSetup {
                     },
                     EntityType.CAT, EntityType.PARROT, EntityType.WOLF
             );
+
+            event.registerEntity(SeatBlockComponent.MAY_SIT_CAPABILITY, EntityType.VILLAGER, (villager, context) -> () -> {
+                if(villager.level().isNight())
+                    return !villager.getBrain().hasMemoryValue(MemoryModuleType.HOME);
+                return true;
+            });
         });
 
         NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.EntityInteract.class, event -> {

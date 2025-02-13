@@ -2,10 +2,10 @@ package dev.apexstudios.apexcore.lib.data;
 
 import dev.apexstudios.apexcore.core.ApexCore;
 import dev.apexstudios.apexcore.lib.data.provider.LanguageProvider;
-import dev.apexstudios.apexcore.lib.data.provider.ModelProvider;
 import dev.apexstudios.apexcore.lib.data.provider.RecipeProvider;
 import dev.apexstudios.apexcore.lib.data.provider.datamap.DataMapProvider;
 import dev.apexstudios.apexcore.lib.data.provider.loot.LootTableProvider;
+import dev.apexstudios.apexcore.lib.data.provider.model.ModelProvider;
 import dev.apexstudios.apexcore.lib.data.provider.tag.IntrusiveTagProvider;
 import dev.apexstudios.apexcore.lib.data.provider.tag.SimpleTagProvider;
 import dev.apexstudios.apexcore.lib.data.provider.tag.TagProvider;

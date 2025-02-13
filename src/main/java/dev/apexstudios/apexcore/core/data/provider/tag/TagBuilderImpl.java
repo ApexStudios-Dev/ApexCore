@@ -2,6 +2,8 @@ package dev.apexstudios.apexcore.core.data.provider.tag;
 
 import com.google.common.collect.Lists;
 import dev.apexstudios.apexcore.lib.data.provider.tag.TagBuilder;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagEntry;
@@ -120,6 +122,12 @@ sealed class TagBuilderImpl<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf
     // endregion
 
     TagFile compile() {
-        return new TagFile(List.copyOf(elements), replace, List.copyOf(removals));
+        return new TagFile(copyAndSort(elements), replace, copyAndSort(removals));
+    }
+
+    private static List<TagEntry> copyAndSort(List<TagEntry> list) {
+        var copy = Lists.newArrayList(list);
+        copy.sort(Comparator.comparing(TagEntry::isRequired).thenComparing(TagEntry::getId).thenComparing(TagEntry::isTag));
+        return Collections.unmodifiableList(copy);
     }
 }
