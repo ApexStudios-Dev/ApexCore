@@ -1,4 +1,4 @@
-package dev.apexstudios.apexcore.lib.data.provider;
+package dev.apexstudios.apexcore.lib.data.provider.model;
 
 import dev.apexstudios.apexcore.core.data.provider.ModelProviderImpl;
 import dev.apexstudios.apexcore.lib.data.ProviderType;

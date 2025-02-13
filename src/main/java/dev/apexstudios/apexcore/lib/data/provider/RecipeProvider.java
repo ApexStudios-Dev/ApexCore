@@ -456,6 +456,18 @@ public interface RecipeProvider {
         return net.minecraft.data.recipes.RecipeProvider.getBlastingRecipeName(itemLike);
     }
 
+    static ResourceKey<Recipe<?>> recipeKey(ResourceLocation recipeId) {
+        return ResourceKey.create(Registries.RECIPE, recipeId);
+    }
+
+    static ResourceKey<Recipe<?>> recipeKeyWithPrefix(ItemLike item, String prefix) {
+        return recipeKey(RecipeBuilder.getDefaultRecipeId(item).withPrefix(prefix));
+    }
+
+    static ResourceKey<Recipe<?>> recipeKeyWithSuffix(ItemLike item, String suffix) {
+        return recipeKey(RecipeBuilder.getDefaultRecipeId(item).withSuffix(suffix));
+    }
+
     @FunctionalInterface
     interface FamilyRecipeProvider {
         RecipeBuilder create(RecipeProvider recipeProvider, ItemLike ingredient, ItemLike result);
