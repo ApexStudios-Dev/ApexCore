@@ -1,8 +1,6 @@
 package dev.apexstudios.apexcore.core.data.provider;
 
 import com.google.common.base.Predicates;
-import dev.apexstudios.apexcore.core.ApexCore;
-import dev.apexstudios.apexcore.lib.data.ProviderType;
 import dev.apexstudios.apexcore.lib.data.provider.context.ProviderListenerContext;
 import dev.apexstudios.apexcore.lib.data.provider.context.ProviderOutputContext;
 import dev.apexstudios.apexcore.lib.data.provider.model.ModelProvider;
@@ -18,10 +16,9 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.ApiStatus;
 
 public final class ModelProviderImpl implements BaseProvider, ModelProvider {
-    public static final ProviderType<ModelProvider> PROVIDER_TYPE = ProviderType.register(ApexCore.identifier("models"), ModelProviderImpl::new);
-
     private final net.minecraft.client.data.models.ModelProvider.ItemInfoCollector itemInfoCollector = new net.minecraft.client.data.models.ModelProvider.ItemInfoCollector(this::filteredItems);
     private final net.minecraft.client.data.models.ModelProvider.BlockStateGeneratorCollector blockStateGeneratorCollector = new net.minecraft.client.data.models.ModelProvider.BlockStateGeneratorCollector(this::filteredBlocks);
     private final net.minecraft.client.data.models.ModelProvider.SimpleModelCollector simpleModelCollector = new net.minecraft.client.data.models.ModelProvider.SimpleModelCollector();
@@ -33,7 +30,8 @@ public final class ModelProviderImpl implements BaseProvider, ModelProvider {
     private Predicate<Holder<Item>> itemFilter = Predicates.alwaysTrue();
     private Predicate<Holder<Block>> blockFilter = Predicates.alwaysTrue();
 
-    private ModelProviderImpl(ProviderListenerContext context) {
+    @ApiStatus.Internal
+    public ModelProviderImpl(ProviderListenerContext context) {
         modId = context.modId();
     }
 

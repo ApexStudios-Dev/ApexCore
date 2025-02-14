@@ -129,6 +129,10 @@ public sealed abstract class PackGeneratorImpl<TSelf extends PackGenerator<TSelf
                 return registries.thenCompose(registries -> {
                     var listenerContext = ProviderListenerContext.of(context, registries);
                     var provider = providerType.create(listenerContext);
+
+                    if(provider == null)
+                        return CompletableFuture.completedFuture(null);
+
                     providerListeners.get(providerType).forEach(listener -> ((BiConsumer<ProviderListenerContext, TProvider>) listener).accept(listenerContext, provider));
                     return ((BaseProvider) provider).generate(cache, ProviderOutputContext.of(listenerContext, output));
                 });

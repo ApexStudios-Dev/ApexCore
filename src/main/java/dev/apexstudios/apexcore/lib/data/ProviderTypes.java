@@ -1,6 +1,7 @@
 package dev.apexstudios.apexcore.lib.data;
 
 import dev.apexstudios.apexcore.core.ApexCore;
+import dev.apexstudios.apexcore.core.data.provider.ModelProviderImpl;
 import dev.apexstudios.apexcore.lib.data.provider.LanguageProvider;
 import dev.apexstudios.apexcore.lib.data.provider.RecipeProvider;
 import dev.apexstudios.apexcore.lib.data.provider.datamap.DataMapProvider;
@@ -19,10 +20,11 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.api.distmarker.Dist;
 
 public interface ProviderTypes {
     ProviderType<LanguageProvider> LANGUAGE = LanguageProvider.PROVIDER_TYPE;
-    ProviderType<ModelProvider> MODELS = ModelProvider.PROVIDER_TYPE;
+    ProviderType<ModelProvider> MODELS = ProviderType.registerForDist(ApexCore.identifier("models"), Dist.CLIENT, () -> ModelProviderImpl::new);
     ProviderType<RecipeProvider> RECIPES = RecipeProvider.PROVIDER_TYPE;
 
     ProviderType<IntrusiveTagProvider<Item>> ITEM_TAGS = TagProvider.registerIntrusiveForHolder(ApexCore.ID, Registries.ITEM, Item::builtInRegistryHolder);
