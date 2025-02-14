@@ -1,7 +1,5 @@
 package dev.apexstudios.apexcore.lib.data.provider.model;
 
-import dev.apexstudios.apexcore.core.data.provider.ModelProviderImpl;
-import dev.apexstudios.apexcore.lib.data.ProviderType;
 import dev.apexstudios.apexcore.lib.registree.Registree;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -16,8 +14,6 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 public interface ModelProvider {
-    ProviderType<ModelProvider> PROVIDER_TYPE = ModelProviderImpl.PROVIDER_TYPE;
-
     ModelProvider knownItems(Supplier<Stream<? extends Holder<Item>>> knownItemsSupplier);
 
     ModelProvider knownBlocks(Supplier<Stream<? extends Holder<Block>>> knownBlocksSupplier);

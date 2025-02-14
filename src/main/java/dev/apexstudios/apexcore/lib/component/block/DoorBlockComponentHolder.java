@@ -45,6 +45,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.DoorHingeSide;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -60,7 +61,7 @@ public class DoorBlockComponentHolder extends DoorBlock implements ComponentHold
     private final Map<ComponentType<BlockComponent, ?, ?>, BlockComponent> components = BlockComponentHelper.registerComponents(this, (holder, registrar) -> {
         holder.registerRequiredComponents(registrar);
         holder.registerComponents(registrar);
-    }, DoorBlock.FACING, DoorBlock.HALF);
+    }, DoorBlock.FACING);
 
     public DoorBlockComponentHolder(BlockSetType type, Properties properties) {
         super(type, properties);
@@ -69,6 +70,7 @@ public class DoorBlockComponentHolder extends DoorBlock implements ComponentHold
                 .setValue(OPEN, false)
                 .setValue(HINGE, DoorHingeSide.LEFT)
                 .setValue(POWERED, false)
+                .setValue(HALF, DoubleBlockHalf.LOWER)
         );
     }
 
@@ -387,11 +389,13 @@ public class DoorBlockComponentHolder extends DoorBlock implements ComponentHold
         var pos = context.getClickedPos();
         var hasPower = hasPower(level, pos, blockState);
         var facing = getComponentOrThrow(BlockComponentTypes.FACING).get(blockState);
+        var half = getComponentOrThrow(BlockComponentTypes.MULTI_BLOCK).indexOf(blockState) == MultiBlockComponent.ORIGIN_INDEX ? DoubleBlockHalf.LOWER : DoubleBlockHalf.UPPER;
 
         return blockState
                 .setValue(HINGE, getHinge(context, facing))
                 .setValue(POWERED, hasPower)
-                .setValue(OPEN, hasPower);
+                .setValue(OPEN, hasPower)
+                .setValue(HALF, half);
     }
 
     private InteractionResult useDoor(BlockState blockState, Level level, BlockPos pos, Player player, BlockHitResult result) {

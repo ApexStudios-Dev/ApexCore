@@ -167,7 +167,7 @@ public class Registree {
 
     // region: Registry
     public final <TRegistry> Optional<Holder.Reference<TRegistry>> get(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName) {
-        return Optional.of((Holder.Reference<TRegistry>) holders.get(registryType, registryName));
+        return Optional.ofNullable((Holder.Reference<TRegistry>) holders.get(registryType, registryName));
     }
 
     public final <TRegistry> Holder.Reference<TRegistry> getOrThrow(ResourceKey<? extends Registry<TRegistry>> registryType, String registryName) {
