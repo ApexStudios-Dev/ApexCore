@@ -10,7 +10,7 @@ jobs:
         secrets: inherit
         with:
             curseforge_id: "550778"
-            # modrinth_id: "xl3myxch"
+            modrinth_id: "xl3myxch"
             release_type: "alpha"
             name: "ApexCore"
             logo: "https://raw.githubusercontent.com/ApexStudios-Dev/.github/refs/heads/master/assets/minecraft/new/apexcore.png"
