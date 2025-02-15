@@ -15,4 +15,3 @@ jobs:
             name: "ApexCore"
             logo: "https://raw.githubusercontent.com/ApexStudios-Dev/.github/refs/heads/master/assets/minecraft/new/apexcore.png"
             color: "3948743" # 3C40C7
-            github_package_url: "https://maven.pkg.github.com/ApexStudios-Dev/ApexCore"
