@@ -7,9 +7,11 @@ on:
 jobs:
     publish:
         uses: ApexStudios-Dev/.github/.github/workflows/publish-mod.yml@master
-        secrets:
-            MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-            MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-            CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
-#            MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-            DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        secrets: inherit
+        with:
+            curseforge_id: "550778"
+            # modrinth_id: "xl3myxch"
+            release_type: "alpha"
+            name: "ApexCore"
+            logo: "https://raw.githubusercontent.com/ApexStudios-Dev/.github/refs/heads/master/assets/minecraft/new/apexcore.png"
+            color: "3948743" # 3C40C7
