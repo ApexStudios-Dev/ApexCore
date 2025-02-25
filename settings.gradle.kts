@@ -1,8 +1,4 @@
 pluginManagement {
-    if(file("../ApexGradle/build.gradle.kts").exists()) {
-        includeBuild("../ApexGradle")
-    }
-
     repositories {
         gradlePluginPortal()
         mavenLocal()
