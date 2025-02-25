@@ -29,9 +29,9 @@ public interface PlacementRendererRegistry {
             var pose = event.getPoseStack();
 
             var client = Minecraft.getInstance();
-            var level = client.level;
+            var level = event.getLevel();
             var player = client.player;
-            assert player != null && level != null;
+            assert player != null;
             var alwaysRender = false;
 
             if(!(client.hitResult instanceof BlockHitResult hitResult) || (hitResult.getType() != HitResult.Type.BLOCK && !alwaysRender))
