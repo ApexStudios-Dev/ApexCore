@@ -10,3 +10,5 @@ jobs:
     build-pr:
         uses: ApexStudios-Dev/.github/.github/workflows/build-prs.yml@master
         secrets: inherit
+        with:
+            artifact_id: apexcore
