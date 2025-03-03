@@ -3,12 +3,9 @@
     "package": "dev.apexstudios.apexcore.mixin",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
-        "AxisMixin",
         "BlockAccessor",
         "BlockItemAccessor",
         "BucketItemAccessor",
-        "CompoundTagMixin",
-        "DiscreteVoxelShapeMixin",
         "DoorBlockMixin",
         "DoublePlantBlockMixin",
         "EntityMixin",
@@ -17,7 +14,6 @@
         "LevelAccessor",
         "LevelMixin",
         "LootTableAccessor",
-        "OctahedralGroupMixin",
         "StateDefinitionBuilderAccessor",
         "StructureTemplateMixin"
     ],

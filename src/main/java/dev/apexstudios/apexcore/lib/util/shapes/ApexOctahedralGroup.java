@@ -1,4 +1,4 @@
-package dev.apexstudios.apexcore.extension;
+package dev.apexstudios.apexcore.lib.util.shapes;
 
 import com.mojang.math.OctahedralGroup;
 import net.minecraft.core.Direction;
@@ -10,8 +10,8 @@ import org.jetbrains.annotations.ApiStatus;
 public interface ApexOctahedralGroup {
     Direction.Axis[] AXES = Direction.Axis.values();
 
-    default Direction.Axis permute(Direction.Axis axis) {
-        return AXES[((OctahedralGroup) this).permutation.permutation(axis.ordinal())];
+    static Direction.Axis permute(OctahedralGroup group, Direction.Axis axis) {
+        return AXES[group.permutation.permutation(axis.ordinal())];
     }
 
     static OctahedralGroup fromAngles(int a, int b) {
