@@ -1,0 +1,12 @@
+on:
+    pull_request:
+        types:
+            - synchronize
+            - opened
+            - ready_for_review
+            - reopened
+
+jobs:
+    check-local-changes:
+        uses: ApexStudios-Dev/.github/.github/workflows/check-local-changes.yml@master
+        secrets: inherit
