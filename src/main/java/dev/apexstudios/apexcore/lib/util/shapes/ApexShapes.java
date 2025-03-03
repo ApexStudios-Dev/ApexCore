@@ -2,7 +2,6 @@ package dev.apexstudios.apexcore.lib.util.shapes;
 
 import com.google.common.collect.Maps;
 import com.mojang.math.OctahedralGroup;
-import dev.apexstudios.apexcore.extension.ApexOctahedralGroup;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import java.util.Map;
@@ -43,14 +42,14 @@ public interface ApexShapes {
         if(group == OctahedralGroup.IDENTITY)
             return shape;
 
-        var discrete = shape.shape.rotate(group);
+        var discrete = ApexDiscreteVoxelShape.rotate(shape.shape, group);
 
         if(shape instanceof CubeVoxelShape && BLOCK_CENTER.equals(center))
             return new CubeVoxelShape(discrete);
 
-        var axisX = group.permute(Direction.Axis.X);
-        var axisY = group.permute(Direction.Axis.Y);
-        var axisZ = group.permute(Direction.Axis.Z);
+        var axisX = ApexOctahedralGroup.permute(group, Direction.Axis.X);
+        var axisY = ApexOctahedralGroup.permute(group, Direction.Axis.Y);
+        var axisZ = ApexOctahedralGroup.permute(group, Direction.Axis.Z);
 
         var xCoords = shape.getCoords(axisX);
         var yCoords = shape.getCoords(axisY);
@@ -60,9 +59,9 @@ public interface ApexShapes {
         var invertY = group.inverts(axisY);
         var invertZ = group.inverts(axisZ);
 
-        var chosenX = axisX.choose(invertX, invertY, invertZ);
-        var chosenY = axisY.choose(invertX, invertY, invertZ);
-        var chosenZ = axisZ.choose(invertX, invertY, invertZ);
+        var chosenX = ApexAxis.choose(axisX, invertX, invertY, invertZ);
+        var chosenY = ApexAxis.choose(axisY, invertX, invertY, invertZ);
+        var chosenZ = ApexAxis.choose(axisZ, invertX, invertY, invertZ);
 
         return new ArrayVoxelShape(
                 discrete,

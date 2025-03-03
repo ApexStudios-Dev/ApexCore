@@ -7,8 +7,6 @@ on:
             - reopened
 
 jobs:
-    build-pr:
-        uses: ApexStudios-Dev/.github/.github/workflows/build-prs.yml@master
+    check-local-changes:
+        uses: ApexStudios-Dev/.github/.github/workflows/check-local-changes.yml@master
         secrets: inherit
-        with:
-            artifact_id: apexcore
