@@ -1,3 +1,5 @@
+name: Build PR
+
 on:
     pull_request:
         types:
@@ -8,7 +10,5 @@ on:
 
 jobs:
     build-pr:
-        uses: ApexStudios-Dev/.github/.github/workflows/build-prs.yml@master
-        secrets: inherit
-        with:
-            artifact_id: apexcore
+        name: Build PR
+        uses: ApexStudios-Dev/.github/.github/workflows/build-pr.yml@master
