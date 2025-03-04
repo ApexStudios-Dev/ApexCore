@@ -1,3 +1,5 @@
+name: Publish
+
 on:
     workflow_dispatch:
     push:
@@ -6,13 +8,13 @@ on:
 
 jobs:
     publish:
+        name: Publish ApexCore
         uses: ApexStudios-Dev/.github/.github/workflows/publish-mod.yml@master
-        secrets: inherit
         with:
-            curseforge_id: "550778"
-            modrinth_id: "xl3myxch"
-            release_type: "alpha"
-            name: "ApexCore"
-            logo: "https://raw.githubusercontent.com/ApexStudios-Dev/.github/refs/heads/master/assets/minecraft/new/apexcore.png"
-            color: "3948743" # 3C40C7
+            display_name: ApexCore
+            logo_url: https://raw.githubusercontent.com/ApexStudios-Dev/.github/refs/heads/master/assets/minecraft/new/apexcore.png
+            color: 0x3C40C7
+            release_type: alpha
             artifact_id: apexcore
+            curseforge_id: "550778"
+            modrinth_id: xl3myxch
