@@ -248,6 +248,19 @@ public class BaseBlockEntityComponentHolder extends BaseBlockEntity implements C
         return BlockEntityComponentHelper.updateEntityMovementAfterFallOn(this, level, entity);
     }
 
+    @MustBeInvokedByOverriders
+    @Override
+    public void modifyCloneItemStack(ItemStack stack, LevelReader level, boolean includeData) {
+        super.modifyCloneItemStack(stack, level, includeData);
+        BlockEntityComponentHelper.modifyCloneItemStack(this, stack, level, worldPosition, getBlockState(), includeData);
+    }
+
+    @MustBeInvokedByOverriders
+    @Override
+    public void modifyCloneItemStack(ItemStack stack, LevelReader level, boolean includeData, Player player) {
+        super.modifyCloneItemStack(stack, level, includeData, player);
+        BlockEntityComponentHelper.modifyCloneItemStack(this, stack, level, worldPosition, getBlockState(), includeData, player);
+    }
     // endregion
 
     // region: Vanilla Wrappers

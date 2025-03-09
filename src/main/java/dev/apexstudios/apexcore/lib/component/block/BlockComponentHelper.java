@@ -235,6 +235,18 @@ public interface BlockComponentHelper {
 
         return false;
     }
+
+    static void modifyCloneItemStack(ComponentHolder<BlockComponent> holder, ItemStack stack, LevelReader level, BlockPos pos, BlockState blockState, boolean includeData) {
+        for(var component : holder.getComponents()) {
+            component.modifyCloneItemStack(stack, level, pos, blockState, includeData);
+        }
+    }
+
+    static void modifyCloneItemStack(ComponentHolder<BlockComponent> holder, ItemStack stack, LevelReader level, BlockPos pos, BlockState blockState, boolean includeData, Player player) {
+        for(var component : holder.getComponents()) {
+            component.modifyCloneItemStack(stack, level, pos, blockState, includeData, player);
+        }
+    }
     // endregion
 
     // region: BlockState

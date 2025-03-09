@@ -6,6 +6,7 @@ import dev.apexstudios.apexcore.lib.component.block.types.BaseCauldronBlockCompo
 import dev.apexstudios.apexcore.lib.component.block.types.BedBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.types.BounceBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.types.CauldronBlockComponent;
+import dev.apexstudios.apexcore.lib.component.block.types.DyeableBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.types.FacingBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.types.FluidLoggedBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.types.LayeredCauldronBlockComponent;
@@ -24,6 +25,7 @@ public interface BlockComponentTypes {
     ComponentType<BlockComponent, SeatBlockComponent, ComponentBuilder> SEAT = SeatBlockComponent.COMPONENT_TYPE;
     ComponentType<BlockComponent, BedBlockComponent, BedBlockComponent.Builder> BED = BedBlockComponent.COMPONENT_TYPE;
     ComponentType<BlockComponent, BounceBlockComponent, ComponentBuilder> BOUNCE = BounceBlockComponent.COMPONENT_TYPE;
+    ComponentType<BlockComponent, DyeableBlockComponent, DyeableBlockComponent.Builder> DYEABLE = DyeableBlockComponent.COMPONENT_TYPE;
 
     @ApiStatus.Internal
     static void register() {

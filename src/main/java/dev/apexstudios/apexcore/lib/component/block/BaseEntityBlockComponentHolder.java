@@ -305,5 +305,21 @@ public abstract class BaseEntityBlockComponentHolder extends BaseEntityBlock imp
         if(!BlockComponentHelper.updateEntityMovementAfterFallOn(this, level, entity))
             super.updateEntityMovementAfterFallOn(level, entity);
     }
+
+    @MustBeInvokedByOverriders
+    @Override
+    protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState blockState, boolean includeData) {
+        var stack = super.getCloneItemStack(level, pos, blockState, includeData);
+        BlockComponentHelper.modifyCloneItemStack(this, stack, level, pos, blockState, includeData);
+        return stack;
+    }
+
+    @MustBeInvokedByOverriders
+    @Override
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState blockState, boolean includeData, Player player) {
+        var stack = super.getCloneItemStack(level, pos, blockState, includeData);
+        BlockComponentHelper.modifyCloneItemStack(this, stack, level, pos, blockState, includeData, player);
+        return stack;
+    }
     // endregion
 }
