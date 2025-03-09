@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BaseEntityBlock extends net.minecraft.world.level.block.BaseEntityBlock {
@@ -169,5 +170,27 @@ public abstract class BaseEntityBlock extends net.minecraft.world.level.block.Ba
             return;
 
         super.updateEntityMovementAfterFallOn(level, entity);
+    }
+
+    @MustBeInvokedByOverriders
+    @Override
+    protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState blockState, boolean includeData) {
+        var stack = super.getCloneItemStack(level, pos, blockState, includeData);
+
+        if(level.getBlockEntity(pos) instanceof BaseBlockEntity blockEntity)
+            blockEntity.modifyCloneItemStack(stack, level, includeData);
+
+        return stack;
+    }
+
+    @MustBeInvokedByOverriders
+    @Override
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState blockState, boolean includeData, Player player) {
+        var stack = super.getCloneItemStack(level, pos, blockState, includeData, player);
+
+        if(level.getBlockEntity(pos) instanceof BaseBlockEntity blockEntity)
+            blockEntity.modifyCloneItemStack(stack, level, includeData, player);
+
+        return stack;
     }
 }

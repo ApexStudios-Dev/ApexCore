@@ -17,6 +17,7 @@ import dev.apexstudios.apexcore.lib.registree.holder.DeferredFluid;
 import dev.apexstudios.apexcore.lib.registree.holder.DeferredFluidType;
 import dev.apexstudios.apexcore.lib.registree.holder.DeferredItem;
 import dev.apexstudios.apexcore.lib.registree.holder.DeferredMenu;
+import dev.apexstudios.apexcore.lib.registree.holder.DeferredParticleType;
 import dev.apexstudios.apexcore.lib.registree.holder.DeferredRecipeSerializer;
 import dev.apexstudios.apexcore.lib.registree.type.SimpleRecipeSerializer;
 import java.util.NoSuchElementException;
@@ -39,6 +40,9 @@ import net.minecraft.core.HolderOwner;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -626,6 +630,30 @@ public class Registree {
     // region: RecipeSerializer
     public final <TRecipe extends Recipe<?>> DeferredRecipeSerializer<TRecipe> registerRecipeSerializer(String registryName, MapCodec<TRecipe> codec, StreamCodec<RegistryFriendlyByteBuf, TRecipe> streamCodec) {
         return registerForHolder(Registries.RECIPE_SERIALIZER, registryName, () -> new SimpleRecipeSerializer<>(codec, streamCodec), DeferredRecipeSerializer::new);
+    }
+    // endregion
+
+    // region: ParticleType
+    public final <TParticle extends ParticleOptions, TParticleType extends ParticleType<TParticle>> DeferredParticleType<TParticle, TParticleType> registerParticle(String registryName, Supplier<ParticleType<TParticle>> factory) {
+        return registerForHolder(Registries.PARTICLE_TYPE, registryName, factory, DeferredParticleType::new);
+    }
+
+    public final <TParticle extends ParticleOptions> DeferredParticleType<TParticle, ParticleType<TParticle>> registerParticle(String registryName, boolean overrideLimiter, MapCodec<TParticle> codec, StreamCodec<? super RegistryFriendlyByteBuf, TParticle> streamCodec) {
+        return registerParticle(registryName, () -> new ParticleType<>(overrideLimiter) {
+            @Override
+            public MapCodec<TParticle> codec() {
+                return codec;
+            }
+
+            @Override
+            public StreamCodec<? super RegistryFriendlyByteBuf, TParticle> streamCodec() {
+                return streamCodec;
+            }
+        });
+    }
+
+    public final DeferredParticleType<SimpleParticleType, SimpleParticleType> registerSimpleParticle(String registryName, boolean overrideLimiter) {
+        return registerParticle(registryName, () -> new SimpleParticleType(overrideLimiter));
     }
     // endregion
     // endregion

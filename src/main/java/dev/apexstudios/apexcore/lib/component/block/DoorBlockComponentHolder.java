@@ -338,6 +338,14 @@ public class DoorBlockComponentHolder extends DoorBlock implements ComponentHold
         if(!BlockComponentHelper.updateEntityMovementAfterFallOn(this, level, entity))
             super.updateEntityMovementAfterFallOn(level, entity);
     }
+
+    @MustBeInvokedByOverriders
+    @Override
+    protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState blockState, boolean includeData) {
+        var stack = super.getCloneItemStack(level, pos, blockState, includeData);
+        BlockComponentHelper.modifyCloneItemStack(this, stack, level, pos, blockState, includeData);
+        return stack;
+    }
     // endregion
 
     // region: NeoForgeExtensions
@@ -355,6 +363,14 @@ public class DoorBlockComponentHolder extends DoorBlock implements ComponentHold
     public final Direction getBedDirection(BlockState blockState, LevelReader level, BlockPos pos) {
         var facing = getComponent(BlockComponentTypes.FACING);
         return facing == null ? Direction.NORTH : facing.get(blockState).getOpposite();
+    }
+
+    @MustBeInvokedByOverriders
+    @Override
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState blockState, boolean includeData, Player player) {
+        var stack = super.getCloneItemStack(level, pos, blockState, includeData);
+        BlockComponentHelper.modifyCloneItemStack(this, stack, level, pos, blockState, includeData, player);
+        return stack;
     }
     // endregion
 

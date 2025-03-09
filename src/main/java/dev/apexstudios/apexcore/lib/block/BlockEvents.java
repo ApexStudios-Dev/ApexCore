@@ -92,4 +92,14 @@ public interface BlockEvents {
     default boolean updateEntityMovementAfterFallOn(BlockGetter level, Entity entity) {
         return false;
     }
+
+    @ForOverride
+    default void modifyCloneItemStack(ItemStack stack, LevelReader level, BlockPos pos, BlockState blockState, boolean includeData) {
+
+    }
+
+    @ForOverride
+    default void modifyCloneItemStack(ItemStack stack, LevelReader level, BlockPos pos, BlockState blockState, boolean includeData, Player player) {
+        modifyCloneItemStack(stack, level, pos, blockState, includeData);
+    }
 }

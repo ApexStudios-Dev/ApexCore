@@ -3,6 +3,7 @@ package dev.apexstudios.apexcore.lib.data;
 import dev.apexstudios.apexcore.core.ApexCore;
 import dev.apexstudios.apexcore.core.data.provider.ModelProviderImpl;
 import dev.apexstudios.apexcore.lib.data.provider.LanguageProvider;
+import dev.apexstudios.apexcore.lib.data.provider.ParticleProvider;
 import dev.apexstudios.apexcore.lib.data.provider.RecipeProvider;
 import dev.apexstudios.apexcore.lib.data.provider.datamap.DataMapProvider;
 import dev.apexstudios.apexcore.lib.data.provider.loot.LootTableProvider;
@@ -26,6 +27,7 @@ public interface ProviderTypes {
     ProviderType<LanguageProvider> LANGUAGE = LanguageProvider.PROVIDER_TYPE;
     ProviderType<ModelProvider> MODELS = ProviderType.registerForDist(ApexCore.identifier("models"), Dist.CLIENT, () -> ModelProviderImpl::new);
     ProviderType<RecipeProvider> RECIPES = RecipeProvider.PROVIDER_TYPE;
+    ProviderType<ParticleProvider> PARTICLES = ParticleProvider.PROVIDER_TYPE;
 
     ProviderType<IntrusiveTagProvider<Item>> ITEM_TAGS = TagProvider.registerIntrusiveForHolder(ApexCore.ID, Registries.ITEM, Item::builtInRegistryHolder);
     ProviderType<IntrusiveTagProvider<Block>> BLOCK_TAGS = TagProvider.registerIntrusiveForHolder(ApexCore.ID, Registries.BLOCK, Block::builtInRegistryHolder);

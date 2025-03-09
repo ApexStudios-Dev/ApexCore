@@ -103,6 +103,16 @@ public class BaseBlockEntity extends BlockEntity {
     public boolean updateEntityMovementAfterFallOn(BlockGetter level, Entity entity) {
         return false;
     }
+
+    @ForOverride
+    public void modifyCloneItemStack(ItemStack stack, LevelReader level, boolean includeData) {
+
+    }
+
+    @ForOverride
+    public void modifyCloneItemStack(ItemStack stack, LevelReader level, boolean includeData, Player player) {
+
+    }
     // endregion
 
     // region: Internal
