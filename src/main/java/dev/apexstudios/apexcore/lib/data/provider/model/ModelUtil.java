@@ -67,9 +67,6 @@ public interface ModelUtil {
                 .with(createPropertyDispatch(block, b -> block.getComponentOrThrow(BlockComponentTypes.MULTI_BLOCK).property(), modelGetter::apply))
                 .with(createHorizontalFacingDispatch(block))
         );
-
-        // registerMultiBlockItemModel(block, modelGetter, blockModels);
-        registerBlockItemModel(block, blockModels);
     }
 
     static <TBlock extends Block & ComponentHolder<BlockComponent>> void multiBlockModelSuffix(TBlock block, BlockModelGenerators blockModels, IntFunction<String> suffixGetter) {
@@ -86,8 +83,6 @@ public interface ModelUtil {
                 .with(createPropertyDispatch(block, propertyGetter, modelGetter))
                 .with(createHorizontalFacingDispatch(block))
         );
-
-        blockModels.registerSimpleItemModel(block, modelGetter.apply(itemValue));
     }
 
     static <TBlock extends Block & ComponentHolder<BlockComponent>, TValue extends Comparable<TValue>> void facingPropertyModel(TBlock block, BlockModelGenerators blockModels, Property<TValue> property, Function<TValue, ResourceLocation> modelGetter, TValue itemValue) {
