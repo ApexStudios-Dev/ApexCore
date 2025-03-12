@@ -6,12 +6,13 @@ import dev.apexstudios.apexcore.lib.component.ComponentHolder;
 import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.BaseBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponent;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentHelper;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentTypes;
 import dev.apexstudios.apexcore.lib.util.ApexUtil;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
@@ -63,10 +64,6 @@ public final class DyeableBlockComponent extends BaseBlockComponent {
         return blockState.setValue(property, color);
     }
 
-    public boolean isAllowed(@Nullable DyeColor color) {
-        return color != null && property.getPossibleValues().contains(color);
-    }
-
     @Override
     public BlockState registerDefaultBlockState(BlockState blockState) {
         return set(blockState, defaultColor);
@@ -79,39 +76,30 @@ public final class DyeableBlockComponent extends BaseBlockComponent {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context, BlockState blockState) {
-        var color = getColorForPlacement(context, this);
-        return set(blockState, color);
+        return getStateForPlacement(property, defaultColor, context, blockState);
     }
 
     @Override
     public InteractionResult useItemOn(ItemStack stack, BlockState blockState, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
-        if(!level.isClientSide) {
-            var color = DyeColor.getColor(stack);
-            var currentColor = get(blockState);
-
-            if(color != currentColor && isAllowed(color)) {
-                level.setBlock(pos, set(blockState, color), Block.UPDATE_ALL);
-                return InteractionResult.SUCCESS_SERVER;
-            }
-        }
-
-        return super.useItemOn(stack, blockState, level, pos, player, hand, result);
+        return useItemOn(property, stack, blockState, level, pos);
     }
 
     @Override
     public void modifyCloneItemStack(ItemStack stack, LevelReader level, BlockPos pos, BlockState blockState, boolean includeData) {
-        if(includeData)
-            stack.set(DataComponents.BASE_COLOR, get(blockState));
+        modifyCloneItemStack(property, stack, blockState, includeData, null);
     }
 
     @Override
     public void modifyCloneItemStack(ItemStack stack, LevelReader level, BlockPos pos, BlockState blockState, boolean includeData, Player player) {
-        if(player.isCreative() || includeData)
-            stack.set(DataComponents.BASE_COLOR, get(blockState));
+        modifyCloneItemStack(property, stack, blockState, includeData, player);
+    }
+
+    public static boolean isAllowed(Property<DyeColor> property, @Nullable DyeColor color) {
+        return color != null && property.getPossibleValues().contains(color);
     }
 
     @Nullable
-    public static DyeColor getColorForPlacement(BlockPlaceContext context, Predicate<@Nullable DyeColor> validColor) {
+    public static DyeColor getColorForPlacement(Property<DyeColor> property, BlockPlaceContext context) {
         var player = context.getPlayer();
 
         if(player != null) {
@@ -122,17 +110,62 @@ public final class DyeableBlockComponent extends BaseBlockComponent {
 
             var dyeColor = DyeColor.getColor(player.getItemInHand(otherHand));
 
-            if(validColor.test(dyeColor))
+            if(isAllowed(property, dyeColor))
                 return dyeColor;
         }
 
         var color = context.getItemInHand().get(DataComponents.BASE_COLOR);
-        return validColor.test(color) ? color : null;
+        return isAllowed(property, color) ? color : null;
     }
 
-    public static DyeColor getColorForPlacement(BlockPlaceContext context, DyeableBlockComponent component) {
-        var result = getColorForPlacement(context, component::isAllowed);
-        return result == null ? component.defaultColor : result;
+    public static DyeColor getColorForPlacement(Property<DyeColor> property, DyeColor defaultColor, BlockPlaceContext context) {
+        var result = getColorForPlacement(property, context);
+        return result == null ? defaultColor : result;
+    }
+
+    public static BlockState getStateForPlacement(Property<DyeColor> property, DyeColor defaultColor, BlockPlaceContext context, BlockState blockState) {
+        var color = getColorForPlacement(property, defaultColor, context);
+        return blockState.setValue(property, color);
+    }
+
+    public static InteractionResult useItemOn(Property<DyeColor> property, ItemStack stack, BlockState blockState, Level level, BlockPos pos) {
+        if(!level.isClientSide) {
+            var color = DyeColor.getColor(stack);
+            var currentColor = blockState.getValue(property);
+
+            if(color != null && color != currentColor && isAllowed(property, color)) {
+                set(property, blockState, color, level, pos);
+                return InteractionResult.SUCCESS_SERVER;
+            }
+        }
+
+        return InteractionResult.PASS;
+    }
+
+    public static void modifyCloneItemStack(Property<DyeColor> property, ItemStack stack, BlockState blockState, boolean includeData, @Nullable Player player) {
+        var color = blockState.getNullableValue(property);
+
+        if(includeData || (player != null && player.isCreative()))
+            stack.set(DataComponents.BASE_COLOR, color);
+    }
+
+    public static void set(Property<DyeColor> property, BlockState blockState, DyeColor color, Level level, BlockPos pos) {
+        var newBlockState = blockState.setValue(property, color);
+        level.setBlock(pos, newBlockState, Block.UPDATE_ALL);
+
+        BlockComponentHelper.runForComponent(blockState, BlockComponentTypes.MULTI_BLOCK, component -> {
+            var origin = component.getOrigin(pos, newBlockState);
+            var index = component.indexOf(newBlockState);
+
+            for(var i = 0; i < component.size(); i++) {
+                if(i == index)
+                    continue;
+
+                var newSubBlockState = component.withIndex(newBlockState, i);
+                var subPos = component.getPos(origin, newSubBlockState);
+                level.setBlock(subPos, newSubBlockState, Block.UPDATE_ALL);
+            }
+        });
     }
 
     public static final class Builder implements ComponentBuilder {
