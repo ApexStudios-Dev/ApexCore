@@ -129,14 +129,13 @@ public final class DyeableBlockComponent extends BaseBlockComponent {
     }
 
     public static InteractionResult useItemOn(Property<DyeColor> property, ItemStack stack, BlockState blockState, Level level, BlockPos pos) {
-        if(!level.isClientSide) {
-            var color = DyeColor.getColor(stack);
-            var currentColor = blockState.getValue(property);
+        var color = DyeColor.getColor(stack);
+        var currentColor = blockState.getValue(property);
 
-            if(color != null && color != currentColor && isAllowed(property, color)) {
+        if(color != null && color != currentColor && isAllowed(property, color)) {
+            if(!level.isClientSide)
                 set(property, blockState, color, level, pos);
-                return InteractionResult.SUCCESS_SERVER;
-            }
+            return InteractionResult.SUCCESS;
         }
 
         return InteractionResult.PASS;
