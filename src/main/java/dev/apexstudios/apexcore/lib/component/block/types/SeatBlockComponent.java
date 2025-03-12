@@ -2,7 +2,6 @@ package dev.apexstudios.apexcore.lib.component.block.types;
 
 import dev.apexstudios.apexcore.core.ApexCore;
 import dev.apexstudios.apexcore.core.seat.SeatEntity;
-import dev.apexstudios.apexcore.core.seat.SeatSetup;
 import dev.apexstudios.apexcore.lib.component.ComponentBuilder;
 import dev.apexstudios.apexcore.lib.component.ComponentHolder;
 import dev.apexstudios.apexcore.lib.component.ComponentType;
@@ -10,6 +9,7 @@ import dev.apexstudios.apexcore.lib.component.block.BaseBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponentHelper;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponentTypes;
+import dev.apexstudios.apexcore.lib.util.ApexTags;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
@@ -101,7 +101,7 @@ public final class SeatBlockComponent extends BaseBlockComponent {
         BlockComponentHelper.runForComponent(newBlockState, BlockComponentTypes.MULTI_BLOCK, multiBlock -> {
             var index = multiBlock.indexOf(newBlockState);
 
-            if(newBlockState.is(SeatSetup.ORIGIN_ONLY)) {
+            if(newBlockState.is(ApexTags.Blocks.SEAT_ORIGIN_ONLY)) {
                 var origin = multiBlock.getOrigin(pos, newBlockState);
 
                 for(var i = 0; i < multiBlock.size(); i++) {
@@ -119,7 +119,7 @@ public final class SeatBlockComponent extends BaseBlockComponent {
     }
 
     public static boolean maySit(EntityType<?> entityType) {
-        return !entityType.is(SeatSetup.BLACKLIST);
+        return !entityType.is(ApexTags.EntityTypes.SEAT_BLACKLIST);
     }
 
     public static boolean maySit(Entity entity) {

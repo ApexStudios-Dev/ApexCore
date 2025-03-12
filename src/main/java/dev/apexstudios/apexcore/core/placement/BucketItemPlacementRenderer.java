@@ -2,6 +2,7 @@ package dev.apexstudios.apexcore.core.placement;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.apexstudios.apexcore.lib.placement.BlockPlacementRenderer;
+import dev.apexstudios.apexcore.lib.util.ApexTags;
 import dev.apexstudios.apexcore.mixin.BucketItemAccessor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -29,7 +30,7 @@ final class BucketItemPlacementRenderer implements BlockPlacementRenderer {
             return false;
         if(!(item.content instanceof FlowingFluid fluid))
             return false;
-        if(!item.content.is(FLUID_WHITELIST))
+        if(!item.content.is(ApexTags.Fluids.RENDER_PLACEMENT_WHITELIST))
             return false;
 
         var fluidResult = Item.getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);

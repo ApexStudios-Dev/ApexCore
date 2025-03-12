@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.apexstudios.apexcore.lib.level.FakeLevel;
 import dev.apexstudios.apexcore.lib.placement.BlockPlacementRenderer;
 import dev.apexstudios.apexcore.lib.placement.PlacementRenderEvent;
+import dev.apexstudios.apexcore.lib.util.ApexTags;
 import dev.apexstudios.apexcore.lib.util.ApexUtil;
 import dev.apexstudios.apexcore.mixin.BlockItemAccessor;
 import java.util.List;
@@ -33,7 +34,7 @@ final class BlockItemPlacementRenderer implements BlockPlacementRenderer {
 
         if(!(stack.getItem() instanceof BlockItem item))
             return false;
-        if(!item.getBlock().builtInRegistryHolder().is(BLOCK_WHITELIST))
+        if(!item.getBlock().builtInRegistryHolder().is(ApexTags.Blocks.RENDER_PLACEMENT_WHITELIST))
             return false;
 
         var canBePlaced = new AtomicBoolean(stack.isItemEnabled(level.enabledFeatures()));

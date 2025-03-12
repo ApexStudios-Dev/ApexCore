@@ -6,7 +6,7 @@ import dev.apexstudios.apexcore.lib.data.ProviderTypes;
 import dev.apexstudios.apexcore.lib.data.ResourceGenerator;
 import dev.apexstudios.apexcore.lib.data.provider.context.ProviderListenerContext;
 import dev.apexstudios.apexcore.lib.data.provider.tag.IntrusiveTagProvider;
-import dev.apexstudios.apexcore.lib.placement.BlockPlacementRenderer;
+import dev.apexstudios.apexcore.lib.util.ApexTags;
 import java.util.function.Predicate;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -34,13 +34,13 @@ public final class ApexCoreDataEntryPoint {
             generator.pack("visual_vanilla")
                     .description("Enables the Placement Visualizer for all of Vanilla Minecraft")
                     .providing(ProviderTypes.BLOCK_TAGS, (context, provider) -> {
-                        addTagToNamespace(context, provider, BlockPlacementRenderer.BLOCK_WHITELIST, ResourceLocation.DEFAULT_NAMESPACE, block -> {
+                        addTagToNamespace(context, provider, ApexTags.Blocks.RENDER_PLACEMENT_WHITELIST, ResourceLocation.DEFAULT_NAMESPACE, block -> {
                             var item = block.asItem();
                             return item instanceof BlockItem || item instanceof BucketItem;
                         });
                     })
                     .providing(ProviderTypes.FLUID_TAGS, (context, provider) -> {
-                        addTagToNamespace(context, provider, BlockPlacementRenderer.FLUID_WHITELIST, ResourceLocation.DEFAULT_NAMESPACE, fluid -> fluid.isSource(fluid.defaultFluidState()));
+                        addTagToNamespace(context, provider, ApexTags.Fluids.RENDER_PLACEMENT_WHITELIST, ResourceLocation.DEFAULT_NAMESPACE, fluid -> fluid.isSource(fluid.defaultFluidState()));
                     });
         });
     }
