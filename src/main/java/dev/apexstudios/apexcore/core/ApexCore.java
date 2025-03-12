@@ -8,6 +8,7 @@ import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponentT
 import dev.apexstudios.apexcore.lib.placement.PlacementRenderEvent;
 import dev.apexstudios.apexcore.lib.registree.Registree;
 import dev.apexstudios.apexcore.lib.util.ApexPackSources;
+import dev.apexstudios.apexcore.lib.util.ApexTags;
 import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -33,6 +34,7 @@ public final class ApexCore {
     public ApexCore(IEventBus modBus) {
         REGISTREE.registerEvents(modBus);
 
+        ApexTags.register();
         BlockComponentTypes.register();
         BlockEntityComponentTypes.register();
         TooltipMutationHandler.register(modBus);

@@ -1,7 +1,6 @@
 package dev.apexstudios.apexcore.lib.placement;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.apexstudios.apexcore.core.ApexCore;
 import dev.apexstudios.apexcore.core.placement.FluidVertexConsumer;
 import dev.apexstudios.apexcore.core.placement.GhostVertexConsumer;
 import dev.apexstudios.apexcore.lib.level.FakeLevel;
@@ -12,9 +11,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -22,13 +19,11 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.RotationSegment;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
@@ -37,9 +32,6 @@ import org.jetbrains.annotations.Nullable;
 
 @FunctionalInterface
 public interface BlockPlacementRenderer {
-    TagKey<Block> BLOCK_WHITELIST = ApexCore.REGISTREE.tag(Registries.BLOCK, "render_placement");
-    TagKey<Fluid> FLUID_WHITELIST = ApexCore.REGISTREE.tag(Registries.FLUID, "render_placement");
-
     boolean renderForHand(Level level, Player player, InteractionHand hand, BlockHitResult hitResult, Camera camera, PoseStack pose, MultiBufferSource.BufferSource buffers);
 
     static void renderAt(Camera camera, PoseStack pose, Runnable runnable) {

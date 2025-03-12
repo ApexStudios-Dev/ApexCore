@@ -4,14 +4,11 @@ import dev.apexstudios.apexcore.core.ApexCore;
 import dev.apexstudios.apexcore.lib.component.block.types.SeatBlockComponent;
 import dev.apexstudios.apexcore.lib.registree.holder.DeferredEntity;
 import net.minecraft.client.renderer.entity.NoopRenderer;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
@@ -19,8 +16,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 public interface SeatSetup {
-    TagKey<EntityType<?>> BLACKLIST = ApexCore.REGISTREE.tag(Registries.ENTITY_TYPE, "seat_blacklist");
-    TagKey<Block> ORIGIN_ONLY = ApexCore.REGISTREE.tag(Registries.BLOCK, "seat_origin_only");
     DeferredEntity<SeatEntity> ENTITY = ApexCore.REGISTREE.registerEntity("seat", SeatEntity::new, MobCategory.MISC, builder -> builder.sized(1F, 1F).noLootTable());
 
     static void register(IEventBus modBus) {
