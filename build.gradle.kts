@@ -14,9 +14,13 @@ apex.extendCompilerErrors()
 val single = ApexSingleExtension.getOrCreate(project)
 single.withDataGen()
 
-neoForge.accessTransformers {
-    from(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg"))
-    publish(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg"))
+neoForge {
+    validateAccessTransformers.set(false)
+
+    accessTransformers {
+        from(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg"))
+        publish(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg"))
+    }
 }
 
 repositories {
