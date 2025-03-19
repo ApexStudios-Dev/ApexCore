@@ -7,6 +7,8 @@ on:
       - opened
       - ready_for_review
       - reopened
+    branches-ignore:
+      - '**/port'
 
 jobs:
   compile-mod:
@@ -46,4 +48,4 @@ jobs:
     needs: compile-mod
     if: success()
     with:
-      neoforge_version: 21.4.96-beta
+      neoforge_version: 21.5.0-beta

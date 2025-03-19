@@ -29,7 +29,7 @@ public interface PlacementRendererRegistry {
             var pose = event.getPoseStack();
 
             var client = Minecraft.getInstance();
-            var level = event.getLevel();
+            var level = client.level; // TODO: REGRESSION: Pull level from event
             var player = client.player;
             assert player != null;
             var alwaysRender = false;

@@ -1,18 +1,11 @@
 package dev.apexstudios.apexcore.lib.util;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import dev.apexstudios.apexcore.core.ApexCore;
-import java.util.OptionalDouble;
-import java.util.function.BiFunction;
-import net.minecraft.Util;
-import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import org.lwjgl.opengl.GL11;
 
 public interface ApexRenderTypes {
-    RenderStateShard.DepthTestStateShard DEPTH_TEST_NOT_EQUAL = new RenderStateShard.DepthTestStateShard("!=", GL11.GL_NOTEQUAL);
+    // TODO: what are the replacements for these
+    /*RenderStateShard.DepthTestStateShard DEPTH_TEST_NOT_EQUAL = new RenderStateShard.DepthTestStateShard("!=", GL11.GL_NOTEQUAL);
 
     BiFunction<ResourceLocation, Boolean, RenderType> ENTITY_TRANSLUCENT_NO_DEPTH = Util.memoize((texture, outline) -> RenderType.create(
             ApexCore.id("entity_translucent_no_depth"),
@@ -66,10 +59,11 @@ public interface ApexRenderTypes {
                     .setDepthTestState(DEPTH_TEST_NOT_EQUAL)
                     .setLayeringState(RenderStateShard.POLYGON_OFFSET_LAYERING)
                     .createCompositeState(false)
-    );
+    );*/
 
     static RenderType entityTranslucentNoDepth(ResourceLocation texture, boolean outline) {
-        return ENTITY_TRANSLUCENT_NO_DEPTH.apply(texture, outline);
+        // return ENTITY_TRANSLUCENT_NO_DEPTH.apply(texture, outline);
+        return RenderType.entityTranslucent(texture, outline);
     }
 
     static RenderType entityTranslucentNoDepth(ResourceLocation texture) {
@@ -77,11 +71,12 @@ public interface ApexRenderTypes {
     }
 
     static RenderType linesNoDepth() {
-        return LINES_NO_DEPTH;
+        // return LINES_NO_DEPTH;
+        return RenderType.lines();
     }
 
     static RenderType translucentNoDepth() {
-        return RenderType.create(
+        /*return RenderType.create(
                 ApexCore.id("translucent_no_depth"),
                 DefaultVertexFormat.BLOCK,
                 VertexFormat.Mode.QUADS,
@@ -97,7 +92,8 @@ public interface ApexRenderTypes {
                         .setDepthTestState(DEPTH_TEST_NOT_EQUAL)
                         // .setLayeringState(RenderStateShard.POLYGON_OFFSET_LAYERING)
                         .createCompositeState(true)
-        );
+        );*/
+        return RenderType.translucent();
     }
 
     static void register() {

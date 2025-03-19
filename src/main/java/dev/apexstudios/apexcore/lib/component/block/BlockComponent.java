@@ -71,4 +71,9 @@ public interface BlockComponent extends Component<BlockComponent>, ComponentHold
     default void onExplosionHit(BlockState blockState, ServerLevel level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> dropsConsumer) {
 
     }
+
+    @ForOverride
+    default void affectNeighborsAfterRemoval(BlockState blockState, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+
+    }
 }

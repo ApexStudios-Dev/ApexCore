@@ -15,10 +15,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.Containers;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -78,13 +78,13 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
 
     @Override
     public void loadNbt(CompoundTag tag, HolderLookup.Provider registries) {
-        if(tag.contains(NBT_INVENTORY, Tag.TAG_COMPOUND))
-            inventory.deserializeNBT(registries, tag.getCompound(NBT_INVENTORY));
+        if(tag.contains(NBT_INVENTORY))
+            inventory.deserializeNBT(registries, tag.getCompoundOrEmpty(NBT_INVENTORY));
     }
 
     @Override
-    public void applyImplicitComponents(BlockEntity.DataComponentInput input) {
-        var contents = input.get(DataComponents.CONTAINER);
+    public void applyImplicitComponents(DataComponentGetter getter) {
+        var contents = getter.get(DataComponents.CONTAINER);
 
         if(!saveToItem || contents == null)
             return;
@@ -110,8 +110,10 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
     }
 
     @Override
-    public void onRemove(BlockState blockState, Level level, BlockPos pos, BlockState newBlockState, boolean movedByPiston) {
-        if(blockState.is(newBlockState.getBlock()))
+    public void preRemoveSideEffects(BlockPos pos, BlockState blockState) {
+        var level = asBlockEntity().getLevel();
+
+        if(level == null)
             return;
 
         var block = blockState.getBlock();

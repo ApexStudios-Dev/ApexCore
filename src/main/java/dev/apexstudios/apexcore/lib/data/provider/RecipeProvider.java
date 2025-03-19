@@ -26,7 +26,6 @@ import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
 import net.minecraft.data.recipes.SingleItemRecipeBuilder;
 import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
-import net.minecraft.data.recipes.SmithingTrimRecipeBuilder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
@@ -103,9 +102,9 @@ public interface RecipeProvider {
         SmithingTransformRecipeBuilder.smithing(Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), Ingredient.of(ingredientItem), tag(ItemTags.NETHERITE_TOOL_MATERIALS), category, resultItem).unlocks("has_netherite_ingot", has(ItemTags.NETHERITE_TOOL_MATERIALS)).save(output(), getItemName(resultItem) + "_smithing");
     }
 
-    default void trimSmithing(Item templateItem, ResourceKey<Recipe<?>> key) {
+    /*default void trimSmithing(Item templateItem, ResourceKey<Recipe<?>> key) {
         SmithingTrimRecipeBuilder.smithingTrim(Ingredient.of(templateItem), tag(ItemTags.TRIMMABLE_ARMOR), tag(ItemTags.TRIM_MATERIALS), RecipeCategory.MISC).unlocks("has_smithing_trim_template", has(templateItem)).save(output(), key);
-    }
+    }*/
 
     default void twoByTwoPacker(RecipeCategory category, ItemLike packed, ItemLike unpacked) {
         shaped(category, packed, 1).define('#', unpacked).pattern("##").pattern("##").unlockedBy(getHasName(unpacked), has(unpacked)).save(output());

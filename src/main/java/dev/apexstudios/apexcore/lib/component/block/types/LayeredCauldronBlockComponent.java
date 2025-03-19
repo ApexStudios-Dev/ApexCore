@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
@@ -68,7 +69,7 @@ public final class LayeredCauldronBlockComponent extends BaseCauldronBlockCompon
     }
 
     @Override
-    public void entityInside(BlockState blockState, Level level, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState blockState, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier applier) {
         var contentHeight = getContentHeight(blockState);
 
         if(level instanceof ServerLevel sLevel && entity.isOnFire() && isEntityInsideContent(pos, entity, contentHeight)) {

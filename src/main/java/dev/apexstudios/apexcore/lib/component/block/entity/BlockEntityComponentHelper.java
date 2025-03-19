@@ -14,13 +14,14 @@ import java.util.function.UnaryOperator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -30,7 +31,6 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
@@ -76,8 +76,8 @@ public interface BlockEntityComponentHelper {
         holder.getComponents().forEach(component -> component.onPlace(blockState, level, pos, oldBlockState, movedByPiston));
     }
 
-    static void onRemove(ComponentHolder<BlockEntityComponent> holder, BlockState blockState, Level level, BlockPos pos, BlockState newBlockState, boolean movedByPiston) {
-        holder.getComponents().forEach(component -> component.onRemove(blockState, level, pos, newBlockState, movedByPiston));
+    static void preRemoveSideEffects(ComponentHolder<BlockEntityComponent> holder, BlockPos pos, BlockState blockState) {
+        holder.getComponents().forEach(component -> component.preRemoveSideEffects(pos, blockState));
     }
 
     static InteractionResult useItemOn(ComponentHolder<BlockEntityComponent> holder, ItemStack stack, BlockState blockState, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
@@ -131,14 +131,14 @@ public interface BlockEntityComponentHelper {
     }
 
     static void loadAdditional(ComponentHolder<BlockEntityComponent> holder, CompoundTag tag, HolderLookup.Provider registries) {
-        if(tag.contains(NBT_COMPONENTS, Tag.TAG_COMPOUND)) {
-            var componentsTag = tag.getCompound(NBT_COMPONENTS);
+        if(tag.contains(NBT_COMPONENTS)) {
+            var componentsTag = tag.getCompoundOrEmpty(NBT_COMPONENTS);
 
             holder.getComponentTypes().forEach(componentType -> {
                 var key = componentType.registryName().toString();
 
-                if(componentsTag.contains(key, Tag.TAG_COMPOUND)) {
-                    var componentTag = componentsTag.getCompound(key);
+                if(componentsTag.contains(key)) {
+                    var componentTag = componentsTag.getCompoundOrEmpty(key);
                     holder.getComponentOrThrow(componentType).loadNbt(componentTag, registries);
                 }
             });
@@ -156,8 +156,8 @@ public interface BlockEntityComponentHelper {
         return false;
     }
 
-    static void applyImplicitComponents(ComponentHolder<BlockEntityComponent> holder, BlockEntity.DataComponentInput input) {
-        holder.getComponents().forEach(component -> component.applyImplicitComponents(input));
+    static void applyImplicitComponents(ComponentHolder<BlockEntityComponent> holder, DataComponentGetter getter) {
+        holder.getComponents().forEach(component -> component.applyImplicitComponents(getter));
     }
 
     static void collectImplicitComponents(ComponentHolder<BlockEntityComponent> holder, DataComponentMap.Builder components) {
@@ -165,14 +165,14 @@ public interface BlockEntityComponentHelper {
     }
 
     static void removeComponentsFromTag(ComponentHolder<BlockEntityComponent> holder, CompoundTag tag) {
-        if(tag.contains(NBT_COMPONENTS, Tag.TAG_COMPOUND)) {
-            var componentsTag = tag.getCompound(NBT_COMPONENTS);
+        if(tag.contains(NBT_COMPONENTS)) {
+            var componentsTag = tag.getCompoundOrEmpty(NBT_COMPONENTS);
 
             holder.getComponentTypes().forEach(componentType -> {
                 var key = componentType.registryName().toString();
 
-                if(componentsTag.contains(key, Tag.TAG_COMPOUND)) {
-                    var componentTag = componentsTag.getCompound(key);
+                if(componentsTag.contains(key)) {
+                    var componentTag = componentsTag.getCompoundOrEmpty(key);
                     holder.getComponentOrThrow(componentType).removeComponentsFromTag(componentTag);
 
                     if(componentTag.isEmpty())
@@ -185,8 +185,8 @@ public interface BlockEntityComponentHelper {
         }
     }
 
-    static void entityInside(ComponentHolder<BlockEntityComponent> holder, BlockState blockState, Level level, BlockPos pos, Entity entity) {
-        holder.getComponents().forEach(component -> component.entityInside(blockState, level, pos, entity));
+    static void entityInside(ComponentHolder<BlockEntityComponent> holder, BlockState blockState, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier applier) {
+        holder.getComponents().forEach(component -> component.entityInside(blockState, level, pos, entity, applier));
     }
 
     static void handlePrecipitation(ComponentHolder<BlockEntityComponent> holder, BlockState blockState, Level level, BlockPos pos, Biome.Precipitation precipitation) {

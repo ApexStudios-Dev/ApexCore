@@ -9,6 +9,7 @@ import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponent;
 import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponentTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -52,8 +53,8 @@ public final class LockBlockEntityComponent extends BaseBlockEntityComponent {
     }
 
     @Override
-    public void applyImplicitComponents(BlockEntity.DataComponentInput input) {
-        lockCode = input.getOrDefault(DataComponents.LOCK, LockCode.NO_LOCK);
+    public void applyImplicitComponents(DataComponentGetter getter) {
+        lockCode = getter.getOrDefault(DataComponents.LOCK, LockCode.NO_LOCK);
     }
 
     @Override

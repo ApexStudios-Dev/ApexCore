@@ -18,6 +18,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -156,9 +157,9 @@ public class BaseBlockComponentHolder extends Block implements ComponentHolder<B
 
     @MustBeInvokedByOverriders
     @Override
-    public void onRemove(BlockState blockState, Level level, BlockPos pos, BlockState newBlockState, boolean movedByPiston) {
-        BlockComponentHelper.onRemove(this, blockState, level, pos, newBlockState, movedByPiston);
-        super.onRemove(blockState, level, pos, newBlockState, movedByPiston);
+    public void affectNeighborsAfterRemoval(BlockState blockState, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        BlockComponentHelper.affectNeighborsAfterRemoval(this, blockState, level, pos, movedByPiston);
+        super.affectNeighborsAfterRemoval(blockState, level, pos, movedByPiston);
     }
 
     @MustBeInvokedByOverriders
@@ -216,9 +217,9 @@ public class BaseBlockComponentHolder extends Block implements ComponentHolder<B
 
     @MustBeInvokedByOverriders
     @Override
-    public void entityInside(BlockState blockState, Level level, BlockPos pos, Entity entity) {
-        BlockComponentHelper.entityInside(this, blockState, level, pos, entity);
-        super.entityInside(blockState, level, pos, entity);
+    public void entityInside(BlockState blockState, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier applier) {
+        BlockComponentHelper.entityInside(this, blockState, level, pos, entity, applier);
+        super.entityInside(blockState, level, pos, entity, applier);
     }
 
     @MustBeInvokedByOverriders
@@ -258,7 +259,7 @@ public class BaseBlockComponentHolder extends Block implements ComponentHolder<B
 
     @MustBeInvokedByOverriders
     @Override
-    public ItemStack pickupBlock(@Nullable Player player, LevelAccessor level, BlockPos pos, BlockState blockState) {
+    public ItemStack pickupBlock(@Nullable LivingEntity player, LevelAccessor level, BlockPos pos, BlockState blockState) {
         var component = getComponent(BlockComponentTypes.FLUID_LOGGED);
         return component == null ? ItemStack.EMPTY : component.pickupBlock(player, level, pos, blockState);
     }
@@ -279,7 +280,7 @@ public class BaseBlockComponentHolder extends Block implements ComponentHolder<B
 
     @MustBeInvokedByOverriders
     @Override
-    public boolean canPlaceLiquid(@Nullable Player player, BlockGetter level, BlockPos pos, BlockState blockState, Fluid fluid) {
+    public boolean canPlaceLiquid(@Nullable LivingEntity player, BlockGetter level, BlockPos pos, BlockState blockState, Fluid fluid) {
         var component = getComponent(BlockComponentTypes.FLUID_LOGGED);
         return component != null && component.canPlaceLiquid(player, level, pos, blockState, fluid);
     }

@@ -142,10 +142,10 @@ public final class DyeableBlockComponent extends BaseBlockComponent {
     }
 
     public static void modifyCloneItemStack(Property<DyeColor> property, ItemStack stack, BlockState blockState, boolean includeData, @Nullable Player player) {
-        var color = blockState.getNullableValue(property);
-
-        if(includeData || (player != null && player.isCreative()))
-            stack.set(DataComponents.BASE_COLOR, color);
+        blockState.getOptionalValue(property).ifPresent(color -> {
+            if(includeData || (player != null && player.isCreative()))
+                stack.set(DataComponents.BASE_COLOR, color);
+        });
     }
 
     public static void set(Property<DyeColor> property, BlockState blockState, DyeColor color, Level level, BlockPos pos) {

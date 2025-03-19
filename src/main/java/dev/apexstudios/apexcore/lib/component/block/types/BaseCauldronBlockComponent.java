@@ -76,7 +76,7 @@ public abstract class BaseCauldronBlockComponent<TBuilder extends BaseCauldronBl
     }
 
     @Override
-    public void onRemove(BlockState blockState, Level level, BlockPos pos, BlockState newBlockState, boolean movedByPiston) {
+    public void affectNeighborsAfterRemoval(BlockState blockState, ServerLevel level, BlockPos pos, boolean movedByPiston) {
         if(CauldronFluidContent.getForBlock(blockState.getBlock()) == null)
             level.invalidateCapabilities(pos);
     }

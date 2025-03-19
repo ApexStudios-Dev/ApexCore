@@ -39,7 +39,7 @@ public interface SeatSetup {
             );
 
             event.registerEntity(SeatBlockComponent.MAY_SIT_CAPABILITY, EntityType.VILLAGER, (villager, context) -> () -> {
-                if(villager.level().isNight())
+                if(villager.level().isDarkOutside())
                     return !villager.getBrain().hasMemoryValue(MemoryModuleType.HOME);
                 return true;
             });

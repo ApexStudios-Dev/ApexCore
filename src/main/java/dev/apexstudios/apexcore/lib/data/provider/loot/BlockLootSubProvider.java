@@ -3,12 +3,9 @@ package dev.apexstudios.apexcore.lib.data.provider.loot;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.IntStream;
 import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
-import net.minecraft.advancements.critereon.ItemEnchantmentsPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.advancements.critereon.ItemSubPredicates;
 import net.minecraft.advancements.critereon.LocationPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
@@ -17,6 +14,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.component.predicates.DataComponentPredicates;
+import net.minecraft.core.component.predicates.EnchantmentsPredicate;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.packs.VanillaBlockLoot;
 import net.minecraft.util.StringRepresentable;
@@ -34,7 +33,6 @@ import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.MossyCarpetBlock;
 import net.minecraft.world.level.block.MultifaceBlock;
-import net.minecraft.world.level.block.PinkPetalsBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StemBlock;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
@@ -94,7 +92,7 @@ public interface BlockLootSubProvider extends LootTableSubProvider {
 
     default LootItemCondition.Builder hasSilkTouch(HolderLookup.Provider registries) {
         var enchantments = registries.lookupOrThrow(Registries.ENCHANTMENT);
-        return MatchTool.toolMatches(ItemPredicate.Builder.item().withSubPredicate(ItemSubPredicates.ENCHANTMENTS, ItemEnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(enchantments.getOrThrow(Enchantments.SILK_TOUCH), MinMaxBounds.Ints.atLeast(1))))));
+        return MatchTool.toolMatches(ItemPredicate.Builder.item().withSubPredicate(DataComponentPredicates.ENCHANTMENTS, EnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(enchantments.getOrThrow(Enchantments.SILK_TOUCH), MinMaxBounds.Ints.atLeast(1))))));
     }
 
     default LootItemCondition.Builder doesNotHaveSilkTouch(HolderLookup.Provider registries) {
@@ -188,9 +186,9 @@ public interface BlockLootSubProvider extends LootTableSubProvider {
         return createSilkTouchDispatchTable(registries, block, applyExplosionDecay(block, LootItem.lootTableItem(Items.REDSTONE).apply(SetItemCountFunction.setCount(UniformGenerator.between(4.0F, 5.0F))).apply(ApplyBonusCount.addUniformBonusCount(enchantments.getOrThrow(Enchantments.FORTUNE)))));
     }
 
-    default LootTable.Builder createBannerDrop(Block block) {
+    /*default LootTable.Builder createBannerDrop(Block block) {
         return LootTable.lootTable().withPool(applyExplosionCondition(block, LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(block).apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY).include(DataComponents.CUSTOM_NAME).include(DataComponents.ITEM_NAME).include(DataComponents.HIDE_ADDITIONAL_TOOLTIP).include(DataComponents.BANNER_PATTERNS).include(DataComponents.RARITY)))));
-    }
+    }*/
 
     default LootTable.Builder createBeeNestDrop(HolderLookup.Provider registries, Block block) {
         return LootTable.lootTable().withPool(LootPool.lootPool().when(hasSilkTouch(registries)).setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(block).apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY).include(DataComponents.BEES)).apply(CopyBlockState.copyState(block).copy(BeehiveBlock.HONEY_LEVEL))));
@@ -280,9 +278,9 @@ public interface BlockLootSubProvider extends LootTableSubProvider {
         return LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(applyExplosionDecay(block, LootItem.lootTableItem(block).apply(List.of(2, 3, 4), amount -> SetItemCountFunction.setCount(ConstantValue.exactly(amount)).when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(block).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(CandleBlock.CANDLES, amount)))))));
     }
 
-    default LootTable.Builder createPetalsDrops(Block block) {
+    /*default LootTable.Builder createPetalsDrops(Block block) {
         return LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1F)).add(applyExplosionDecay(block, LootItem.lootTableItem(block).apply(IntStream.rangeClosed(1, 4).boxed().toList(), amount -> SetItemCountFunction.setCount(ConstantValue.exactly(amount)).when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(block).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(PinkPetalsBlock.AMOUNT, amount)))))));
-    }
+    }*/
 
     default void addNetherVinesDropTable(HolderLookup.Provider registries, Block vines, Block plant) {
         var enchantments = registries.lookupOrThrow(Registries.ENCHANTMENT);

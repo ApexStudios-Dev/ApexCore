@@ -12,6 +12,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -65,11 +66,6 @@ public class BaseBlockEntity extends BlockEntity {
     }
 
     @ForOverride
-    public void onRemove(BlockState blockState, Level level, BlockState newBlockState, boolean movedByPiston) {
-
-    }
-
-    @ForOverride
     public InteractionResult useItemOn(ItemStack stack, BlockState blockState, Level level, Player player, InteractionHand hand, BlockHitResult result) {
         return InteractionResult.PASS;
     }
@@ -85,7 +81,7 @@ public class BaseBlockEntity extends BlockEntity {
     }
 
     @ForOverride
-    public void entityInside(BlockState blockState, Level level, Entity entity) {
+    public void entityInside(BlockState blockState, Level level, Entity entity, InsideBlockEffectApplier applier) {
 
     }
 

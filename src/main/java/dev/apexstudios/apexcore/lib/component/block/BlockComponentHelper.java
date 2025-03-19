@@ -19,6 +19,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -120,8 +121,8 @@ public interface BlockComponentHelper {
         holder.getComponents().forEach(component -> component.onPlace(blockState, level, pos, oldBlockState, movedByPiston));
     }
 
-    static void onRemove(ComponentHolder<BlockComponent> holder, BlockState blockState, Level level, BlockPos pos, BlockState newBlockState, boolean movedByPiston) {
-        holder.getComponents().forEach(component -> component.onRemove(blockState, level, pos, newBlockState, movedByPiston));
+    static void affectNeighborsAfterRemoval(ComponentHolder<BlockComponent> holder, BlockState blockState, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        holder.getComponents().forEach(component -> component.affectNeighborsAfterRemoval(blockState, level, pos, movedByPiston));
     }
 
     static InteractionResult useItemOn(ComponentHolder<BlockComponent> holder, ItemStack stack, BlockState blockState, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
@@ -181,8 +182,8 @@ public interface BlockComponentHelper {
         holder.getComponents().forEach(component -> component.tick(blockState, level, pos, random));
     }
 
-    static void entityInside(ComponentHolder<BlockComponent> holder, BlockState blockState, Level level, BlockPos pos, Entity entity) {
-        holder.getComponents().forEach(component -> component.entityInside(blockState, level, pos, entity));
+    static void entityInside(ComponentHolder<BlockComponent> holder, BlockState blockState, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier applier) {
+        holder.getComponents().forEach(component -> component.entityInside(blockState, level, pos, entity, applier));
     }
 
     static void handlePrecipitation(ComponentHolder<BlockComponent> holder, BlockState blockState, Level level, BlockPos pos, Biome.Precipitation precipitation) {

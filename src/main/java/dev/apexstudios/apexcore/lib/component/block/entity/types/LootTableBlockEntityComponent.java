@@ -12,11 +12,8 @@ import java.util.Objects;
 import java.util.function.LongSupplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.entity.player.Player;
@@ -72,12 +69,8 @@ public final class LootTableBlockEntityComponent extends BaseBlockEntityComponen
 
     @Override
     public void loadNbt(CompoundTag tag, HolderLookup.Provider registries) {
-        if(tag.contains(NBT_LOOT_TABLE, Tag.TAG_STRING)) {
-            lootTableId = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.parse(tag.getString(NBT_LOOT_TABLE)));
-
-            if(tag.contains(NBT_SEED, Tag.TAG_LONG))
-                seed = tag.getLong(NBT_SEED);
-        }
+        lootTableId = tag.read(NBT_LOOT_TABLE, LootTable.KEY_CODEC).orElse(null);
+        seed = tag.getLongOr(NBT_SEED, 0L);
     }
 
     @Override
