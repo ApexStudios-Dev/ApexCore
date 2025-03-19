@@ -1,0 +1,11 @@
+name: Publish PR
+
+on:
+  workflow_run:
+    workflows: [ 'Build PR' ]
+    types: [ completed ]
+
+jobs:
+  publish-pr:
+    name: Publish PR
+    uses: ApexStudios-Dev/.github/.github/workflows/publish-pr.yml@master
