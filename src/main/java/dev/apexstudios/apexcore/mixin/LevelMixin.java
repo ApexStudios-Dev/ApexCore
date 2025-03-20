@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Mixin;
 public abstract class LevelMixin {
     @Nullable
     @WrapMethod(method = "getBlockEntity")
-    private BlockEntity getBlockEntity(BlockPos pos, Operation<BlockEntity> original) {
+    private BlockEntity ApexCore$getBlockEntity(BlockPos pos, Operation<BlockEntity> original) {
         var self = Level.class.cast(this);
         var blockEntityPos = MultiBlockComponent.getBlockEntityPos(self, pos);
         return original.call(blockEntityPos);

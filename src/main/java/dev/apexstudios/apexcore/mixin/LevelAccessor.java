@@ -14,15 +14,6 @@ public interface LevelAccessor {
     @Mutable
     void ApexCore$setIsClientSide(boolean isClientSide);
 
-    @Invoker("tickBlockEntities")
-    void ApexCore$tickBlockEntities();
-
-    @Invoker("prepareWeather")
-    void ApexCore$prepareWeather();
-
     @Invoker("getEntities")
     LevelEntityGetter<Entity> ApexCore$getEntities();
-
-    @Invoker("advanceDaytime")
-    long ApexCore$advanceDaytime();
 }
