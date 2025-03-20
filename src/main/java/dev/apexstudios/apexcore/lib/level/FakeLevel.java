@@ -208,16 +208,6 @@ public final class FakeLevel extends Level {
     }
 
     @Override
-    public void setMapData(MapId mapId, MapItemSavedData mapData) {
-
-    }
-
-    @Override
-    public MapId getFreeMapId() {
-        return new MapId(0);
-    }
-
-    @Override
     public void destroyBlockProgress(int breakerId, BlockPos pos, int progress) {
 
     }
