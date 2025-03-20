@@ -1,102 +1,95 @@
 package dev.apexstudios.apexcore.lib.util;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.DepthTestFunction;
+import dev.apexstudios.apexcore.core.ApexCore;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import net.minecraft.Util;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.TriState;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
 public interface ApexRenderTypes {
-    // TODO: what are the replacements for these
-    /*RenderStateShard.DepthTestStateShard DEPTH_TEST_NOT_EQUAL = new RenderStateShard.DepthTestStateShard("!=", GL11.GL_NOTEQUAL);
-
     BiFunction<ResourceLocation, Boolean, RenderType> ENTITY_TRANSLUCENT_NO_DEPTH = Util.memoize((texture, outline) -> RenderType.create(
             ApexCore.id("entity_translucent_no_depth"),
-            DefaultVertexFormat.NEW_ENTITY,
-            VertexFormat.Mode.QUADS,
             RenderType.TRANSIENT_BUFFER_SIZE, true, true,
+            Pipelines.ENTITY_TRANSLUCENT_NO_DEPTH,
             RenderType.CompositeState.builder()
-                    .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
-                    .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
-                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                    .setCullState(RenderStateShard.CULL)
+                    .setTextureState(new RenderStateShard.TextureStateShard(texture, TriState.FALSE, false))
                     .setLightmapState(RenderStateShard.LIGHTMAP)
                     .setOverlayState(RenderStateShard.OVERLAY)
-                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
-                    .setDepthTestState(DEPTH_TEST_NOT_EQUAL)
-                    .setLayeringState(RenderStateShard.POLYGON_OFFSET_LAYERING)
+                    .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
                     .createCompositeState(outline)
     ));
 
     RenderType TRANSLUCENT_NO_DEPTH = RenderType.create(
             ApexCore.id("translucent_no_depth"),
-            DefaultVertexFormat.BLOCK,
-            VertexFormat.Mode.QUADS,
             RenderType.SMALL_BUFFER_SIZE, true, true,
+            Pipelines.TRANSLUCENT_NO_DEPTH,
             RenderType.CompositeState.builder()
                     .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setShaderState(RenderStateShard.RENDERTYPE_TRANSLUCENT_SHADER)
                     .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
-                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                    // .setCullState(RenderStateShard.CULL)
-                    // .setOverlayState(RenderStateShard.OVERLAY)
-                    // .setWriteMaskState(RenderStateShard.COLOR_WRITE)
-                    .setDepthTestState(DEPTH_TEST_NOT_EQUAL)
-                    // .setLayeringState(RenderStateShard.POLYGON_OFFSET_LAYERING)
                     .createCompositeState(true)
     );
 
-    RenderType LINES_NO_DEPTH = RenderType.create(
-            ApexCore.id("lines_no_depth"),
-            DefaultVertexFormat.POSITION_COLOR_NORMAL,
-            VertexFormat.Mode.LINES,
-            RenderType.TRANSIENT_BUFFER_SIZE,
-            RenderType.CompositeState.builder()
-                    .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
-                    .setLineState(new RenderStateShard.LineStateShard(OptionalDouble.empty()))
-                    .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
-                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                    .setOutputState(RenderStateShard.ITEM_ENTITY_TARGET)
-                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
-                    .setCullState(RenderStateShard.NO_CULL)
-                    .setDepthTestState(DEPTH_TEST_NOT_EQUAL)
-                    .setLayeringState(RenderStateShard.POLYGON_OFFSET_LAYERING)
-                    .createCompositeState(false)
-    );*/
-
     static RenderType entityTranslucentNoDepth(ResourceLocation texture, boolean outline) {
-        // return ENTITY_TRANSLUCENT_NO_DEPTH.apply(texture, outline);
-        return RenderType.entityTranslucent(texture, outline);
+        return ENTITY_TRANSLUCENT_NO_DEPTH.apply(texture, outline);
     }
 
     static RenderType entityTranslucentNoDepth(ResourceLocation texture) {
         return entityTranslucentNoDepth(texture, true);
     }
 
-    static RenderType linesNoDepth() {
-        // return LINES_NO_DEPTH;
-        return RenderType.lines();
-    }
-
     static RenderType translucentNoDepth() {
-        /*return RenderType.create(
-                ApexCore.id("translucent_no_depth"),
-                DefaultVertexFormat.BLOCK,
-                VertexFormat.Mode.QUADS,
-                RenderType.SMALL_BUFFER_SIZE, true, true,
-                RenderType.CompositeState.builder()
-                        .setLightmapState(RenderStateShard.LIGHTMAP)
-                        .setShaderState(RenderStateShard.RENDERTYPE_TRANSLUCENT_SHADER)
-                        .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
-                        .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                        // .setCullState(RenderStateShard.CULL)
-                        // .setOverlayState(RenderStateShard.OVERLAY)
-                        // .setWriteMaskState(RenderStateShard.COLOR_WRITE)
-                        .setDepthTestState(DEPTH_TEST_NOT_EQUAL)
-                        // .setLayeringState(RenderStateShard.POLYGON_OFFSET_LAYERING)
-                        .createCompositeState(true)
-        );*/
-        return RenderType.translucent();
+        return TRANSLUCENT_NO_DEPTH;
     }
 
-    static void register() {
+    static void register(IEventBus modBus) {
+        Pipelines.register(modBus);
+    }
 
+    interface Pipelines {
+        RenderPipeline ENTITY_TRANSLUCENT_NO_DEPTH = RenderPipeline.builder(snippet(RenderPipelines.ENTITY_TRANSLUCENT))
+                .withLocation(ApexCore.identifier("pipeline/entity_translucent_no_depth"))
+                .withCull(true)
+                .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+                .build();
+
+        RenderPipeline TRANSLUCENT_NO_DEPTH = RenderPipeline.builder(snippet(RenderPipelines.TRANSLUCENT))
+                .withLocation(ApexCore.identifier("pipeline/translucent_no_depth"))
+                .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+                .build();
+
+        private static void register(IEventBus modBus) {
+            modBus.addListener(RegisterRenderPipelinesEvent.class, event -> {
+                event.registerPipeline(ENTITY_TRANSLUCENT_NO_DEPTH);
+                event.registerPipeline(TRANSLUCENT_NO_DEPTH);
+            });
+        }
+
+        private static RenderPipeline.Snippet snippet(RenderPipeline pipeline) {
+            return new RenderPipeline.Snippet(
+                    Optional.of(pipeline.getVertexShader()),
+                    Optional.of(pipeline.getFragmentShader()),
+                    Optional.of(pipeline.getShaderDefines()),
+                    Optional.of(pipeline.getSamplers()),
+                    Optional.of(pipeline.getUniforms()),
+                    pipeline.getBlendFunction(),
+                    Optional.of(pipeline.getDepthTestFunction()),
+                    Optional.of(pipeline.getPolygonMode()),
+                    Optional.of(pipeline.isCull()),
+                    Optional.of(pipeline.isWriteColor()),
+                    Optional.of(pipeline.isWriteAlpha()),
+                    Optional.of(pipeline.isWriteDepth()),
+                    Optional.of(pipeline.getColorLogic()),
+                    Optional.of(pipeline.getVertexFormat()),
+                    Optional.of(pipeline.getVertexFormatMode())
+            );
+        }
     }
 }
