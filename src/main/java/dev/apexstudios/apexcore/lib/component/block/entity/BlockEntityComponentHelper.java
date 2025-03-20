@@ -3,7 +3,10 @@ package dev.apexstudios.apexcore.lib.component.block.entity;
 import dev.apexstudios.apexcore.lib.component.ComponentHolder;
 import dev.apexstudios.apexcore.lib.component.ComponentRegistrar;
 import dev.apexstudios.apexcore.lib.component.ComponentType;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentHelper;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentTypes;
 import dev.apexstudios.apexcore.lib.component.block.entity.types.InventoryBlockEntityComponent;
+import dev.apexstudios.apexcore.lib.component.block.types.MultiBlockComponent;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
@@ -117,6 +120,9 @@ public interface BlockEntityComponentHelper {
     }
 
     static void saveAdditional(ComponentHolder<BlockEntityComponent, BlockEntity> holder, CompoundTag tag, HolderLookup.Provider registries) {
+        if(!shouldSerialize(holder))
+            return;
+
         var componentsTag = new CompoundTag();
 
         holder.getComponentTypes().forEach(componentType -> {
@@ -132,7 +138,7 @@ public interface BlockEntityComponentHelper {
     }
 
     static void loadAdditional(ComponentHolder<BlockEntityComponent, BlockEntity> holder, CompoundTag tag, HolderLookup.Provider registries) {
-        if(tag.contains(NBT_COMPONENTS)) {
+        if(shouldSerialize(holder) && tag.contains(NBT_COMPONENTS)) {
             var componentsTag = tag.getCompoundOrEmpty(NBT_COMPONENTS);
 
             holder.getComponentTypes().forEach(componentType -> {
@@ -146,6 +152,12 @@ public interface BlockEntityComponentHelper {
 
             tag.remove(NBT_COMPONENTS);
         }
+    }
+
+    static boolean shouldSerialize(ComponentHolder<BlockEntityComponent, BlockEntity> holder) {
+        var blockState = holder.unwrap().getBlockState();
+        var multiBlock = BlockComponentHelper.getComponent(blockState, BlockComponentTypes.MULTI_BLOCK);
+        return multiBlock == null || multiBlock.indexOf(blockState) == MultiBlockComponent.ORIGIN_INDEX;
     }
 
     static boolean triggerEvent(ComponentHolder<BlockEntityComponent, BlockEntity> holder, int id, int event) {
@@ -166,7 +178,7 @@ public interface BlockEntityComponentHelper {
     }
 
     static void removeComponentsFromTag(ComponentHolder<BlockEntityComponent, BlockEntity> holder, CompoundTag tag) {
-        if(tag.contains(NBT_COMPONENTS)) {
+        if(shouldSerialize(holder) && tag.contains(NBT_COMPONENTS)) {
             var componentsTag = tag.getCompoundOrEmpty(NBT_COMPONENTS);
 
             holder.getComponentTypes().forEach(componentType -> {
