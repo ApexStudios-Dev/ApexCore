@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -75,7 +76,7 @@ public interface BlockPlacementRenderer {
         // pose.translate(blockState.getOffset(pos)); // 'tesselateBlock' does the offset translation for us
         pose.translate(pos.getX(), pos.getY(), pos.getZ());
 
-        var modelParts = model.collectParts(level, pos, blockState, level.random);
+        var modelParts = model.collectParts(level, pos, blockState, RandomSource.create(blockState.getSeed(pos)));
         var overlay = canBePlaced ? OverlayTexture.NO_OVERLAY : OverlayTexture.pack(OverlayTexture.RED_OVERLAY_V, OverlayTexture.NO_WHITE_U);
         modelRenderer.tesselateBlock(level, modelParts, blockState, pos, pose, new GhostVertexConsumer(buffers.getBuffer(ApexRenderTypes.entityTranslucentNoDepth(TextureAtlas.LOCATION_BLOCKS)), 170), true, overlay);
 
