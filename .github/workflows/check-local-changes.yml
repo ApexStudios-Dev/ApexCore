@@ -7,8 +7,8 @@ on:
             - opened
             - ready_for_review
             - reopened
-    branches:
-        - '!**/port'
+        branches:
+            - '!**/port'
 
 jobs:
     check-local-changes:
