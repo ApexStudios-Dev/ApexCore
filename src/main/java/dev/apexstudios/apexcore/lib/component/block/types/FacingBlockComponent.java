@@ -19,6 +19,7 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
@@ -28,7 +29,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.Nullable;
 
 public final class FacingBlockComponent extends BaseBlockComponent {
-    public static final ComponentType<BlockComponent, FacingBlockComponent, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final ComponentType<BlockComponent, FacingBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("facing"),
             Builder::new,
             FacingBlockComponent::new
@@ -39,7 +40,7 @@ public final class FacingBlockComponent extends BaseBlockComponent {
     private final Function<BlockPlaceContext, Direction> facingForPlacement;
     private final Set<Property<Direction>> compatibilities;
 
-    private FacingBlockComponent(ComponentHolder<BlockComponent> holder, Builder builder) {
+    private FacingBlockComponent(ComponentHolder<BlockComponent, Block> holder, Builder builder) {
         super(holder);
 
         property = EnumProperty.create("facing_component", Direction.class, builder.directions.toArray(Direction[]::new));
@@ -104,7 +105,7 @@ public final class FacingBlockComponent extends BaseBlockComponent {
         return blockState.rotate(mirror.getRotation(get(blockState)));
     }
 
-    public static void registerHorizontal(ComponentRegistrar<BlockComponent> registrar, UnaryOperator<Builder> additional) {
+    public static void registerHorizontal(ComponentRegistrar<BlockComponent, Block> registrar, UnaryOperator<Builder> additional) {
         registrar.register(COMPONENT_TYPE, builder -> additional.apply(builder
                 .allowing(Direction.Plane.HORIZONTAL)
                 .defaultFacing(Direction.NORTH)
@@ -113,7 +114,7 @@ public final class FacingBlockComponent extends BaseBlockComponent {
         ));
     }
 
-    public static void registerHorizontal(ComponentRegistrar<BlockComponent> registrar) {
+    public static void registerHorizontal(ComponentRegistrar<BlockComponent, Block> registrar) {
         registerHorizontal(registrar, UnaryOperator.identity());
     }
 

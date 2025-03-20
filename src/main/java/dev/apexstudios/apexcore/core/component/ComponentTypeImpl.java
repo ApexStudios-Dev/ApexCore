@@ -12,17 +12,18 @@ import java.util.function.Supplier;
 import net.minecraft.resources.ResourceLocation;
 
 public final class ComponentTypeImpl<
-        TBase extends Component<TBase>,
+        TBase extends Component<TBase, TObj>,
         TComponent extends TBase,
+        TObj,
         TBuilder extends ComponentBuilder
-> implements ComponentType<TBase, TComponent, TBuilder> {
-    private static final Map<Class<? extends Component<?>>, ? super Map<ResourceLocation, ? extends ComponentType<?, ?, ?>>> ROOT_REGISTRY = Maps.newConcurrentMap();
+> implements ComponentType<TBase, TComponent, TObj, TBuilder> {
+    private static final Map<Class<? extends Component<?, ?>>, ? super Map<ResourceLocation, ? extends ComponentType<?, ?, ?, ?>>> ROOT_REGISTRY = Maps.newConcurrentMap();
 
     private final ResourceLocation registryName;
     private final Supplier<TBuilder> builderFactory;
-    private final BiFunction<ComponentHolder<TBase>, TBuilder, TComponent> componentFactory;
+    private final BiFunction<ComponentHolder<TBase, TObj>, TBuilder, TComponent> componentFactory;
 
-    private ComponentTypeImpl(ResourceLocation registryName, Supplier<TBuilder> builderFactory, BiFunction<ComponentHolder<TBase>, TBuilder, TComponent> componentFactory) {
+    private ComponentTypeImpl(ResourceLocation registryName, Supplier<TBuilder> builderFactory, BiFunction<ComponentHolder<TBase, TObj>, TBuilder, TComponent> componentFactory) {
         this.registryName = registryName;
         this.builderFactory = builderFactory;
         this.componentFactory = componentFactory;
@@ -34,13 +35,13 @@ public final class ComponentTypeImpl<
     }
 
     @Override
-    public TComponent newInstance(ComponentHolder<TBase> holder, Consumer<TBuilder> modifier) {
+    public TComponent newInstance(ComponentHolder<TBase, TObj> holder, Consumer<TBuilder> modifier) {
         var builder = builderFactory.get();
         modifier.accept(builder);
         return componentFactory.apply(holder, builder);
     }
 
-    public static <TBase extends Component<TBase>, TComponent extends TBase, TBuilder extends ComponentBuilder> ComponentType<TBase, TComponent, TBuilder> register(Class<TBase> baseType, ResourceLocation registryName, Supplier<TBuilder> builderFactory, BiFunction<ComponentHolder<TBase>, TBuilder, TComponent> componentFactory) {
+    public static <TBase extends Component<TBase, TObj>, TComponent extends TBase, TObj, TBuilder extends ComponentBuilder> ComponentType<TBase, TComponent, TObj, TBuilder> register(Class<TBase> baseType, ResourceLocation registryName, Supplier<TBuilder> builderFactory, BiFunction<ComponentHolder<TBase, TObj>, TBuilder, TComponent> componentFactory) {
         var componentType = new ComponentTypeImpl<>(registryName, builderFactory, componentFactory);
 
         if(registry(baseType).putIfAbsent(registryName, componentType) != null)
@@ -49,7 +50,7 @@ public final class ComponentTypeImpl<
         return componentType;
     }
 
-    private static <TBase extends Component<TBase>, THolder extends ComponentHolder<TBase>> Map<ResourceLocation, ComponentType<TBase, ?, ?>> registry(Class<TBase> baseType) {
-        return (Map<ResourceLocation, ComponentType<TBase, ?, ?>>) ROOT_REGISTRY.computeIfAbsent(baseType, $ -> Maps.newConcurrentMap());
+    private static <TBase extends Component<TBase, TObj>, TObj> Map<ResourceLocation, ComponentType<TBase, ?, ?, ?>> registry(Class<TBase> baseType) {
+        return (Map<ResourceLocation, ComponentType<TBase, ?, ?, ?>>) ROOT_REGISTRY.computeIfAbsent(baseType, $ -> Maps.newConcurrentMap());
     }
 }

@@ -36,7 +36,7 @@ import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
 public final class MultiBlockComponent extends BaseBlockComponent {
-    public static final ComponentType<BlockComponent, MultiBlockComponent, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final ComponentType<BlockComponent, MultiBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("multi_block"),
             Builder::new,
             MultiBlockComponent::new
@@ -50,7 +50,7 @@ public final class MultiBlockComponent extends BaseBlockComponent {
     private final IntegerProperty property;
     private final BiFunction<BlockState, Vector3ic, Vector3ic> rotationFunction;
 
-    private MultiBlockComponent(ComponentHolder<BlockComponent> holder, Builder builder) {
+    private MultiBlockComponent(ComponentHolder<BlockComponent, Block> holder, Builder builder) {
         super(holder);
 
         localPositions = List.copyOf(builder.positions);

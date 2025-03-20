@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
 import java.util.function.UnaryOperator;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,7 +22,7 @@ import net.minecraft.world.level.block.state.properties.RotationSegment;
 import org.jetbrains.annotations.Nullable;
 
 public final class RotationBlockComponent extends BaseBlockComponent {
-    public static final ComponentType<BlockComponent, RotationBlockComponent, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final ComponentType<BlockComponent, RotationBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("rotation"),
             Builder::new,
             RotationBlockComponent::new
@@ -33,7 +34,7 @@ public final class RotationBlockComponent extends BaseBlockComponent {
     private final ToIntFunction<BlockPlaceContext> segmentForPlacement;
     private final IntegerProperty property;
 
-    private RotationBlockComponent(ComponentHolder<BlockComponent> holder, Builder builder) {
+    private RotationBlockComponent(ComponentHolder<BlockComponent, Block> holder, Builder builder) {
         super(holder);
 
         if(builder.segments <= 0)
@@ -90,14 +91,14 @@ public final class RotationBlockComponent extends BaseBlockComponent {
         return set(blockState, mirror.mirror(get(blockState), segments));
     }
 
-    public static void register16(ComponentRegistrar<BlockComponent> registrar, UnaryOperator<Builder> additional) {
+    public static void register16(ComponentRegistrar<BlockComponent, Block> registrar, UnaryOperator<Builder> additional) {
         registrar.register(COMPONENT_TYPE, builder -> additional.apply(builder
                 .segments(16)
                 .facingForPlacement(context -> RotationSegment.convertToSegment(context.getRotation() + 180F))
         ));
     }
 
-    public static void register16(ComponentRegistrar<BlockComponent> registrar) {
+    public static void register16(ComponentRegistrar<BlockComponent, Block> registrar) {
         register16(registrar, UnaryOperator.identity());
     }
 

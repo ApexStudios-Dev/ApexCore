@@ -14,43 +14,43 @@ import org.jetbrains.annotations.Nullable;
 //
 // See BaseBlockComponentHolder & BaseEntityBlockComponentHolder for Block ComponentHolder implementations
 // See BaseBlockEntityComponentHolder for BlockEntity ComponentHolder implementation
-public class BaseComponentHolder<TBase extends Component<TBase>> implements ComponentHolder<TBase> {
-    private final Map<ComponentType<TBase, ?, ?>, TBase> components = ComponentHelper.registerComponents(this, BaseComponentHolder::registerComponents);
+public abstract class BaseComponentHolder<TBase extends Component<TBase, TObj>, TObj> implements ComponentHolder<TBase, TObj> {
+    private final Map<ComponentType<TBase, ?, TObj, ?>, TBase> components = ComponentHelper.registerComponents(this, BaseComponentHolder::registerComponents);
 
     // region: ComponentHolder
     @ForOverride
-    protected void registerComponents(ComponentRegistrar<TBase> registrar) {
+    protected void registerComponents(ComponentRegistrar<TBase, TObj> registrar) {
 
     }
 
     @Nullable
     @Override
-    public final <TComponent extends TBase> TComponent getComponent(ComponentType<TBase, TComponent, ?> componentType) {
+    public final <TComponent extends TBase> TComponent getComponent(ComponentType<TBase, TComponent, TObj, ?> componentType) {
         return (TComponent) components.get(componentType);
     }
 
     @Override
-    public final <TComponent extends TBase> Optional<TComponent> findComponent(ComponentType<TBase, TComponent, ?> componentType) {
+    public final <TComponent extends TBase> Optional<TComponent> findComponent(ComponentType<TBase, TComponent, TObj, ?> componentType) {
         return ComponentHolder.super.findComponent(componentType);
     }
 
     @Override
-    public final <TComponent extends TBase> TComponent getComponentOrThrow(ComponentType<TBase, TComponent, ?> componentType) {
+    public final <TComponent extends TBase> TComponent getComponentOrThrow(ComponentType<TBase, TComponent, TObj, ?> componentType) {
         return ComponentHolder.super.getComponentOrThrow(componentType);
     }
 
     @Override
-    public final <TComponent extends TBase> void runForComponent(ComponentType<TBase, TComponent, ?> componentType, Consumer<TComponent> action) {
+    public final <TComponent extends TBase> void runForComponent(ComponentType<TBase, TComponent, TObj, ?> componentType, Consumer<TComponent> action) {
         ComponentHolder.super.runForComponent(componentType, action);
     }
 
     @Override
-    public final boolean hasComponent(ComponentType<TBase, ?, ?> componentType) {
+    public final boolean hasComponent(ComponentType<TBase, ?, TObj, ?> componentType) {
         return ComponentHolder.super.hasComponent(componentType);
     }
 
     @Override
-    public final Set<ComponentType<TBase, ?, ?>> getComponentTypes() {
+    public final Set<ComponentType<TBase, ?, TObj, ?>> getComponentTypes() {
         return components.keySet();
     }
 

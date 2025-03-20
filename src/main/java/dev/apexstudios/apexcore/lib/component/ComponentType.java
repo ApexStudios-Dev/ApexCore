@@ -8,32 +8,34 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.NonExtendable
-public interface ComponentType<TBase extends Component<TBase>, TComponent extends TBase, TBuilder extends ComponentBuilder> {
+public interface ComponentType<TBase extends Component<TBase, TObj>, TComponent extends TBase, TObj, TBuilder extends ComponentBuilder> {
     ResourceLocation registryName();
 
     @ApiStatus.Internal
-    TComponent newInstance(ComponentHolder<TBase> holder, Consumer<TBuilder> builder);
+    TComponent newInstance(ComponentHolder<TBase, TObj> holder, Consumer<TBuilder> builder);
 
-    static <TBase extends Component<TBase>, TComponent extends TBase, TBuilder extends ComponentBuilder> ComponentType<TBase, TComponent, TBuilder> register(Class<TBase> baseType, ResourceLocation registryName, Supplier<TBuilder> builderFactory, BiFunction<ComponentHolder<TBase>, TBuilder, TComponent> componentFactory) {
+    static <TBase extends Component<TBase, TObj>, TComponent extends TBase, TObj, TBuilder extends ComponentBuilder> ComponentType<TBase, TComponent, TObj, TBuilder> register(Class<TBase> baseType, ResourceLocation registryName, Supplier<TBuilder> builderFactory, BiFunction<ComponentHolder<TBase, TObj>, TBuilder, TComponent> componentFactory) {
         return ComponentTypeImpl.register(baseType, registryName, builderFactory, componentFactory);
     }
 
-    static <TComponent extends BlockComponent, TBuilder extends ComponentBuilder> ComponentType<BlockComponent, TComponent, TBuilder> registerBlock(ResourceLocation registryName, Supplier<TBuilder> builderFactory, BiFunction<ComponentHolder<BlockComponent>, TBuilder, TComponent> componentFactory) {
+    static <TComponent extends BlockComponent, TBuilder extends ComponentBuilder> ComponentType<BlockComponent, TComponent, Block, TBuilder> registerBlock(ResourceLocation registryName, Supplier<TBuilder> builderFactory, BiFunction<ComponentHolder<BlockComponent, Block>, TBuilder, TComponent> componentFactory) {
         return register(BlockComponent.class, registryName, builderFactory, componentFactory);
     }
 
-    static <TComponent extends BlockComponent> ComponentType<BlockComponent, TComponent, ComponentBuilder> registerBlock(ResourceLocation registryName, Function<ComponentHolder<BlockComponent>, TComponent> componentFactory) {
+    static <TComponent extends BlockComponent> ComponentType<BlockComponent, TComponent, Block, ComponentBuilder> registerBlock(ResourceLocation registryName, Function<ComponentHolder<BlockComponent, Block>, TComponent> componentFactory) {
         return registerBlock(registryName, ComponentBuilder.NOOP, (holder, builder) -> componentFactory.apply(holder));
     }
 
-    static <TComponent extends BlockEntityComponent, TBuilder extends ComponentBuilder> ComponentType<BlockEntityComponent, TComponent, TBuilder> registerBlockEntity(ResourceLocation registryName, Supplier<TBuilder> builderFactory, BiFunction<ComponentHolder<BlockEntityComponent>, TBuilder, TComponent> componentFactory) {
+    static <TComponent extends BlockEntityComponent, TBuilder extends ComponentBuilder> ComponentType<BlockEntityComponent, TComponent, BlockEntity, TBuilder> registerBlockEntity(ResourceLocation registryName, Supplier<TBuilder> builderFactory, BiFunction<ComponentHolder<BlockEntityComponent, BlockEntity>, TBuilder, TComponent> componentFactory) {
         return register(BlockEntityComponent.class, registryName, builderFactory, componentFactory);
     }
 
-    static <TComponent extends BlockEntityComponent> ComponentType<BlockEntityComponent, TComponent, ComponentBuilder> registerBlockEntity(ResourceLocation registryName, Function<ComponentHolder<BlockEntityComponent>, TComponent> componentFactory) {
+    static <TComponent extends BlockEntityComponent> ComponentType<BlockEntityComponent, TComponent, BlockEntity, ComponentBuilder> registerBlockEntity(ResourceLocation registryName, Function<ComponentHolder<BlockEntityComponent, BlockEntity>, TComponent> componentFactory) {
         return registerBlockEntity(registryName, ComponentBuilder.NOOP, (holder, builder) -> componentFactory.apply(holder));
     }
 }

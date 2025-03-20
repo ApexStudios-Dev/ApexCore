@@ -9,14 +9,15 @@ import dev.apexstudios.apexcore.lib.component.block.BlockComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
 
 public final class BounceBlockComponent extends BaseBlockComponent {
-    public static final ComponentType<BlockComponent, BounceBlockComponent, ComponentBuilder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final ComponentType<BlockComponent, BounceBlockComponent, Block, ComponentBuilder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("bounce"),
             BounceBlockComponent::new
     );
 
-    private BounceBlockComponent(ComponentHolder<BlockComponent> holder) {
+    private BounceBlockComponent(ComponentHolder<BlockComponent, Block> holder) {
         super(holder);
     }
 

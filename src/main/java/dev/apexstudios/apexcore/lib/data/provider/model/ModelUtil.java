@@ -29,7 +29,7 @@ public interface ModelUtil {
         );
     }
 
-    static <TBlock extends Block & ComponentHolder<BlockComponent>> void horizontalFacingBlock(TBlock block, BlockModelGenerators blockModels) {
+    static <TBlock extends Block & ComponentHolder<BlockComponent, Block>> void horizontalFacingBlock(TBlock block, BlockModelGenerators blockModels) {
         var facingProperty = block.getComponentOrThrow(BlockComponentTypes.FACING).getProperty();
         horizontalFacingBlock(block, facingProperty, blockModels);
     }
@@ -42,23 +42,23 @@ public interface ModelUtil {
                 .select(Direction.NORTH, BlockModelGenerators.NOP);
     }
 
-    static <TBlock extends Block & ComponentHolder<BlockComponent>> PropertyDispatch<VariantMutator> createHorizontalFacingDispatch(TBlock block) {
+    static <TBlock extends Block & ComponentHolder<BlockComponent, Block>> PropertyDispatch<VariantMutator> createHorizontalFacingDispatch(TBlock block) {
         return createHorizontalFacingDispatch(block.getComponentOrThrow(BlockComponentTypes.FACING).getProperty());
     }
 
-    static <TBlock extends Block & ComponentHolder<BlockComponent>> PropertyDispatch<MultiVariant> createMultiBlockDispatch(TBlock block, IntFunction<ResourceLocation> modelGetter) {
+    static <TBlock extends Block & ComponentHolder<BlockComponent, Block>> PropertyDispatch<MultiVariant> createMultiBlockDispatch(TBlock block, IntFunction<ResourceLocation> modelGetter) {
         return PropertyDispatch.initial(block.getComponentOrThrow(BlockComponentTypes.MULTI_BLOCK).property())
                 .generate(index -> BlockModelGenerators.plainVariant(modelGetter.apply(index)));
     }
 
-    static <TBlock extends Block & ComponentHolder<BlockComponent>> void multiBlockModel(TBlock block, BlockModelGenerators blockModels, IntFunction<ResourceLocation> modelGetter) {
+    static <TBlock extends Block & ComponentHolder<BlockComponent, Block>> void multiBlockModel(TBlock block, BlockModelGenerators blockModels, IntFunction<ResourceLocation> modelGetter) {
         blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(block)
                 .with(createMultiBlockDispatch(block, modelGetter))
                 .with(createHorizontalFacingDispatch(block))
         );
     }
 
-    static <TBlock extends Block & ComponentHolder<BlockComponent>> void multiBlockModelSuffix(TBlock block, BlockModelGenerators blockModels, IntFunction<String> suffixGetter) {
+    static <TBlock extends Block & ComponentHolder<BlockComponent, Block>> void multiBlockModelSuffix(TBlock block, BlockModelGenerators blockModels, IntFunction<String> suffixGetter) {
         multiBlockModel(block, blockModels, index -> ModelLocationUtils.getModelLocation(block, suffixGetter.apply(index)));
     }
 
@@ -67,28 +67,26 @@ public interface ModelUtil {
         blockModels.registerSimpleItemModel(item, ModelLocationUtils.getModelLocation(item));
     }
 
-
-    static <TBlock extends Block & ComponentHolder<BlockComponent>, TValue extends Comparable<TValue>> void facingPropertyModel(TBlock block, BlockModelGenerators blockModels, Function<TBlock, Property<TValue>> propertyGetter, Function<TValue, ResourceLocation> modelGetter) {
+    static <TBlock extends Block & ComponentHolder<BlockComponent, Block>, TValue extends Comparable<TValue>> void facingPropertyModel(TBlock block, BlockModelGenerators blockModels, Function<TBlock, Property<TValue>> propertyGetter, Function<TValue, ResourceLocation> modelGetter) {
         blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(block)
                 .with(PropertyDispatch.initial(propertyGetter.apply(block)).generate(value -> BlockModelGenerators.plainVariant(modelGetter.apply(value))))
                 .with(createHorizontalFacingDispatch(block))
         );
     }
 
-    static <TBlock extends Block & ComponentHolder<BlockComponent>, TValue extends Comparable<TValue>> void facingPropertyModel(TBlock block, BlockModelGenerators blockModels, Property<TValue> property, Function<TValue, ResourceLocation> modelGetter) {
+    static <TBlock extends Block & ComponentHolder<BlockComponent, Block>, TValue extends Comparable<TValue>> void facingPropertyModel(TBlock block, BlockModelGenerators blockModels, Property<TValue> property, Function<TValue, ResourceLocation> modelGetter) {
         facingPropertyModel(block, blockModels, $ -> property, modelGetter);
     }
 
-    static <TBlock extends Block & ComponentHolder<BlockComponent>, TValue extends Comparable<TValue>> void facingPropertyModelSuffix(TBlock block, BlockModelGenerators blockModels, Function<TBlock, Property<TValue>> propertyGetter, Function<TValue, String> suffixGetter) {
+    static <TBlock extends Block & ComponentHolder<BlockComponent, Block>, TValue extends Comparable<TValue>> void facingPropertyModelSuffix(TBlock block, BlockModelGenerators blockModels, Function<TBlock, Property<TValue>> propertyGetter, Function<TValue, String> suffixGetter) {
         facingPropertyModel(block, blockModels, propertyGetter, value -> ModelLocationUtils.getModelLocation(block, suffixGetter.apply(value)));
     }
 
-    static <TBlock extends Block & ComponentHolder<BlockComponent>, TValue extends Comparable<TValue>> void facingPropertyModelSuffix(TBlock block, BlockModelGenerators blockModels, Property<TValue> property, Function<TValue, String> suffixGetter) {
+    static <TBlock extends Block & ComponentHolder<BlockComponent, Block>, TValue extends Comparable<TValue>> void facingPropertyModelSuffix(TBlock block, BlockModelGenerators blockModels, Property<TValue> property, Function<TValue, String> suffixGetter) {
         facingPropertyModelSuffix(block, blockModels, $ -> property, suffixGetter);
     }
 
-
-    static <TBlock extends Block & ComponentHolder<BlockComponent>> void registerMultiBlockItemModel(TBlock block, IntFunction<ResourceLocation> modelGetter, BlockModelGenerators blockModels) {
+    static <TBlock extends Block & ComponentHolder<BlockComponent, Block>> void registerMultiBlockItemModel(TBlock block, IntFunction<ResourceLocation> modelGetter, BlockModelGenerators blockModels) {
         blockModels.itemModelOutput.accept(block.asItem(), ItemModelUtils.composite(IntStream
                 .range(0, block.getComponentOrThrow(BlockComponentTypes.MULTI_BLOCK).size())
                 .mapToObj(modelGetter)
@@ -97,7 +95,7 @@ public interface ModelUtil {
         ));
     }
 
-    static <TBlock extends Block & ComponentHolder<BlockComponent>> void registerMultiBlockItemModelSuffix(TBlock block, IntFunction<String> suffixGetter, BlockModelGenerators blockModels) {
+    static <TBlock extends Block & ComponentHolder<BlockComponent, Block>> void registerMultiBlockItemModelSuffix(TBlock block, IntFunction<String> suffixGetter, BlockModelGenerators blockModels) {
         registerMultiBlockItemModel(block, index -> ModelLocationUtils.getModelLocation(block, suffixGetter.apply(index)), blockModels);
     }
 

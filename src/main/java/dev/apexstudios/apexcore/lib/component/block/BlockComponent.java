@@ -12,6 +12,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
@@ -20,7 +21,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import org.jetbrains.annotations.Nullable;
 
-public interface BlockComponent extends Component<BlockComponent>, ComponentHolder<BlockComponent>, BlockEvents {
+public interface BlockComponent extends Component<BlockComponent, Block>, ComponentHolder<BlockComponent, Block>, BlockEvents {
     @ForOverride
     default BlockState registerDefaultBlockState(BlockState blockState) {
         return blockState;

@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 public final class NameableBlockEntityComponent extends BaseBlockEntityComponent implements Nameable {
     public static final String NBT_CUSTOM_NAME = "CustomName";
 
-    public static final ComponentType<BlockEntityComponent, NameableBlockEntityComponent, Builder> COMPONENT_TYPE = ComponentType.registerBlockEntity(
+    public static final ComponentType<BlockEntityComponent, NameableBlockEntityComponent, BlockEntity, Builder> COMPONENT_TYPE = ComponentType.registerBlockEntity(
             ApexCore.identifier("nameable"),
             Builder::new,
             NameableBlockEntityComponent::new
@@ -29,7 +29,7 @@ public final class NameableBlockEntityComponent extends BaseBlockEntityComponent
     @Nullable private final Component defaultName;
     @Nullable private Component customName = null;
 
-    private NameableBlockEntityComponent(ComponentHolder<BlockEntityComponent> holder, Builder builder) {
+    private NameableBlockEntityComponent(ComponentHolder<BlockEntityComponent, BlockEntity> holder, Builder builder) {
         super(holder);
 
         defaultName = builder.defaultName;
@@ -37,12 +37,12 @@ public final class NameableBlockEntityComponent extends BaseBlockEntityComponent
 
     public void setCustomName(@Nullable Component customName) {
         this.customName = customName;
-        asBlockEntity().setChanged();
+        unwrap().setChanged();
     }
 
     @Override
     public Component getName() {
-        return defaultName == null ? asBlockEntity().getBlockState().getBlock().getName() : defaultName;
+        return defaultName == null ? unwrap().getBlockState().getBlock().getName() : defaultName;
     }
 
     @Override

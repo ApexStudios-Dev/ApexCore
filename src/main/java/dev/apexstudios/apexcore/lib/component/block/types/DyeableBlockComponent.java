@@ -31,7 +31,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 public final class DyeableBlockComponent extends BaseBlockComponent {
-    public static final ComponentType<BlockComponent, DyeableBlockComponent, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final ComponentType<BlockComponent, DyeableBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("dyeable"),
             Builder::new,
             DyeableBlockComponent::new
@@ -40,7 +40,7 @@ public final class DyeableBlockComponent extends BaseBlockComponent {
     private final EnumProperty<DyeColor> property;
     private final DyeColor defaultColor;
 
-    private DyeableBlockComponent(ComponentHolder<BlockComponent> holder, Builder builder) {
+    private DyeableBlockComponent(ComponentHolder<BlockComponent, Block> holder, Builder builder) {
         super(holder);
 
         builder.allow(builder.defaultColor);

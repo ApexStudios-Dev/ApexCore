@@ -46,8 +46,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class BaseEntityBlockComponentHolder extends BaseEntityBlock implements ComponentHolder<BlockComponent>, BucketPickup, LiquidBlockContainer {
-    private final Map<ComponentType<BlockComponent, ?, ?>, BlockComponent> components = BlockComponentHelper.registerComponents(this, BaseEntityBlockComponentHolder::registerComponents);
+public abstract class BaseEntityBlockComponentHolder extends BaseEntityBlock implements ComponentHolder<BlockComponent, Block>, BucketPickup, LiquidBlockContainer {
+    private final Map<ComponentType<BlockComponent, ?, Block, ?>, BlockComponent> components = BlockComponentHelper.registerComponents(this, BaseEntityBlockComponentHolder::registerComponents);
 
     protected BaseEntityBlockComponentHolder(Properties properties) {
         super(properties);
@@ -65,44 +65,49 @@ public abstract class BaseEntityBlockComponentHolder extends BaseEntityBlock imp
 
     // region: ComponentHolder
     @ForOverride
-    protected void registerComponents(ComponentRegistrar<BlockComponent> registrar) {
+    protected void registerComponents(ComponentRegistrar<BlockComponent, Block> registrar) {
 
     }
 
     @Nullable
     @Override
-    public final <TComponent extends BlockComponent> TComponent getComponent(ComponentType<BlockComponent, TComponent, ?> componentType) {
+    public final <TComponent extends BlockComponent> TComponent getComponent(ComponentType<BlockComponent, TComponent, Block, ?> componentType) {
         return (TComponent) components.get(componentType);
     }
 
     @Override
-    public final <TComponent extends BlockComponent> Optional<TComponent> findComponent(ComponentType<BlockComponent, TComponent, ?> componentType) {
+    public final <TComponent extends BlockComponent> Optional<TComponent> findComponent(ComponentType<BlockComponent, TComponent, Block, ?> componentType) {
         return ComponentHolder.super.findComponent(componentType);
     }
 
     @Override
-    public final <TComponent extends BlockComponent> TComponent getComponentOrThrow(ComponentType<BlockComponent, TComponent, ?> componentType) {
+    public final <TComponent extends BlockComponent> TComponent getComponentOrThrow(ComponentType<BlockComponent, TComponent, Block, ?> componentType) {
         return ComponentHolder.super.getComponentOrThrow(componentType);
     }
 
     @Override
-    public final <TComponent extends BlockComponent> void runForComponent(ComponentType<BlockComponent, TComponent, ?> componentType, Consumer<TComponent> action) {
+    public final <TComponent extends BlockComponent> void runForComponent(ComponentType<BlockComponent, TComponent, Block, ?> componentType, Consumer<TComponent> action) {
         ComponentHolder.super.runForComponent(componentType, action);
     }
 
     @Override
-    public final boolean hasComponent(ComponentType<BlockComponent, ?, ?> componentType) {
+    public final boolean hasComponent(ComponentType<BlockComponent, ?, Block, ?> componentType) {
         return ComponentHolder.super.hasComponent(componentType);
     }
 
     @Override
-    public final Set<ComponentType<BlockComponent, ?, ?>> getComponentTypes() {
+    public final Set<ComponentType<BlockComponent, ?, Block, ?>> getComponentTypes() {
         return components.keySet();
     }
 
     @Override
     public final Collection<BlockComponent> getComponents() {
         return components.values();
+    }
+
+    @Override
+    public final Block unwrap() {
+        return this;
     }
     // endregion
 
