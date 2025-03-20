@@ -81,23 +81,7 @@ public interface ApexRenderTypes {
     }
 
     static RenderType translucentNoDepth() {
-        return RenderType.create(
-                ApexCore.id("translucent_no_depth"),
-                DefaultVertexFormat.BLOCK,
-                VertexFormat.Mode.QUADS,
-                RenderType.SMALL_BUFFER_SIZE, true, true,
-                RenderType.CompositeState.builder()
-                        .setLightmapState(RenderStateShard.LIGHTMAP)
-                        .setShaderState(RenderStateShard.RENDERTYPE_TRANSLUCENT_SHADER)
-                        .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
-                        .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                        // .setCullState(RenderStateShard.CULL)
-                        // .setOverlayState(RenderStateShard.OVERLAY)
-                        // .setWriteMaskState(RenderStateShard.COLOR_WRITE)
-                        .setDepthTestState(DEPTH_TEST_NOT_EQUAL)
-                        // .setLayeringState(RenderStateShard.POLYGON_OFFSET_LAYERING)
-                        .createCompositeState(true)
-        );
+        return TRANSLUCENT_NO_DEPTH;
     }
 
     static void register() {
