@@ -13,18 +13,18 @@ issueTrackerURL="https://github.com/ApexStudios-Dev/Issues/issues"
     logoFile="logo.png"
     displayURL="https://modrinth.com/mod/apexcore"
 
-#[[dependencies.apexcore]]
-#    modId="minecraft"
-#    type="required"
-#    versionRange="[1.21.5,1.21.6)"
-#    ordering="NONE"
-#    side="BOTH"
-#[[dependencies.apexcore]]
-#    modId="neoforge"
-#    type="required"
-#    versionRange="[21.5.0-alpha,21.6)"
-#    ordering="NONE"
-#    side="BOTH"
+[[dependencies.apexcore]]
+    modId="minecraft"
+    type="required"
+    versionRange="[1.21.5,1.21.6)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.apexcore]]
+    modId="neoforge"
+    type="required"
+    versionRange="[21.5.0-alpha,21.6)"
+    ordering="NONE"
+    side="BOTH"
 
 [[accessTransformers]]
     file="META-INF/accesstransformer.cfg"
