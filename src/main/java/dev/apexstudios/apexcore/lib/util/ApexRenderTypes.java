@@ -3,7 +3,6 @@ package dev.apexstudios.apexcore.lib.util;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.DepthTestFunction;
 import dev.apexstudios.apexcore.core.ApexCore;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -54,13 +53,13 @@ public interface ApexRenderTypes {
     }
 
     interface Pipelines {
-        RenderPipeline ENTITY_TRANSLUCENT_NO_DEPTH = RenderPipeline.builder(snippet(RenderPipelines.ENTITY_TRANSLUCENT))
+        RenderPipeline ENTITY_TRANSLUCENT_NO_DEPTH = RenderPipelines.ENTITY_TRANSLUCENT.toBuilder()
                 .withLocation(ApexCore.identifier("pipeline/entity_translucent_no_depth"))
                 .withCull(true)
                 .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
                 .build();
 
-        RenderPipeline TRANSLUCENT_NO_DEPTH = RenderPipeline.builder(snippet(RenderPipelines.TRANSLUCENT))
+        RenderPipeline TRANSLUCENT_NO_DEPTH = RenderPipelines.TRANSLUCENT.toBuilder()
                 .withLocation(ApexCore.identifier("pipeline/translucent_no_depth"))
                 .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
                 .build();
@@ -70,26 +69,6 @@ public interface ApexRenderTypes {
                 event.registerPipeline(ENTITY_TRANSLUCENT_NO_DEPTH);
                 event.registerPipeline(TRANSLUCENT_NO_DEPTH);
             });
-        }
-
-        private static RenderPipeline.Snippet snippet(RenderPipeline pipeline) {
-            return new RenderPipeline.Snippet(
-                    Optional.of(pipeline.getVertexShader()),
-                    Optional.of(pipeline.getFragmentShader()),
-                    Optional.of(pipeline.getShaderDefines()),
-                    Optional.of(pipeline.getSamplers()),
-                    Optional.of(pipeline.getUniforms()),
-                    pipeline.getBlendFunction(),
-                    Optional.of(pipeline.getDepthTestFunction()),
-                    Optional.of(pipeline.getPolygonMode()),
-                    Optional.of(pipeline.isCull()),
-                    Optional.of(pipeline.isWriteColor()),
-                    Optional.of(pipeline.isWriteAlpha()),
-                    Optional.of(pipeline.isWriteDepth()),
-                    Optional.of(pipeline.getColorLogic()),
-                    Optional.of(pipeline.getVertexFormat()),
-                    Optional.of(pipeline.getVertexFormatMode())
-            );
         }
     }
 }
