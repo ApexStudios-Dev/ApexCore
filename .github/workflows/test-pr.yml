@@ -7,8 +7,6 @@ on:
       - opened
       - ready_for_review
       - reopened
-    branches:
-      - '!**/port'
 
 jobs:
   compile-mod:
