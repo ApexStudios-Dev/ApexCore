@@ -32,7 +32,7 @@ import org.apache.commons.lang3.function.TriConsumer;
 import org.jetbrains.annotations.NotNull;
 
 public final class SeatBlockComponent extends BaseBlockComponent {
-    public static final ComponentType<BlockComponent, SeatBlockComponent, ComponentBuilder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final ComponentType<BlockComponent, SeatBlockComponent, Block, ComponentBuilder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("seat"),
             SeatBlockComponent::new
     );
@@ -43,7 +43,7 @@ public final class SeatBlockComponent extends BaseBlockComponent {
     public static final EntityCapability<Runnable, @NotNull CapabilityContext> UNSEATED_CAPABILITY = EntityCapability.create(ApexCore.identifier("unseated"), Runnable.class, CapabilityContext.class);
     public static final EntityCapability<BooleanSupplier, @NotNull CapabilityContext> MAY_SIT_CAPABILITY = EntityCapability.create(ApexCore.identifier("may_sit"), BooleanSupplier.class, CapabilityContext.class);
 
-    private SeatBlockComponent(ComponentHolder<BlockComponent> holder) {
+    private SeatBlockComponent(ComponentHolder<BlockComponent, Block> holder) {
         super(holder);
     }
 

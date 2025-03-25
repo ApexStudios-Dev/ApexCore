@@ -20,7 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -41,7 +41,7 @@ import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
 public final class FluidLoggedBlockComponent extends BaseBlockComponent implements BucketPickup, LiquidBlockContainer {
-    public static final ComponentType<BlockComponent, FluidLoggedBlockComponent, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final ComponentType<BlockComponent, FluidLoggedBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("fluid_logged"),
             Builder::new,
             FluidLoggedBlockComponent::new
@@ -52,7 +52,7 @@ public final class FluidLoggedBlockComponent extends BaseBlockComponent implemen
     private final UnaryOperator<ItemStack> bucketModifier;
     private final Predicate<FluidState> isMatchingFluid;
 
-    private FluidLoggedBlockComponent(ComponentHolder<BlockComponent> holder, Builder builder) {
+    private FluidLoggedBlockComponent(ComponentHolder<BlockComponent, Block> holder, Builder builder) {
         super(holder);
 
         fluid = builder.fluid instanceof FlowingFluid flowing ? flowing.getSource() : builder.fluid;
@@ -96,7 +96,7 @@ public final class FluidLoggedBlockComponent extends BaseBlockComponent implemen
     }
 
     @Override
-    public ItemStack pickupBlock(@Nullable Player player, LevelAccessor level, BlockPos pos, BlockState blockState) {
+    public ItemStack pickupBlock(@Nullable LivingEntity player, LevelAccessor level, BlockPos pos, BlockState blockState) {
         if(get(blockState)) {
             level.setBlock(pos, set(blockState, false), Block.UPDATE_ALL);
 
@@ -116,7 +116,7 @@ public final class FluidLoggedBlockComponent extends BaseBlockComponent implemen
     }
 
     @Override
-    public boolean canPlaceLiquid(@Nullable Player player, BlockGetter level, BlockPos pos, BlockState blockState, Fluid fluid) {
+    public boolean canPlaceLiquid(@Nullable LivingEntity player, BlockGetter level, BlockPos pos, BlockState blockState, Fluid fluid) {
         return matches(fluid);
     }
 
@@ -166,14 +166,14 @@ public final class FluidLoggedBlockComponent extends BaseBlockComponent implemen
         return super.updateShape(blockState, level, tickAccess, pos, facing, neighborPos, neighborBlockState, random);
     }
 
-    public static void registerWater(ComponentRegistrar<BlockComponent> registrar) {
+    public static void registerWater(ComponentRegistrar<BlockComponent, Block> registrar) {
         registrar.register(COMPONENT_TYPE, builder -> builder
                 .fluid(Fluids.WATER)
                 .matchingFluid(fluidState -> fluidState.is(FluidTags.WATER))
         );
     }
 
-    public static void registerLava(ComponentRegistrar<BlockComponent> registrar) {
+    public static void registerLava(ComponentRegistrar<BlockComponent, Block> registrar) {
         registrar.register(COMPONENT_TYPE, builder -> builder
                 .fluid(Fluids.LAVA)
                 .matchingFluid(fluidState -> fluidState.is(FluidTags.LAVA))

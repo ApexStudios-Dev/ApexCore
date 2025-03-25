@@ -19,6 +19,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -44,14 +45,14 @@ import org.jetbrains.annotations.Nullable;
 public interface BlockComponentHelper {
     // region: Callbacks
     @ApiStatus.Internal
-    static <THolder extends Block & ComponentHolder<BlockComponent>> Map<ComponentType<BlockComponent, ?, ?>, BlockComponent> registerComponents(THolder holder, BiConsumer<THolder, ComponentRegistrar<BlockComponent>> consumer, Iterable<Property<?>> deprecatedProperties) {
+    static <THolder extends ComponentHolder<BlockComponent, Block>> Map<ComponentType<BlockComponent, ?, Block, ?>, BlockComponent> registerComponents(THolder holder, BiConsumer<THolder, ComponentRegistrar<BlockComponent, Block>> consumer, Iterable<Property<?>> deprecatedProperties) {
         var map = ComponentHelper.registerComponents(holder, consumer);
 
         // patch the state definition
         // this allows components to register state properties
         // and define their own default state values
         ApexUtil.replaceBlockStateDefinition(
-                holder,
+                holder.unwrap(),
                 deprecatedProperties,
                 properties -> map.values().forEach(component -> component.createBlockStateDefinition(properties)),
                 defaultBlockState -> {
@@ -66,12 +67,12 @@ public interface BlockComponentHelper {
         return map;
     }
 
-    static <THolder extends Block & ComponentHolder<BlockComponent>> Map<ComponentType<BlockComponent, ?, ?>, BlockComponent> registerComponents(THolder holder, BiConsumer<THolder, ComponentRegistrar<BlockComponent>> consumer, Property<?>... deprecatedProperties) {
+    static <THolder extends ComponentHolder<BlockComponent, Block>> Map<ComponentType<BlockComponent, ?, Block, ?>, BlockComponent> registerComponents(THolder holder, BiConsumer<THolder, ComponentRegistrar<BlockComponent, Block>> consumer, Property<?>... deprecatedProperties) {
         return registerComponents(holder, consumer, Set.of(deprecatedProperties));
     }
 
     @Nullable
-    static BlockState getStateForPlacement(ComponentHolder<BlockComponent> holder, BlockPlaceContext context, BlockState blockState) {
+    static BlockState getStateForPlacement(ComponentHolder<BlockComponent, Block> holder, BlockPlaceContext context, BlockState blockState) {
         var result = blockState;
 
         for(var component : holder.getComponents()) {
@@ -84,15 +85,15 @@ public interface BlockComponentHelper {
         return result;
     }
 
-    static void playerDestroy(ComponentHolder<BlockComponent> holder, Level level, Player player, BlockPos pos, BlockState blockState, ItemStack stack) {
+    static void playerDestroy(ComponentHolder<BlockComponent, Block> holder, Level level, Player player, BlockPos pos, BlockState blockState, ItemStack stack) {
         holder.getComponents().forEach(component -> component.playerDestroy(level, player, pos, blockState, stack));
     }
 
-    static void setPlacedBy(ComponentHolder<BlockComponent> holder, Level level, BlockPos pos, BlockState blockState, @Nullable LivingEntity placer, ItemStack stack) {
+    static void setPlacedBy(ComponentHolder<BlockComponent, Block> holder, Level level, BlockPos pos, BlockState blockState, @Nullable LivingEntity placer, ItemStack stack) {
         holder.getComponents().forEach(component -> component.setPlacedBy(level, pos, blockState, placer, stack));
     }
 
-    static BlockState playerWillDestroy(ComponentHolder<BlockComponent> holder, Level level, BlockPos pos, BlockState blockState, Player player) {
+    static BlockState playerWillDestroy(ComponentHolder<BlockComponent, Block> holder, Level level, BlockPos pos, BlockState blockState, Player player) {
         var result = blockState;
 
         for(var component : holder.getComponents()) {
@@ -102,7 +103,7 @@ public interface BlockComponentHelper {
         return result;
     }
 
-    static BlockState updateShape(ComponentHolder<BlockComponent> holder, BlockState blockState, LevelReader level, ScheduledTickAccess tickAccess, BlockPos pos, Direction facing, BlockPos neighborPos, BlockState neighborBlockState, RandomSource random) {
+    static BlockState updateShape(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, LevelReader level, ScheduledTickAccess tickAccess, BlockPos pos, Direction facing, BlockPos neighborPos, BlockState neighborBlockState, RandomSource random) {
         var result = blockState;
 
         for(var component : holder.getComponents()) {
@@ -112,19 +113,19 @@ public interface BlockComponentHelper {
         return result;
     }
 
-    static void neighborChanged(ComponentHolder<BlockComponent> holder, BlockState blockState, Level level, BlockPos pos, Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {
+    static void neighborChanged(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, Level level, BlockPos pos, Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {
         holder.getComponents().forEach(component -> component.neighborChanged(blockState, level, pos, neighborBlock, orientation, movedByPiston));
     }
 
-    static void onPlace(ComponentHolder<BlockComponent> holder, BlockState blockState, Level level, BlockPos pos, BlockState oldBlockState, boolean movedByPiston) {
+    static void onPlace(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, Level level, BlockPos pos, BlockState oldBlockState, boolean movedByPiston) {
         holder.getComponents().forEach(component -> component.onPlace(blockState, level, pos, oldBlockState, movedByPiston));
     }
 
-    static void onRemove(ComponentHolder<BlockComponent> holder, BlockState blockState, Level level, BlockPos pos, BlockState newBlockState, boolean movedByPiston) {
-        holder.getComponents().forEach(component -> component.onRemove(blockState, level, pos, newBlockState, movedByPiston));
+    static void affectNeighborsAfterRemoval(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        holder.getComponents().forEach(component -> component.affectNeighborsAfterRemoval(blockState, level, pos, movedByPiston));
     }
 
-    static InteractionResult useItemOn(ComponentHolder<BlockComponent> holder, ItemStack stack, BlockState blockState, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+    static InteractionResult useItemOn(ComponentHolder<BlockComponent, Block> holder, ItemStack stack, BlockState blockState, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
         for(var component : holder.getComponents()) {
             var interactionResult = component.useItemOn(stack, blockState, level, pos, player, hand, result);
 
@@ -135,7 +136,7 @@ public interface BlockComponentHelper {
         return InteractionResult.PASS;
     }
 
-    static InteractionResult useWithoutItem(ComponentHolder<BlockComponent> holder, BlockState blockState, Level level, BlockPos pos, Player player, BlockHitResult result) {
+    static InteractionResult useWithoutItem(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, Level level, BlockPos pos, Player player, BlockHitResult result) {
         for(var component : holder.getComponents()) {
             var interactionResult = component.useWithoutItem(blockState, level, pos, player, result);
 
@@ -146,7 +147,7 @@ public interface BlockComponentHelper {
         return InteractionResult.PASS;
     }
 
-    static int getAnalogOutputSignal(ComponentHolder<BlockComponent> holder, BlockState blockState, Level level, BlockPos pos) {
+    static int getAnalogOutputSignal(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, Level level, BlockPos pos) {
         var result = 0;
 
         for(var component : holder.getComponents()) {
@@ -159,7 +160,7 @@ public interface BlockComponentHelper {
         return result;
     }
 
-    static boolean hasAnalogOutputSignal(ComponentHolder<BlockComponent> holder, BlockState blockState) {
+    static boolean hasAnalogOutputSignal(ComponentHolder<BlockComponent, Block> holder, BlockState blockState) {
         for(var component : holder.getComponents()) {
             if(component.hasAnalogOutputSignal(blockState))
                 return true;
@@ -168,7 +169,7 @@ public interface BlockComponentHelper {
         return false;
     }
 
-    static boolean isPathfindable(ComponentHolder<BlockComponent> holder, BlockState blockState, PathComputationType pathType) {
+    static boolean isPathfindable(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, PathComputationType pathType) {
         for(var component : holder.getComponents()) {
             if(!component.isPathfindable(blockState, pathType))
                 return false;
@@ -177,23 +178,23 @@ public interface BlockComponentHelper {
         return true;
     }
 
-    static void tick(ComponentHolder<BlockComponent> holder, BlockState blockState, ServerLevel level, BlockPos pos, RandomSource random) {
+    static void tick(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, ServerLevel level, BlockPos pos, RandomSource random) {
         holder.getComponents().forEach(component -> component.tick(blockState, level, pos, random));
     }
 
-    static void entityInside(ComponentHolder<BlockComponent> holder, BlockState blockState, Level level, BlockPos pos, Entity entity) {
-        holder.getComponents().forEach(component -> component.entityInside(blockState, level, pos, entity));
+    static void entityInside(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier applier) {
+        holder.getComponents().forEach(component -> component.entityInside(blockState, level, pos, entity, applier));
     }
 
-    static void handlePrecipitation(ComponentHolder<BlockComponent> holder, BlockState blockState, Level level, BlockPos pos, Biome.Precipitation precipitation) {
+    static void handlePrecipitation(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, Level level, BlockPos pos, Biome.Precipitation precipitation) {
         holder.getComponents().forEach(component -> component.handlePrecipitation(blockState, level, pos, precipitation));
     }
 
-    static void stepOn(ComponentHolder<BlockComponent> holder, Level level, BlockPos pos, BlockState blockState, Entity entity) {
+    static void stepOn(ComponentHolder<BlockComponent, Block> holder, Level level, BlockPos pos, BlockState blockState, Entity entity) {
         holder.getComponents().forEach(component -> component.stepOn(level, pos, blockState, entity));
     }
 
-    static BlockState rotate(ComponentHolder<BlockComponent> holder, BlockState blockState, Rotation rotation) {
+    static BlockState rotate(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, Rotation rotation) {
         var result = blockState;
 
         for(var component : holder.getComponents()) {
@@ -203,7 +204,7 @@ public interface BlockComponentHelper {
         return result;
     }
 
-    static BlockState mirror(ComponentHolder<BlockComponent> holder, BlockState blockState, Mirror mirror) {
+    static BlockState mirror(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, Mirror mirror) {
         var result = blockState;
 
         for(var component : holder.getComponents()) {
@@ -213,7 +214,7 @@ public interface BlockComponentHelper {
         return result;
     }
 
-    static FluidState getFluidState(ComponentHolder<BlockComponent> holder, BlockState blockState, FluidState defaultFluidState) {
+    static FluidState getFluidState(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, FluidState defaultFluidState) {
         var fluidState = defaultFluidState;
 
         for(var component : holder.getComponents()) {
@@ -223,11 +224,11 @@ public interface BlockComponentHelper {
         return fluidState;
     }
 
-    static void onExplosionHit(ComponentHolder<BlockComponent> holder, BlockState blockState, ServerLevel level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> dropsConsumer) {
+    static void onExplosionHit(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, ServerLevel level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> dropsConsumer) {
         holder.getComponents().forEach(component -> component.onExplosionHit(blockState, level, pos, explosion, dropsConsumer));
     }
 
-    static boolean updateEntityMovementAfterFallOn(ComponentHolder<BlockComponent> holder, BlockGetter level, Entity entity) {
+    static boolean updateEntityMovementAfterFallOn(ComponentHolder<BlockComponent, Block> holder, BlockGetter level, Entity entity) {
         for(var component : holder.getComponents()) {
             if(component.updateEntityMovementAfterFallOn(level, entity))
                 return true;
@@ -236,13 +237,13 @@ public interface BlockComponentHelper {
         return false;
     }
 
-    static void modifyCloneItemStack(ComponentHolder<BlockComponent> holder, ItemStack stack, LevelReader level, BlockPos pos, BlockState blockState, boolean includeData) {
+    static void modifyCloneItemStack(ComponentHolder<BlockComponent, Block> holder, ItemStack stack, LevelReader level, BlockPos pos, BlockState blockState, boolean includeData) {
         for(var component : holder.getComponents()) {
             component.modifyCloneItemStack(stack, level, pos, blockState, includeData);
         }
     }
 
-    static void modifyCloneItemStack(ComponentHolder<BlockComponent> holder, ItemStack stack, LevelReader level, BlockPos pos, BlockState blockState, boolean includeData, Player player) {
+    static void modifyCloneItemStack(ComponentHolder<BlockComponent, Block> holder, ItemStack stack, LevelReader level, BlockPos pos, BlockState blockState, boolean includeData, Player player) {
         for(var component : holder.getComponents()) {
             component.modifyCloneItemStack(stack, level, pos, blockState, includeData, player);
         }
@@ -251,33 +252,33 @@ public interface BlockComponentHelper {
 
     // region: BlockState
     @Nullable
-    static <TComponent extends BlockComponent> TComponent getComponent(BlockState blockState, ComponentType<BlockComponent, TComponent, ?> componentType) {
+    static <TComponent extends BlockComponent> TComponent getComponent(BlockState blockState, ComponentType<BlockComponent, TComponent, Block, ?> componentType) {
         var holder = asHolder(blockState);
         return holder == null ? null : holder.getComponent(componentType);
     }
 
-    static <TComponent extends BlockComponent> Optional<TComponent> findComponent(BlockState blockState, ComponentType<BlockComponent, TComponent, ?> componentType) {
+    static <TComponent extends BlockComponent> Optional<TComponent> findComponent(BlockState blockState, ComponentType<BlockComponent, TComponent, Block, ?> componentType) {
         var holder = asHolder(blockState);
         return holder == null ? Optional.empty() : holder.findComponent(componentType);
     }
 
-    static <TComponent extends BlockComponent> TComponent getComponentOrThrow(BlockState blockState, ComponentType<BlockComponent, TComponent, ?> componentType) {
+    static <TComponent extends BlockComponent> TComponent getComponentOrThrow(BlockState blockState, ComponentType<BlockComponent, TComponent, Block, ?> componentType) {
         return asHolderOrThrow(blockState).getComponentOrThrow(componentType);
     }
 
-    static <TComponent extends BlockComponent> void runForComponent(BlockState blockState, ComponentType<BlockComponent, TComponent, ?> componentType, Consumer<TComponent> action) {
+    static <TComponent extends BlockComponent> void runForComponent(BlockState blockState, ComponentType<BlockComponent, TComponent, Block, ?> componentType, Consumer<TComponent> action) {
         var holder = asHolder(blockState);
 
         if(holder != null)
             holder.runForComponent(componentType, action);
     }
 
-    static boolean hasComponent(BlockState blockState, ComponentType<BlockComponent, ?, ?> componentType) {
+    static boolean hasComponent(BlockState blockState, ComponentType<BlockComponent, ?, Block, ?> componentType) {
         var holder = asHolder(blockState);
         return holder != null && holder.hasComponent(componentType);
     }
 
-    static Set<ComponentType<BlockComponent, ?, ?>> getComponentTypes(BlockState blockState) {
+    static Set<ComponentType<BlockComponent, ?, Block, ?>> getComponentTypes(BlockState blockState) {
         var holder = asHolder(blockState);
         return holder == null ? Collections.emptySet() : holder.getComponentTypes();
     }
@@ -288,13 +289,13 @@ public interface BlockComponentHelper {
     }
 
     @Nullable
-    static ComponentHolder<BlockComponent> asHolder(BlockState blockState) {
+    static ComponentHolder<BlockComponent, Block> asHolder(BlockState blockState) {
         var block = blockState.getBlock();
-        return block instanceof ComponentHolder ? (ComponentHolder<BlockComponent>) block : null;
+        return block instanceof ComponentHolder ? (ComponentHolder<BlockComponent, Block>) block : null;
     }
 
-    static ComponentHolder<BlockComponent> asHolderOrThrow(BlockState blockState) {
-        return (ComponentHolder<BlockComponent>) blockState.getBlock();
+    static ComponentHolder<BlockComponent, Block> asHolderOrThrow(BlockState blockState) {
+        return (ComponentHolder<BlockComponent, Block>) blockState.getBlock();
     }
     // endregion
 }

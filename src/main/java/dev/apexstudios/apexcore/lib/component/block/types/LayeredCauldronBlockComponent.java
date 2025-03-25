@@ -8,8 +8,10 @@ import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CauldronBlock;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
@@ -21,7 +23,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
 
 public final class LayeredCauldronBlockComponent extends BaseCauldronBlockComponent<LayeredCauldronBlockComponent.Builder> {
-    public static final ComponentType<BlockComponent, LayeredCauldronBlockComponent, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final ComponentType<BlockComponent, LayeredCauldronBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("layered_cauldron"),
             Builder::new,
             LayeredCauldronBlockComponent::new
@@ -33,7 +35,7 @@ public final class LayeredCauldronBlockComponent extends BaseCauldronBlockCompon
 
     private final Biome.Precipitation precipitation;
 
-    private LayeredCauldronBlockComponent(ComponentHolder<BlockComponent> holder, Builder builder) {
+    private LayeredCauldronBlockComponent(ComponentHolder<BlockComponent, Block> holder, Builder builder) {
         super(holder, builder);
 
         precipitation = builder.precipitation;
@@ -68,7 +70,7 @@ public final class LayeredCauldronBlockComponent extends BaseCauldronBlockCompon
     }
 
     @Override
-    public void entityInside(BlockState blockState, Level level, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState blockState, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier applier) {
         var contentHeight = getContentHeight(blockState);
 
         if(level instanceof ServerLevel sLevel && entity.isOnFire() && isEntityInsideContent(pos, entity, contentHeight)) {

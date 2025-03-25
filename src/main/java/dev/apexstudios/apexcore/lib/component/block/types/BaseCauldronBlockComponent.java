@@ -15,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.PointedDripstoneBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
@@ -27,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class BaseCauldronBlockComponent<TBuilder extends BaseCauldronBlockComponent.Builder<TBuilder>> extends BaseBlockComponent {
     private final CauldronInteraction.InteractionMap interactions;
 
-    protected BaseCauldronBlockComponent(ComponentHolder<BlockComponent> holder, TBuilder builder) {
+    protected BaseCauldronBlockComponent(ComponentHolder<BlockComponent, Block> holder, TBuilder builder) {
         super(holder);
 
         interactions = ((Builder<TBuilder>) Objects.requireNonNull(builder)).interactions;
@@ -76,7 +77,7 @@ public abstract class BaseCauldronBlockComponent<TBuilder extends BaseCauldronBl
     }
 
     @Override
-    public void onRemove(BlockState blockState, Level level, BlockPos pos, BlockState newBlockState, boolean movedByPiston) {
+    public void affectNeighborsAfterRemoval(BlockState blockState, ServerLevel level, BlockPos pos, boolean movedByPiston) {
         if(CauldronFluidContent.getForBlock(blockState.getBlock()) == null)
             level.invalidateCapabilities(pos);
     }

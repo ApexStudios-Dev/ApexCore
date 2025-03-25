@@ -34,7 +34,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
 // Requires MultiBlock component
 public final class BedBlockComponent extends BaseBlockComponent {
-    public static final ComponentType<BlockComponent, BedBlockComponent, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final ComponentType<BlockComponent, BedBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("bed"),
             Builder::new,
             BedBlockComponent::new
@@ -44,7 +44,7 @@ public final class BedBlockComponent extends BaseBlockComponent {
 
     private final BiMap<Integer, Integer> indices;
 
-    private BedBlockComponent(ComponentHolder<BlockComponent> holder, Builder builder) {
+    private BedBlockComponent(ComponentHolder<BlockComponent, Block> holder, Builder builder) {
         super(holder);
 
         if(builder.indices.isEmpty())
@@ -136,11 +136,11 @@ public final class BedBlockComponent extends BaseBlockComponent {
         return true;
     }
 
-    public static <TBlock extends Block & ComponentHolder<BlockComponent>> void registerPoi(IEventBus modBus, Supplier<TBlock> blockSupplier) {
+    public static <TBlock extends Block & ComponentHolder<BlockComponent, Block>> void registerPoi(IEventBus modBus, Supplier<TBlock> blockSupplier) {
         modBus.addListener(FMLCommonSetupEvent.class, event -> event.enqueueWork(() -> registerPoi(blockSupplier.get())));
     }
 
-    public static <TBlock extends Block & ComponentHolder<BlockComponent>> void registerPoi(TBlock block) {
+    public static <TBlock extends Block & ComponentHolder<BlockComponent, Block>> void registerPoi(TBlock block) {
         block.runForComponent(COMPONENT_TYPE, component -> ApexUtil.registerPoiBlockStates(PoiTypes.HOME, block, component::isHead));
     }
 

@@ -13,12 +13,12 @@ import org.jetbrains.annotations.ApiStatus;
 
 public interface ComponentHelper {
     @ApiStatus.Internal
-    static <TBase extends Component<TBase>, THolder extends ComponentHolder<TBase>> Map<ComponentType<TBase, ?, ?>, TBase> registerComponents(THolder holder, BiConsumer<THolder, ComponentRegistrar<TBase>> consumer) {
-        var registrar = new ComponentRegistrar<TBase>() {
-            private final Multimap<ComponentType<TBase, ?, ?>, UnaryOperator<? extends ComponentBuilder>> listeners = LinkedListMultimap.create();
+    static <TBase extends Component<TBase, TObj>, THolder extends ComponentHolder<TBase, TObj>, TObj> Map<ComponentType<TBase, ?, TObj, ?>, TBase> registerComponents(THolder holder, BiConsumer<THolder, ComponentRegistrar<TBase, TObj>> consumer) {
+        var registrar = new ComponentRegistrar<TBase, TObj>() {
+            private final Multimap<ComponentType<TBase, ?, TObj, ?>, UnaryOperator<? extends ComponentBuilder>> listeners = LinkedListMultimap.create();
 
             @Override
-            public <TComponent extends TBase, TBuilder extends ComponentBuilder> ComponentRegistrar<TBase> register(ComponentType<TBase, TComponent, TBuilder> componentType, UnaryOperator<TBuilder> builder) {
+            public <TComponent extends TBase, TBuilder extends ComponentBuilder> ComponentRegistrar<TBase, TObj> register(ComponentType<TBase, TComponent, TObj, TBuilder> componentType, UnaryOperator<TBuilder> builder) {
                 listeners.put(componentType, builder);
                 return this;
             }
@@ -26,7 +26,7 @@ public interface ComponentHelper {
 
         consumer.accept(holder, registrar);
 
-        var map = Maps.<ComponentType<TBase, ?, ?>, TBase>newLinkedHashMap();
+        var map = Maps.<ComponentType<TBase, ?, TObj, ?>, TBase>newLinkedHashMap();
 
         for(var componentType : registrar.listeners.keySet()) {
             var component = componentType.newInstance(holder, builder -> registrar.listeners

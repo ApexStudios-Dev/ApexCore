@@ -31,7 +31,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 public final class DyeableBlockComponent extends BaseBlockComponent {
-    public static final ComponentType<BlockComponent, DyeableBlockComponent, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final ComponentType<BlockComponent, DyeableBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("dyeable"),
             Builder::new,
             DyeableBlockComponent::new
@@ -40,7 +40,7 @@ public final class DyeableBlockComponent extends BaseBlockComponent {
     private final EnumProperty<DyeColor> property;
     private final DyeColor defaultColor;
 
-    private DyeableBlockComponent(ComponentHolder<BlockComponent> holder, Builder builder) {
+    private DyeableBlockComponent(ComponentHolder<BlockComponent, Block> holder, Builder builder) {
         super(holder);
 
         builder.allow(builder.defaultColor);
@@ -142,10 +142,10 @@ public final class DyeableBlockComponent extends BaseBlockComponent {
     }
 
     public static void modifyCloneItemStack(Property<DyeColor> property, ItemStack stack, BlockState blockState, boolean includeData, @Nullable Player player) {
-        var color = blockState.getNullableValue(property);
-
-        if(includeData || (player != null && player.isCreative()))
-            stack.set(DataComponents.BASE_COLOR, color);
+        blockState.getOptionalValue(property).ifPresent(color -> {
+            if(includeData || (player != null && player.isCreative()))
+                stack.set(DataComponents.BASE_COLOR, color);
+        });
     }
 
     public static void set(Property<DyeColor> property, BlockState blockState, DyeColor color, Level level, BlockPos pos) {

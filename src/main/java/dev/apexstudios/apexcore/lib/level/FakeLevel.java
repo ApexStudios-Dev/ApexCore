@@ -178,12 +178,12 @@ public final class FakeLevel extends Level {
     }
 
     @Override
-    public void playSeededSound(@Nullable Player player, double x, double y, double z, Holder<SoundEvent> sound, SoundSource category, float volume, float pitch, long seed) {
+    public void playSeededSound(@Nullable Entity player, double x, double y, double z, Holder<SoundEvent> sound, SoundSource category, float volume, float pitch, long seed) {
 
     }
 
     @Override
-    public void playSeededSound(@Nullable Player player, Entity entity, Holder<SoundEvent> sound, SoundSource category, float volume, float pitch, long seed) {
+    public void playSeededSound(@Nullable Entity player, Entity entity, Holder<SoundEvent> sound, SoundSource category, float volume, float pitch, long seed) {
 
     }
 
@@ -205,16 +205,6 @@ public final class FakeLevel extends Level {
     @Override
     public @Nullable MapItemSavedData getMapData(MapId mapId) {
         return null;
-    }
-
-    @Override
-    public void setMapData(MapId mapId, MapItemSavedData mapData) {
-
-    }
-
-    @Override
-    public MapId getFreeMapId() {
-        return new MapId(0);
     }
 
     @Override
@@ -268,7 +258,7 @@ public final class FakeLevel extends Level {
     }
 
     @Override
-    public void levelEvent(@Nullable Player player, int type, BlockPos pos, int data) {
+    public void levelEvent(@Nullable Entity player, int type, BlockPos pos, int data) {
 
     }
 

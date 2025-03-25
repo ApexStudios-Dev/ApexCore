@@ -4,12 +4,15 @@ import com.google.errorprone.annotations.ForOverride;
 import dev.apexstudios.apexcore.lib.block.BlockEvents;
 import dev.apexstudios.apexcore.lib.component.Component;
 import dev.apexstudios.apexcore.lib.component.ComponentHolder;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
-public interface BlockEntityComponent extends Component<BlockEntityComponent>, ComponentHolder<BlockEntityComponent>, BlockEvents {
+public interface BlockEntityComponent extends Component<BlockEntityComponent, BlockEntity>, ComponentHolder<BlockEntityComponent, BlockEntity>, BlockEvents {
     @ForOverride
     default void loadNbt(CompoundTag tag, HolderLookup.Provider registries) {
 
@@ -26,7 +29,7 @@ public interface BlockEntityComponent extends Component<BlockEntityComponent>, C
     }
 
     @ForOverride
-    default void applyImplicitComponents(BlockEntity.DataComponentInput input) {
+    default void applyImplicitComponents(DataComponentGetter getter) {
 
     }
 
@@ -37,6 +40,11 @@ public interface BlockEntityComponent extends Component<BlockEntityComponent>, C
 
     @ForOverride
     default void removeComponentsFromTag(CompoundTag tag) {
+
+    }
+
+    @ForOverride
+    default void preRemoveSideEffects(BlockPos pos, BlockState blockState) {
 
     }
 }

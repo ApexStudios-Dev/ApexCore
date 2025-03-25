@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -25,6 +26,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -36,6 +38,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.redstone.Orientation;
@@ -45,8 +48,8 @@ import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 
-public class BaseBlockEntityComponentHolder extends BaseBlockEntity implements ComponentHolder<BlockEntityComponent>, Nameable, MenuProvider {
-    private final Map<ComponentType<BlockEntityComponent, ?, ?>, BlockEntityComponent> components = ComponentHelper.registerComponents(this, BaseBlockEntityComponentHolder::registerComponents);
+public class BaseBlockEntityComponentHolder extends BaseBlockEntity implements ComponentHolder<BlockEntityComponent, BlockEntity>, Nameable, MenuProvider {
+    private final Map<ComponentType<BlockEntityComponent, ?, BlockEntity, ?>, BlockEntityComponent> components = ComponentHelper.registerComponents(this, BaseBlockEntityComponentHolder::registerComponents);
 
     protected BaseBlockEntityComponentHolder(BlockEntityType<? extends BaseBlockEntityComponentHolder> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
@@ -59,44 +62,49 @@ public class BaseBlockEntityComponentHolder extends BaseBlockEntity implements C
 
     // region: ComponentHolder
     @ForOverride
-    protected void registerComponents(ComponentRegistrar<BlockEntityComponent> registrar) {
+    protected void registerComponents(ComponentRegistrar<BlockEntityComponent, BlockEntity> registrar) {
 
     }
 
     @Nullable
     @Override
-    public final <TComponent extends BlockEntityComponent> TComponent getComponent(ComponentType<BlockEntityComponent, TComponent, ?> componentType) {
+    public final <TComponent extends BlockEntityComponent> TComponent getComponent(ComponentType<BlockEntityComponent, TComponent, BlockEntity, ?> componentType) {
         return (TComponent) components.get(componentType);
     }
 
     @Override
-    public final <TComponent extends BlockEntityComponent> Optional<TComponent> findComponent(ComponentType<BlockEntityComponent, TComponent, ?> componentType) {
+    public final <TComponent extends BlockEntityComponent> Optional<TComponent> findComponent(ComponentType<BlockEntityComponent, TComponent, BlockEntity, ?> componentType) {
         return ComponentHolder.super.findComponent(componentType);
     }
 
     @Override
-    public final <TComponent extends BlockEntityComponent> TComponent getComponentOrThrow(ComponentType<BlockEntityComponent, TComponent, ?> componentType) {
+    public final <TComponent extends BlockEntityComponent> TComponent getComponentOrThrow(ComponentType<BlockEntityComponent, TComponent, BlockEntity, ?> componentType) {
         return ComponentHolder.super.getComponentOrThrow(componentType);
     }
 
     @Override
-    public final <TComponent extends BlockEntityComponent> void runForComponent(ComponentType<BlockEntityComponent, TComponent, ?> componentType, Consumer<TComponent> action) {
+    public final <TComponent extends BlockEntityComponent> void runForComponent(ComponentType<BlockEntityComponent, TComponent, BlockEntity, ?> componentType, Consumer<TComponent> action) {
         ComponentHolder.super.runForComponent(componentType, action);
     }
 
     @Override
-    public final boolean hasComponent(ComponentType<BlockEntityComponent, ?, ?> componentType) {
+    public final boolean hasComponent(ComponentType<BlockEntityComponent, ?, BlockEntity, ?> componentType) {
         return ComponentHolder.super.hasComponent(componentType);
     }
 
     @Override
-    public final Set<ComponentType<BlockEntityComponent, ?, ?>> getComponentTypes() {
+    public final Set<ComponentType<BlockEntityComponent, ?, BlockEntity, ?>> getComponentTypes() {
         return components.keySet();
     }
 
     @Override
     public final Collection<BlockEntityComponent> getComponents() {
         return components.values();
+    }
+
+    @Override
+    public final BlockEntity unwrap() {
+        return this;
     }
     // endregion
 
@@ -145,9 +153,9 @@ public class BaseBlockEntityComponentHolder extends BaseBlockEntity implements C
 
     @MustBeInvokedByOverriders
     @Override
-    public void onRemove(BlockState blockState, Level level, BlockState newBlockState, boolean movedByPiston) {
-        BlockEntityComponentHelper.onRemove(this, blockState, level, worldPosition, newBlockState, movedByPiston);
-        super.onRemove(blockState, level, newBlockState, movedByPiston);
+    public void preRemoveSideEffects(BlockPos pos, BlockState blockState) {
+        BlockEntityComponentHelper.preRemoveSideEffects(this, pos, blockState);
+        super.preRemoveSideEffects(pos, blockState);
     }
 
     @MustBeInvokedByOverriders
@@ -211,9 +219,9 @@ public class BaseBlockEntityComponentHolder extends BaseBlockEntity implements C
 
     @MustBeInvokedByOverriders
     @Override
-    protected void applyImplicitComponents(DataComponentInput input) {
-        BlockEntityComponentHelper.applyImplicitComponents(this, input);
-        super.applyImplicitComponents(input);
+    protected void applyImplicitComponents(DataComponentGetter getter) {
+        BlockEntityComponentHelper.applyImplicitComponents(this, getter);
+        super.applyImplicitComponents(getter);
     }
 
     @MustBeInvokedByOverriders
@@ -232,8 +240,8 @@ public class BaseBlockEntityComponentHolder extends BaseBlockEntity implements C
 
     @MustBeInvokedByOverriders
     @Override
-    public void entityInside(BlockState blockState, Level level, Entity entity) {
-        BlockEntityComponentHelper.entityInside(this, blockState, level, worldPosition, entity);
+    public void entityInside(BlockState blockState, Level level, Entity entity, InsideBlockEffectApplier applier) {
+        BlockEntityComponentHelper.entityInside(this, blockState, level, worldPosition, entity, applier);
     }
 
     @MustBeInvokedByOverriders

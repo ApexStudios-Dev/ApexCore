@@ -9,6 +9,7 @@ import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponent;
 import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponentTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -19,14 +20,14 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 public final class LockBlockEntityComponent extends BaseBlockEntityComponent {
-    public static final ComponentType<BlockEntityComponent, LockBlockEntityComponent, ComponentBuilder> COMPONENT_TYPE = ComponentType.registerBlockEntity(
+    public static final ComponentType<BlockEntityComponent, LockBlockEntityComponent, BlockEntity, ComponentBuilder> COMPONENT_TYPE = ComponentType.registerBlockEntity(
             ApexCore.identifier("lock"),
             LockBlockEntityComponent::new
     );
 
     private LockCode lockCode = LockCode.NO_LOCK;
 
-    private LockBlockEntityComponent(ComponentHolder<BlockEntityComponent> holder) {
+    private LockBlockEntityComponent(ComponentHolder<BlockEntityComponent, BlockEntity> holder) {
         super(holder);
     }
 
@@ -37,7 +38,7 @@ public final class LockBlockEntityComponent extends BaseBlockEntityComponent {
     public void setLockCode(LockCode lockCode) {
         if(!this.lockCode.equals(lockCode)) {
             this.lockCode = lockCode;
-            asBlockEntity().setChanged();
+            unwrap().setChanged();
         }
     }
 
@@ -52,8 +53,8 @@ public final class LockBlockEntityComponent extends BaseBlockEntityComponent {
     }
 
     @Override
-    public void applyImplicitComponents(BlockEntity.DataComponentInput input) {
-        lockCode = input.getOrDefault(DataComponents.LOCK, LockCode.NO_LOCK);
+    public void applyImplicitComponents(DataComponentGetter getter) {
+        lockCode = getter.getOrDefault(DataComponents.LOCK, LockCode.NO_LOCK);
     }
 
     @Override
@@ -71,7 +72,7 @@ public final class LockBlockEntityComponent extends BaseBlockEntityComponent {
         if(!(blockEntity instanceof ComponentHolder))
             return false;
 
-        var component = ((ComponentHolder<BlockEntityComponent>) blockEntity).getComponent(BlockEntityComponentTypes.LOCK);
+        var component = ((ComponentHolder<BlockEntityComponent, BlockEntity>) blockEntity).getComponent(BlockEntityComponentTypes.LOCK);
         return component != null && !component.canAccess(player.getMainHandItem());
     }
 

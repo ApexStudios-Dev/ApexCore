@@ -12,11 +12,8 @@ import java.util.Objects;
 import java.util.function.LongSupplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.entity.player.Player;
@@ -28,7 +25,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import org.jetbrains.annotations.Nullable;
 
 public final class LootTableBlockEntityComponent extends BaseBlockEntityComponent {
-    public static final ComponentType<BlockEntityComponent, LootTableBlockEntityComponent, ComponentBuilder> COMPONENT_TYPE = ComponentType.registerBlockEntity(
+    public static final ComponentType<BlockEntityComponent, LootTableBlockEntityComponent, BlockEntity, ComponentBuilder> COMPONENT_TYPE = ComponentType.registerBlockEntity(
             ApexCore.identifier("loot_table"),
             LootTableBlockEntityComponent::new
     );
@@ -39,7 +36,7 @@ public final class LootTableBlockEntityComponent extends BaseBlockEntityComponen
     @Nullable private ResourceKey<LootTable> lootTableId = null;
     private long seed = -1L;
 
-    private LootTableBlockEntityComponent(ComponentHolder<BlockEntityComponent> holder) {
+    private LootTableBlockEntityComponent(ComponentHolder<BlockEntityComponent, BlockEntity> holder) {
         super(holder);
     }
 
@@ -59,25 +56,21 @@ public final class LootTableBlockEntityComponent extends BaseBlockEntityComponen
     public void setLootTable(@Nullable ResourceKey<LootTable> lootTableId) {
         if(!Objects.equals(this.lootTableId, lootTableId)) {
             this.lootTableId = lootTableId;
-            asBlockEntity().setChanged();
+            unwrap().setChanged();
         }
     }
 
     public void setLootTableSeed(long seed) {
         if(this.seed != seed) {
             this.seed = seed;
-            asBlockEntity().setChanged();
+            unwrap().setChanged();
         }
     }
 
     @Override
     public void loadNbt(CompoundTag tag, HolderLookup.Provider registries) {
-        if(tag.contains(NBT_LOOT_TABLE, Tag.TAG_STRING)) {
-            lootTableId = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.parse(tag.getString(NBT_LOOT_TABLE)));
-
-            if(tag.contains(NBT_SEED, Tag.TAG_LONG))
-                seed = tag.getLong(NBT_SEED);
-        }
+        lootTableId = tag.read(NBT_LOOT_TABLE, LootTable.KEY_CODEC).orElse(null);
+        seed = tag.getLongOr(NBT_SEED, 0L);
     }
 
     @Override
@@ -93,7 +86,7 @@ public final class LootTableBlockEntityComponent extends BaseBlockEntityComponen
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState blockState, Player player) {
         if (level.isClientSide || !player.isCreative())
-            unpack(asBlockEntity(), player);
+            unpack(unwrap(), player);
 
         return super.playerWillDestroy(level, pos, blockState, player);
     }
@@ -106,10 +99,10 @@ public final class LootTableBlockEntityComponent extends BaseBlockEntityComponen
     }
 
     public static void unpack(BlockEntity blockEntity, @Nullable Player player) {
-        if(!blockEntity.hasLevel() || !(blockEntity instanceof ComponentHolder<?>))
+        if(!blockEntity.hasLevel() || !(blockEntity instanceof ComponentHolder<?, ?>))
             return;
 
-        var holder = (ComponentHolder<BlockEntityComponent>) blockEntity;
+        var holder = (ComponentHolder<BlockEntityComponent, BlockEntity>) blockEntity;
         var inventory = holder.getComponent(BlockEntityComponentTypes.INVENTORY);
         var lootTable = holder.getComponent(COMPONENT_TYPE);
 
@@ -160,7 +153,7 @@ public final class LootTableBlockEntityComponent extends BaseBlockEntityComponen
 
     public static void setLootTable(BlockEntity blockEntity, @Nullable ResourceKey<LootTable> lootTableId, LongSupplier seed) {
         if(blockEntity instanceof ComponentHolder)
-            ((ComponentHolder<BlockEntityComponent>) blockEntity).runForComponent(COMPONENT_TYPE, component -> component.setLootTable(lootTableId, seed.getAsLong()));
+            ((ComponentHolder<BlockEntityComponent, BlockEntity>) blockEntity).runForComponent(COMPONENT_TYPE, component -> component.setLootTable(lootTableId, seed.getAsLong()));
     }
 
     public static void setLootTable(BlockEntity blockEntity, @Nullable ResourceKey<LootTable> lootTableId, RandomSource random) {
@@ -173,12 +166,12 @@ public final class LootTableBlockEntityComponent extends BaseBlockEntityComponen
 
     public static void setLootTable(BlockEntity blockEntity, @Nullable ResourceKey<LootTable> lootTableId) {
         if(blockEntity instanceof ComponentHolder)
-            ((ComponentHolder<BlockEntityComponent>) blockEntity).runForComponent(COMPONENT_TYPE, component -> component.setLootTable(lootTableId));
+            ((ComponentHolder<BlockEntityComponent, BlockEntity>) blockEntity).runForComponent(COMPONENT_TYPE, component -> component.setLootTable(lootTableId));
     }
 
     public static void setLootTableSeed(BlockEntity blockEntity, LongSupplier seed) {
         if(blockEntity instanceof ComponentHolder)
-            ((ComponentHolder<BlockEntityComponent>) blockEntity).runForComponent(COMPONENT_TYPE, component -> component.setLootTableSeed(seed.getAsLong()));
+            ((ComponentHolder<BlockEntityComponent, BlockEntity>) blockEntity).runForComponent(COMPONENT_TYPE, component -> component.setLootTableSeed(seed.getAsLong()));
     }
 
     public static void setLootTableSeed(BlockEntity blockEntity, RandomSource random) {

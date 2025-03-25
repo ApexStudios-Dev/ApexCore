@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -35,7 +36,7 @@ import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
 public final class MultiBlockComponent extends BaseBlockComponent {
-    public static final ComponentType<BlockComponent, MultiBlockComponent, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final ComponentType<BlockComponent, MultiBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("multi_block"),
             Builder::new,
             MultiBlockComponent::new
@@ -49,7 +50,7 @@ public final class MultiBlockComponent extends BaseBlockComponent {
     private final IntegerProperty property;
     private final BiFunction<BlockState, Vector3ic, Vector3ic> rotationFunction;
 
-    private MultiBlockComponent(ComponentHolder<BlockComponent> holder, Builder builder) {
+    private MultiBlockComponent(ComponentHolder<BlockComponent, Block> holder, Builder builder) {
         super(holder);
 
         localPositions = List.copyOf(builder.positions);
@@ -155,10 +156,7 @@ public final class MultiBlockComponent extends BaseBlockComponent {
     }
 
     @Override
-    public void onRemove(BlockState blockState, Level level, BlockPos pos, BlockState newBlockState, boolean movedByPiston) {
-        if (newBlockState.is(blockState.getBlock()))
-            return;
-
+    public void affectNeighborsAfterRemoval(BlockState blockState, ServerLevel level, BlockPos pos, boolean movedByPiston) {
         var index = indexOf(blockState);
         var origin = getOrigin(pos, blockState);
 

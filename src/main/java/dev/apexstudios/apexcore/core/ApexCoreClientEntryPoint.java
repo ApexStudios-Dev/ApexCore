@@ -11,7 +11,7 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 @Mod(value = ApexCore.ID, dist = Dist.CLIENT)
 public final class ApexCoreClientEntryPoint {
     public ApexCoreClientEntryPoint(IEventBus modBus) {
-        ApexRenderTypes.register();
+        ApexRenderTypes.register(modBus);
         PlacementRendererRegistry.register();
 
         modBus.addListener(RegisterColorHandlersEvent.ItemTintSources.class, event -> event.register(ApexCore.identifier("dye_color"), DyeColorItemTintSource.MAP_CODEC));

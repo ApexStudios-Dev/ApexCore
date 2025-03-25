@@ -8,7 +8,6 @@
         "BucketItemAccessor",
         "DoorBlockMixin",
         "DoublePlantBlockMixin",
-        "EntityMixin",
         "ItemCooldownsMixin",
         "ItemStackMixin",
         "LevelAccessor",

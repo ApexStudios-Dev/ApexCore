@@ -18,6 +18,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -44,8 +45,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 
-public class BaseBlockComponentHolder extends Block implements ComponentHolder<BlockComponent>, BucketPickup, LiquidBlockContainer {
-    private final Map<ComponentType<BlockComponent, ?, ?>, BlockComponent> components = BlockComponentHelper.registerComponents(this, BaseBlockComponentHolder::registerComponents);
+public class BaseBlockComponentHolder extends Block implements ComponentHolder<BlockComponent, Block>, BucketPickup, LiquidBlockContainer {
+    private final Map<ComponentType<BlockComponent, ?, Block, ?>, BlockComponent> components = BlockComponentHelper.registerComponents(this, BaseBlockComponentHolder::registerComponents);
 
     protected BaseBlockComponentHolder(Properties properties) {
         super(properties);
@@ -63,44 +64,49 @@ public class BaseBlockComponentHolder extends Block implements ComponentHolder<B
 
     // region: ComponentHolder
     @ForOverride
-    protected void registerComponents(ComponentRegistrar<BlockComponent> registrar) {
+    protected void registerComponents(ComponentRegistrar<BlockComponent, Block> registrar) {
 
     }
 
     @Nullable
     @Override
-    public final <TComponent extends BlockComponent> TComponent getComponent(ComponentType<BlockComponent, TComponent, ?> componentType) {
+    public final <TComponent extends BlockComponent> TComponent getComponent(ComponentType<BlockComponent, TComponent, Block, ?> componentType) {
         return (TComponent) components.get(componentType);
     }
 
     @Override
-    public final <TComponent extends BlockComponent> Optional<TComponent> findComponent(ComponentType<BlockComponent, TComponent, ?> componentType) {
+    public final <TComponent extends BlockComponent> Optional<TComponent> findComponent(ComponentType<BlockComponent, TComponent, Block, ?> componentType) {
         return ComponentHolder.super.findComponent(componentType);
     }
 
     @Override
-    public final <TComponent extends BlockComponent> TComponent getComponentOrThrow(ComponentType<BlockComponent, TComponent, ?> componentType) {
+    public final <TComponent extends BlockComponent> TComponent getComponentOrThrow(ComponentType<BlockComponent, TComponent, Block, ?> componentType) {
         return ComponentHolder.super.getComponentOrThrow(componentType);
     }
 
     @Override
-    public final <TComponent extends BlockComponent> void runForComponent(ComponentType<BlockComponent, TComponent, ?> componentType, Consumer<TComponent> action) {
+    public final <TComponent extends BlockComponent> void runForComponent(ComponentType<BlockComponent, TComponent, Block, ?> componentType, Consumer<TComponent> action) {
         ComponentHolder.super.runForComponent(componentType, action);
     }
 
     @Override
-    public final boolean hasComponent(ComponentType<BlockComponent, ?, ?> componentType) {
+    public final boolean hasComponent(ComponentType<BlockComponent, ?, Block, ?> componentType) {
         return ComponentHolder.super.hasComponent(componentType);
     }
 
     @Override
-    public final Set<ComponentType<BlockComponent, ?, ?>> getComponentTypes() {
+    public final Set<ComponentType<BlockComponent, ?, Block, ?>> getComponentTypes() {
         return components.keySet();
     }
 
     @Override
     public final Collection<BlockComponent> getComponents() {
         return components.values();
+    }
+
+    @Override
+    public final Block unwrap() {
+        return this;
     }
     // endregion
 
@@ -156,9 +162,9 @@ public class BaseBlockComponentHolder extends Block implements ComponentHolder<B
 
     @MustBeInvokedByOverriders
     @Override
-    public void onRemove(BlockState blockState, Level level, BlockPos pos, BlockState newBlockState, boolean movedByPiston) {
-        BlockComponentHelper.onRemove(this, blockState, level, pos, newBlockState, movedByPiston);
-        super.onRemove(blockState, level, pos, newBlockState, movedByPiston);
+    public void affectNeighborsAfterRemoval(BlockState blockState, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        BlockComponentHelper.affectNeighborsAfterRemoval(this, blockState, level, pos, movedByPiston);
+        super.affectNeighborsAfterRemoval(blockState, level, pos, movedByPiston);
     }
 
     @MustBeInvokedByOverriders
@@ -216,9 +222,9 @@ public class BaseBlockComponentHolder extends Block implements ComponentHolder<B
 
     @MustBeInvokedByOverriders
     @Override
-    public void entityInside(BlockState blockState, Level level, BlockPos pos, Entity entity) {
-        BlockComponentHelper.entityInside(this, blockState, level, pos, entity);
-        super.entityInside(blockState, level, pos, entity);
+    public void entityInside(BlockState blockState, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier applier) {
+        BlockComponentHelper.entityInside(this, blockState, level, pos, entity, applier);
+        super.entityInside(blockState, level, pos, entity, applier);
     }
 
     @MustBeInvokedByOverriders
@@ -258,7 +264,7 @@ public class BaseBlockComponentHolder extends Block implements ComponentHolder<B
 
     @MustBeInvokedByOverriders
     @Override
-    public ItemStack pickupBlock(@Nullable Player player, LevelAccessor level, BlockPos pos, BlockState blockState) {
+    public ItemStack pickupBlock(@Nullable LivingEntity player, LevelAccessor level, BlockPos pos, BlockState blockState) {
         var component = getComponent(BlockComponentTypes.FLUID_LOGGED);
         return component == null ? ItemStack.EMPTY : component.pickupBlock(player, level, pos, blockState);
     }
@@ -279,7 +285,7 @@ public class BaseBlockComponentHolder extends Block implements ComponentHolder<B
 
     @MustBeInvokedByOverriders
     @Override
-    public boolean canPlaceLiquid(@Nullable Player player, BlockGetter level, BlockPos pos, BlockState blockState, Fluid fluid) {
+    public boolean canPlaceLiquid(@Nullable LivingEntity player, BlockGetter level, BlockPos pos, BlockState blockState, Fluid fluid) {
         var component = getComponent(BlockComponentTypes.FLUID_LOGGED);
         return component != null && component.canPlaceLiquid(player, level, pos, blockState, fluid);
     }

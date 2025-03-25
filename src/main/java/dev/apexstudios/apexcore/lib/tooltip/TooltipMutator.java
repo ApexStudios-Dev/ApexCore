@@ -15,7 +15,7 @@ public interface TooltipMutator {
     void accept(ItemStack stack, Item.TooltipContext context, Consumer<Component> adder, @Nullable Player player, TooltipFlag flag);
 
     static TooltipMutator forProvider(TooltipProvider provider) {
-        return (stack, context, adder, player, flag) -> provider.addToTooltip(context, adder, flag);
+        return (stack, context, adder, player, flag) -> provider.addToTooltip(context, adder, flag, stack);
     }
 
     static <TComponent extends TooltipProvider> TooltipMutator forComponent(DataComponentType<TComponent> componentType) {

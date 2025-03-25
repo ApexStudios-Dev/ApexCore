@@ -7,11 +7,12 @@ import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.entity.BaseBlockEntityComponent;
 import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponent;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 public final class NameableBlockEntityComponent extends BaseBlockEntityComponent implements Nameable {
     public static final String NBT_CUSTOM_NAME = "CustomName";
 
-    public static final ComponentType<BlockEntityComponent, NameableBlockEntityComponent, Builder> COMPONENT_TYPE = ComponentType.registerBlockEntity(
+    public static final ComponentType<BlockEntityComponent, NameableBlockEntityComponent, BlockEntity, Builder> COMPONENT_TYPE = ComponentType.registerBlockEntity(
             ApexCore.identifier("nameable"),
             Builder::new,
             NameableBlockEntityComponent::new
@@ -28,7 +29,7 @@ public final class NameableBlockEntityComponent extends BaseBlockEntityComponent
     @Nullable private final Component defaultName;
     @Nullable private Component customName = null;
 
-    private NameableBlockEntityComponent(ComponentHolder<BlockEntityComponent> holder, Builder builder) {
+    private NameableBlockEntityComponent(ComponentHolder<BlockEntityComponent, BlockEntity> holder, Builder builder) {
         super(holder);
 
         defaultName = builder.defaultName;
@@ -36,12 +37,12 @@ public final class NameableBlockEntityComponent extends BaseBlockEntityComponent
 
     public void setCustomName(@Nullable Component customName) {
         this.customName = customName;
-        asBlockEntity().setChanged();
+        unwrap().setChanged();
     }
 
     @Override
     public Component getName() {
-        return defaultName == null ? asBlockEntity().getBlockState().getBlock().getName() : defaultName;
+        return defaultName == null ? unwrap().getBlockState().getBlock().getName() : defaultName;
     }
 
     @Override
@@ -61,8 +62,8 @@ public final class NameableBlockEntityComponent extends BaseBlockEntityComponent
     }
 
     @Override
-    public void applyImplicitComponents(BlockEntity.DataComponentInput input) {
-        customName = input.get(DataComponents.CUSTOM_NAME);
+    public void applyImplicitComponents(DataComponentGetter getter) {
+        customName = getter.get(DataComponents.CUSTOM_NAME);
     }
 
     @Override
@@ -80,16 +81,13 @@ public final class NameableBlockEntityComponent extends BaseBlockEntityComponent
 
     @Override
     public void loadNbt(CompoundTag tag, HolderLookup.Provider registries) {
-        customName = null;
-
-        if(tag.contains(NBT_CUSTOM_NAME, Tag.TAG_STRING))
-            customName = BlockEntity.parseCustomNameSafe(tag.getString(NBT_CUSTOM_NAME), registries);
+        customName = BlockEntity.parseCustomNameSafe(tag.get(NBT_CUSTOM_NAME), registries);
     }
 
     @Override
     public void saveNbt(CompoundTag tag, HolderLookup.Provider registries) {
         if(customName != null)
-            tag.putString(NBT_CUSTOM_NAME, Component.Serializer.toJson(customName, registries));
+            tag.store(NBT_CUSTOM_NAME, ComponentSerialization.CODEC, customName);
     }
 
     public static final class Builder implements ComponentBuilder {

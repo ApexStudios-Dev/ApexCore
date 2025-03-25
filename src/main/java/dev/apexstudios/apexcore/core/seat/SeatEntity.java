@@ -119,7 +119,7 @@ public final class SeatEntity extends Entity {
             if(entity == null)
                 return false;
 
-            entity.moveTo(pos, 0F, 0F);
+            entity.setPos(Vec3.atCenterOf(pos));
 
             var leashed = level.getEntities(
                     EntityTypeTest.forClass(LivingEntity.class),

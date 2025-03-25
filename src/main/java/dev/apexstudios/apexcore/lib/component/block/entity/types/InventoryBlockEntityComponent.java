@@ -15,10 +15,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.Containers;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -40,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 
 public final class InventoryBlockEntityComponent extends BaseBlockEntityComponent {
-    public static final ComponentType<BlockEntityComponent, InventoryBlockEntityComponent, Builder> COMPONENT_TYPE = ComponentType.registerBlockEntity(
+    public static final ComponentType<BlockEntityComponent, InventoryBlockEntityComponent, BlockEntity, Builder> COMPONENT_TYPE = ComponentType.registerBlockEntity(
             ApexCore.identifier("inventory"),
             Builder::new,
             InventoryBlockEntityComponent::new
@@ -48,7 +48,7 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
 
     public static final String NBT_INVENTORY = "Inventory";
 
-    private static final ICapabilityProvider<? extends ComponentHolder<BlockEntityComponent>, @Nullable Direction, IItemHandler> CAPABILITY_PROVIDER = (holder, context) -> {
+    private static final ICapabilityProvider<? extends ComponentHolder<BlockEntityComponent, BlockEntity>, @Nullable Direction, IItemHandler> CAPABILITY_PROVIDER = (holder, context) -> {
         var component = holder.getComponent(COMPONENT_TYPE);
         return component == null ? EmptyItemHandler.INSTANCE : component.getItemHandler();
     };
@@ -56,7 +56,7 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
     private final boolean saveToItem;
     private final Inventory inventory;
 
-    private InventoryBlockEntityComponent(ComponentHolder<BlockEntityComponent> holder, Builder builder) {
+    private InventoryBlockEntityComponent(ComponentHolder<BlockEntityComponent, BlockEntity> holder, Builder builder) {
         super(holder);
 
         saveToItem = builder.saveToItem;
@@ -78,13 +78,13 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
 
     @Override
     public void loadNbt(CompoundTag tag, HolderLookup.Provider registries) {
-        if(tag.contains(NBT_INVENTORY, Tag.TAG_COMPOUND))
-            inventory.deserializeNBT(registries, tag.getCompound(NBT_INVENTORY));
+        if(tag.contains(NBT_INVENTORY))
+            inventory.deserializeNBT(registries, tag.getCompoundOrEmpty(NBT_INVENTORY));
     }
 
     @Override
-    public void applyImplicitComponents(BlockEntity.DataComponentInput input) {
-        var contents = input.get(DataComponents.CONTAINER);
+    public void applyImplicitComponents(DataComponentGetter getter) {
+        var contents = getter.get(DataComponents.CONTAINER);
 
         if(!saveToItem || contents == null)
             return;
@@ -110,8 +110,10 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
     }
 
     @Override
-    public void onRemove(BlockState blockState, Level level, BlockPos pos, BlockState newBlockState, boolean movedByPiston) {
-        if(blockState.is(newBlockState.getBlock()))
+    public void preRemoveSideEffects(BlockPos pos, BlockState blockState) {
+        var level = unwrap().getLevel();
+
+        if(level == null)
             return;
 
         var block = blockState.getBlock();
@@ -132,11 +134,11 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
         return ItemHandlerHelper.calcRedstoneFromInventory(inventory);
     }
 
-    public static <TBlockEntity extends BlockEntity & ComponentHolder<BlockEntityComponent>> void registerCapability(BlockEntityType<TBlockEntity> blockEntityType, RegisterCapabilitiesEvent event) {
+    public static <TBlockEntity extends BlockEntity & ComponentHolder<BlockEntityComponent, BlockEntity>> void registerCapability(BlockEntityType<TBlockEntity> blockEntityType, RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, blockEntityType, capability());
     }
 
-    public static <TBlockEntity extends BlockEntity & ComponentHolder<BlockEntityComponent>> ICapabilityProvider<TBlockEntity, @Nullable Direction, IItemHandler> capability() {
+    public static <TBlockEntity extends BlockEntity & ComponentHolder<BlockEntityComponent, BlockEntity>> ICapabilityProvider<TBlockEntity, @Nullable Direction, IItemHandler> capability() {
         return (ICapabilityProvider<TBlockEntity, Direction, IItemHandler>) CAPABILITY_PROVIDER;
     }
 
