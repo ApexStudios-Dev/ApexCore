@@ -25,4 +25,7 @@ public interface BlockItemAccessor {
 
     @Invoker("updateCustomBlockEntityTag")
     boolean ApexCore$updateCustomBlockEntityTag(BlockPos pos, Level level, @Nullable Player player, ItemStack stack, BlockState blockState);
+
+    @Invoker("canPlace")
+    boolean ApexCore$canPlace(BlockPlaceContext context, BlockState blockState);
 }
