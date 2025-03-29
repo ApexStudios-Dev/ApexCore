@@ -78,7 +78,7 @@ public interface BlockPlacementRenderer {
 
         var modelParts = model.collectParts(level, pos, blockState, RandomSource.create(blockState.getSeed(pos)));
         var overlay = canBePlaced ? OverlayTexture.NO_OVERLAY : OverlayTexture.pack(OverlayTexture.RED_OVERLAY_V, OverlayTexture.NO_WHITE_U);
-        modelRenderer.tesselateBlock(level, modelParts, blockState, pos, pose, new GhostVertexConsumer(buffers.getBuffer(ApexRenderTypes.entityTranslucentNoDepth(TextureAtlas.LOCATION_BLOCKS)), 170), true, overlay);
+        modelRenderer.tesselateBlock(level, modelParts, blockState, pos, pose, new GhostVertexConsumer(buffers.getBuffer(ApexRenderTypes.entityTranslucentNoDepth(TextureAtlas.LOCATION_BLOCKS)), 170), false, overlay);
 
         pose.popPose();
     }

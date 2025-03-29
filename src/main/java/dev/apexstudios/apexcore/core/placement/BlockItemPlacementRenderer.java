@@ -5,7 +5,6 @@ import dev.apexstudios.apexcore.lib.level.FakeLevel;
 import dev.apexstudios.apexcore.lib.placement.BlockPlacementRenderer;
 import dev.apexstudios.apexcore.lib.placement.PlacementRenderEvent;
 import dev.apexstudios.apexcore.lib.util.ApexTags;
-import dev.apexstudios.apexcore.lib.util.ApexUtil;
 import dev.apexstudios.apexcore.mixin.BlockItemAccessor;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,7 +43,7 @@ final class BlockItemPlacementRenderer implements BlockPlacementRenderer {
         if(canBePlaced.get()) {
             var contextPositions = copyContextBlockStates(level, context);
             updateContexts(context, contextPositions);
-            validatePlacement(context, canBePlaced);
+            validatePlacement(context, canBePlaced, item);
 
             // clear out context positions from level
             // we only want to render the states we are placing/updating
@@ -93,9 +92,7 @@ final class BlockItemPlacementRenderer implements BlockPlacementRenderer {
         // place the origin block as if it came from the block item
         accessor.ApexCore$placeBlock(context, blockState);
         var fBlockState = accessor.ApexCore$updateBlockStateFromTag(pos, level, stack, blockState);
-        level.runAsServerSide(() -> {
-            accessor.ApexCore$updateCustomBlockEntityTag(pos, level, context.getPlayer(), stack, fBlockState);
-        });
+        level.runAsServerSide(() -> accessor.ApexCore$updateCustomBlockEntityTag(pos, level, context.getPlayer(), stack, fBlockState));
         BlockItem.updateBlockEntityComponents(level, pos, stack);
 
         // fire block events to trigger additional block placement/updates
@@ -105,6 +102,8 @@ final class BlockItemPlacementRenderer implements BlockPlacementRenderer {
             // rails update shapes here
             fBlockState.onPlace(level, pos, Blocks.AIR.defaultBlockState(), false);
         });
+
+        validatePlacement(context, canBePlaced, item);
     }
 
     private List<BlockPos> copyContextBlockStates(LevelReader realLevel, BlockPlaceContext context) {
@@ -144,22 +143,12 @@ final class BlockItemPlacementRenderer implements BlockPlacementRenderer {
         }
     }
 
-    private void validatePlacement(BlockPlaceContext context, AtomicBoolean canBePlaced) {
+    private void validatePlacement(BlockPlaceContext context, AtomicBoolean canBePlaced, BlockItem item) {
         var level = context.getLevel();
         var origin = context.getClickedPos();
-
         var blockState = level.getBlockState(origin);
-        var blockEntity = level.getBlockEntity(origin);
-        level.setBlock(origin, Blocks.AIR.defaultBlockState(), Block.UPDATE_NONE);
 
-        if(!ApexUtil.isInBounds(level, origin))
+        if(!((BlockItemAccessor) item).ApexCore$canPlace(context, blockState))
             canBePlaced.set(false);
-        else if(!ApexUtil.canPlace(context, blockState))
-            canBePlaced.set(false);
-
-        level.setBlock(origin, blockState, Block.UPDATE_NONE);
-
-        if(blockEntity != null)
-            level.setBlockEntity(blockEntity);
     }
 }

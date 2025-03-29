@@ -123,37 +123,28 @@ public interface ApexUtil {
     }
 
     static boolean canPlace(LevelReader level, BlockPos pos, BlockState blockState, @Nullable LivingEntity placer) {
-        var collisionContext = placer == null ? CollisionContext.empty() : CollisionContext.of(placer);
-        var levelBlockState = level.getBlockState(pos);
-
-        if(!blockState.isAir() && !levelBlockState.canBeReplaced())
-            return false;
-        if(!blockState.canSurvive(level, pos))
-            return false;
-        if(!level.isUnobstructed(blockState, pos, collisionContext))
+        if(!blockState.isAir() && !level.getBlockState(pos).canBeReplaced())
             return false;
 
-        if(placer instanceof Player player) {
-            if(!player.mayBuild())
-                return false;
-            if(level instanceof Level lvl && !lvl.mayInteract(player, pos))
-                return false;
-        }
-
-        return true;
+        return mayPlace(level, pos, blockState, placer);
     }
 
     static boolean canPlace(BlockPlaceContext context, BlockState blockState) {
-        var placer = context.getPlayer();
         var level = context.getLevel();
         var pos = context.getClickedPos();
-        var collisionContext = placer == null ? CollisionContext.empty() : CollisionContext.of(placer);
-        var levelBlockState = level.getBlockState(pos);
 
-        if(!blockState.isAir() && !levelBlockState.canBeReplaced(context))
+        if(!blockState.isAir() && !level.getBlockState(pos).canBeReplaced(context))
             return false;
+
+        return mayPlace(level, pos, blockState, context.getPlayer());
+    }
+
+    private static boolean mayPlace(LevelReader level, BlockPos pos, BlockState blockState, @Nullable LivingEntity placer) {
         if(!blockState.canSurvive(level, pos))
             return false;
+
+        var collisionContext = placer == null ? CollisionContext.empty() : CollisionContext.of(placer);
+
         if(!level.isUnobstructed(blockState, pos, collisionContext))
             return false;
 
