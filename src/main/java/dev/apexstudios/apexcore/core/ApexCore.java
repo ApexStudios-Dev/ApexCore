@@ -7,6 +7,8 @@ import dev.apexstudios.apexcore.lib.component.block.BlockComponentTypes;
 import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponentTypes;
 import dev.apexstudios.apexcore.lib.placement.PlacementRenderEvent;
 import dev.apexstudios.apexcore.lib.registree.Registree;
+import dev.apexstudios.apexcore.lib.tooltip.RegisterTooltipEvent;
+import dev.apexstudios.apexcore.lib.tooltip.TooltipPosition;
 import dev.apexstudios.apexcore.lib.util.ApexPackSources;
 import dev.apexstudios.apexcore.lib.util.ApexTags;
 import java.util.concurrent.atomic.AtomicReference;
@@ -49,6 +51,8 @@ public final class ApexCore {
                 Pack.Position.TOP
         ));
 
+        // modBus.addListener(RegisterTooltipEvent.class, ApexCore::tooltipTests);
+
         NeoForge.EVENT_BUS.addListener(PlacementRenderEvent.DefaultBlockState.class, event -> {
             var blockState = event.defaultBlockState();
             var newBlockState = new AtomicReference<>(blockState);
@@ -83,5 +87,13 @@ public final class ApexCore {
 
     public static String id(String identifier) {
         return ID + ResourceLocation.NAMESPACE_SEPARATOR + identifier;
+    }
+
+    private static void tooltipTests(RegisterTooltipEvent event) {
+        for(var position : TooltipPosition.values()) {
+            var name = position.name();
+            event.registerBefore(position, (stack, context, adder, player, flag) -> adder.accept(Component.literal("Before: ").append(name)));
+            event.registerAfter(position, (stack, context, adder, player, flag) -> adder.accept(Component.literal("After: ").append(name)));
+        }
     }
 }
