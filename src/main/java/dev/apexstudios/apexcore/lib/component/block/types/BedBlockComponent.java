@@ -11,17 +11,22 @@ import dev.apexstudios.apexcore.lib.component.block.BaseBlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponentTypes;
 import dev.apexstudios.apexcore.lib.util.ApexUtil;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -124,6 +129,12 @@ public final class BedBlockComponent extends BaseBlockComponent {
         }
 
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(BlockState blockState, EntityType<?> entityType, LevelReader level, BlockPos pos, float orientation) {
+        var facing = findComponent(BlockComponentTypes.FACING).map(component -> component.get(blockState)).orElse(Direction.NORTH);
+        return BedBlock.findStandUpPosition(entityType, level, pos, facing, orientation).map(vec -> ServerPlayer.RespawnPosAngle.of(vec, pos));
     }
 
     private boolean kickVillagerOutOfBed(Level level, BlockPos pos) {
