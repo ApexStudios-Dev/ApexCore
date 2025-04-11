@@ -14,11 +14,13 @@ import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -326,6 +328,12 @@ public abstract class BaseEntityBlockComponentHolder extends BaseEntityBlock imp
         var stack = super.getCloneItemStack(level, pos, blockState, includeData);
         BlockComponentHelper.modifyCloneItemStack(this, stack, level, pos, blockState, includeData, player);
         return stack;
+    }
+
+    @MustBeInvokedByOverriders
+    @Override
+    public Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(BlockState blockState, EntityType<?> entityType, LevelReader level, BlockPos pos, float orientation) {
+        return BlockComponentHelper.getRespawnPosition(this, blockState, entityType, level, pos, orientation).or(() -> super.getRespawnPosition(blockState, entityType, level, pos, orientation));
     }
     // endregion
 }
