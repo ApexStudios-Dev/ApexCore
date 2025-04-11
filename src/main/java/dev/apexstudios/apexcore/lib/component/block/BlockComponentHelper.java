@@ -15,10 +15,12 @@ import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -247,6 +249,17 @@ public interface BlockComponentHelper {
         for(var component : holder.getComponents()) {
             component.modifyCloneItemStack(stack, level, pos, blockState, includeData, player);
         }
+    }
+
+    static Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, EntityType<?> entityType, LevelReader level, BlockPos pos, float orientation) {
+        for(var component : holder.getComponents()) {
+            var result = component.getRespawnPosition(blockState, entityType, level, pos, orientation);
+
+            if(result.isPresent())
+                return result;
+        }
+
+        return Optional.empty();
     }
     // endregion
 
