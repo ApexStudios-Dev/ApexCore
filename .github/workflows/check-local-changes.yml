@@ -1,7 +1,7 @@
 name: Check Local Changes
 
 on:
-    pull_request_target:
+  pull_request_target:
     types:
       - synchronize
       - opened
