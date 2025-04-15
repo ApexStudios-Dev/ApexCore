@@ -1,21 +1,62 @@
 name: Test PR
 
 on:
-  workflow_run:
-    workflows:
-      - 'Build PR'
+  pull_request:
     types:
-      - completed
+      - synchronize
+      - opened
+      - ready_for_review
+      - reopened
 
 jobs:
-  upload-mod:
-    runs-on: ubuntu-latest
+  build-pr:
+    name: Build PR
+    runs-on: apexstudios
+    outputs:
+      version: ${{ steps.checkout.outputs.version }}
     steps:
       - name: Checkout Repository
         id: checkout
         uses: ApexStudios-Dev/.github/actions/checkout@master
 
-      - name: Download Artifact
-        run: curl -O "https://maven.apexstudios.dev/private/dev/apexstudios/apexcore/${{ steps.checkout.outputs.version }}/apexcore-${{ steps.checkout.outputs.version }}.jar"
+      - name: Setup Java
+        uses: ApexStudios-Dev/.github/actions/setup-java@master
 
-      - run: ls
+      - name: Setup Gradle
+        uses: ApexStudios-Dev/.github/actions/setup-gradle@master
+
+      - name: Build with Gradle
+        run: ./gradlew :publishReleasePublicationToApexStudios-PrivateRepository
+        env:
+          VERSION: ${{ steps.checkout.outputs.version }}
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+
+  check-local-changes:
+    name: Check Local Changes
+    uses: ApexStudios-Dev/.github/.github/workflows/check-local-changes.yml@master
+
+  upload-production-dependencies:
+    name: Upload Production Dependencies
+    runs-on: ubuntu-latest
+    if: success()
+    needs: [ build-pr, check-local-changes ]
+    steps:
+      - name: Download dependencies
+        run: curl -O "https://maven.apexstudios.dev/private/dev/apexstudios/apexcore/${{ needs.build-pr.outputs.version }}/apexcore-${{ needs.build-pr.outputs.version }}.jar"
+
+      - name: Upload dependencies
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-artifacts
+          path: '*.jar'
+          if-no-files-found: error
+          overwrite: true
+
+  test-production-server:
+    name: Test Production Server
+    uses: ApexStudios-Dev/.github/.github/workflows/test-production-server.yml@master
+    needs: upload-production-dependencies
+    if: success()
+    with:
+      neoforge_version: 21.5.34-beta
