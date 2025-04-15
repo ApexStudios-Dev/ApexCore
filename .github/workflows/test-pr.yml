@@ -1,49 +1,21 @@
 name: Test PR
 
 on:
-  pull_request:
+  workflow_run:
+    workflows:
+      - 'Build PR'
     types:
-      - synchronize
-      - opened
-      - ready_for_review
-      - reopened
+      - completed
 
 jobs:
-  compile-mod:
-    name: Compile Mod
-    runs-on: apexstudios
+  upload-mod:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         id: checkout
         uses: ApexStudios-Dev/.github/actions/checkout@master
 
-      - name: Setup Java
-        uses: ApexStudios-Dev/.github/actions/setup-java@master
+      - name: Download Artifact
+        run: curl -O "https://maven.apexstudios.dev/private/dev/apexstudios/apexcore/${{ steps.checkout.outputs.version }}/apexcore-${{ steps.checkout.outputs.version }}.jar"
 
-      - name: Setup Gradle
-        uses: ApexStudios-Dev/.github/actions/setup-gradle@master
-
-      - name: Build with Gradle
-        run: ./gradlew :build
-        env:
-          VERSION: ${{ steps.checkout.outputs.version }}
-
-      - name: Delete unwanted artifacts
-        if: success()
-        run: rm -rf ./build/libs/*-data*jar ./build/libs/*-sources*jar
-
-      - name: Upload Mod
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: production-artifacts
-          path: ./build/libs/*-${{ steps.checkout.outputs.version }}.jar
-          if-no-files-found: error
-
-  test-production-server:
-    name: Test Production Server
-    uses: ApexStudios-Dev/.github/.github/workflows/test-production-server.yml@master
-    needs: compile-mod
-    if: success()
-    with:
-      neoforge_version: 21.5.0-beta
+      - run: ls
