@@ -1,14 +1,14 @@
 name: Check Local Changes
 
 on:
-    pull_request:
-        types:
-            - synchronize
-            - opened
-            - ready_for_review
-            - reopened
+  pull_request_target:
+    types:
+      - synchronize
+      - opened
+      - ready_for_review
+      - reopened
 
 jobs:
-    check-local-changes:
-        name: Check Local Changes
-        uses: ApexStudios-Dev/.github/.github/workflows/check-local-changes.yml@master
+  check-local-changes:
+    name: Check Local Changes
+    uses: ApexStudios-Dev/.github/.github/workflows/check-local-changes.yml@master
