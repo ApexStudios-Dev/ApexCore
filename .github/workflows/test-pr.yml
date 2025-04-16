@@ -9,10 +9,6 @@ on:
       - ready_for_review
       - reopened
 
-env:
-  JAVA_VERSION: 21
-  JAVA_VENDOR: temurin
-
 jobs:
   generate-version:
     name: Generate version
@@ -24,8 +20,8 @@ jobs:
     needs: generate-version
     uses: ApexStudios-Dev/.github/.github/workflows/_publish-pr-artifact.yml@better-workflow # TODO: Change to master before merging
     with:
-      java-version: ${{ env.JAVA_VERSION }}
-      java-vendor: ${{ env.JAVA_VENDOR }}
+      java-version: 21
+      java-vendor: temurin
       mod-version: ${{ needs.generate-version.outputs.version }}
 
   check-local-changes:
@@ -34,8 +30,8 @@ jobs:
     needs: generate-version
     uses: ApexStudios-Dev/.github/.github/workflows/_check-local-changes.yml@better-workflow # TODO: Change to master before merging
     with:
-      java-version: ${{ env.JAVA_VERSION }}
-      java-vendor: ${{ env.JAVA_VENDOR }}
+      java-version: 21
+      java-vendor: temurin
       mod-version: ${{ needs.generate-version.outputs.version }}
 
   test-production-server:
@@ -53,5 +49,5 @@ jobs:
         uses: ApexStudios-Dev/.github/actions/test-production-server@better-workflow # TODO: Change to master before merging
         with:
           neoforge-version: 21.5.0-beta
-          java-version: ${{ env.JAVA_VERSION }}
-          java-vendor: ${{ env.JAVA_VENDOR }}
+          java-version: 21
+          java-vendor: temurin
