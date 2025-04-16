@@ -1,49 +1,57 @@
 name: Test PR
 
 on:
-  pull_request_target:
+  # TODO: Change to 'pull_request_target' before merging
+  pull_request:
     types:
       - synchronize
       - opened
       - ready_for_review
       - reopened
 
+env:
+  JAVA_VERSION: 21
+  JAVA_VENDOR: temurin
+
 jobs:
-  compile-mod:
-    name: Compile Mod
-    runs-on: apexstudios
-    steps:
-      - name: Checkout Repository
-        id: checkout
-        uses: ApexStudios-Dev/.github/actions/checkout@master
+  generate-version:
+    name: Generate version
+    uses: ApexStudios-Dev/.github/.github/workflows/_generate-version.yml@better-workflow # TODO: Change to master before merging
 
-      - name: Setup Java
-        uses: ApexStudios-Dev/.github/actions/setup-java@master
+  publish-pr-artifact:
+    name: Publish PR artifact
+    if: success()
+    needs: generate-version
+    uses: ApexStudios-Dev/.github/.github/workflows/_publish-pr-artifact.yml@better-workflow # TODO: Change to master before merging
+    with:
+      java-version: ${{ env.JAVA_VERSION }}
+      java-vendor: ${{ env.JAVA_VENDOR }}
+      mod-version: ${{ needs.generate-version.outputs.version }}
 
-      - name: Setup Gradle
-        uses: ApexStudios-Dev/.github/actions/setup-gradle@master
-
-      - name: Build with Gradle
-        run: ./gradlew :build
-        env:
-          VERSION: ${{ steps.checkout.outputs.version }}
-
-      - name: Delete unwanted artifacts
-        if: success()
-        run: rm -rf ./build/libs/*-data*jar ./build/libs/*-sources*jar
-
-      - name: Upload Mod
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: production-artifacts
-          path: ./build/libs/*-${{ steps.checkout.outputs.version }}.jar
-          if-no-files-found: error
+  check-local-changes:
+    name: Check local changes
+    if: success()
+    needs: generate-version
+    uses: ApexStudios-Dev/.github/.github/workflows/_check-local-changes.yml@better-workflow # TODO: Change to master before merging
+    with:
+      java-version: ${{ env.JAVA_VERSION }}
+      java-vendor: ${{ env.JAVA_VENDOR }}
+      mod-version: ${{ needs.generate-version.outputs.version }}
 
   test-production-server:
     name: Test Production Server
-    uses: ApexStudios-Dev/.github/.github/workflows/test-production-server.yml@master
-    needs: compile-mod
     if: success()
-    with:
-      neoforge_version: 21.5.34-beta
+    runs-on: ubuntu-latest
+    needs: [ generate-version, publish-pr-artifact, check-local-changes ]
+    steps:
+      - name: Install Mods
+        run: |
+          mkdir mods
+          curl -O --output-dir mods https://maven.apexstudios.dev/private/dev/apexstudios/apexcore/${{ needs.generate-version.outputs.version }}/apexcore-${{ needs.generate-version.outputs.version }}.jar
+
+      - name: Test Production Server
+        uses: ApexStudios-Dev/.github/actions/test-production-server@better-workflow # TODO: Change to master before merging
+        with:
+          neoforge-version: 21.5.0-beta
+          java-version: ${{ env.JAVA_VERSION }}
+          java-vendor: ${{ env.JAVA_VENDOR }}
