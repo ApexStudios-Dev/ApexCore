@@ -20,6 +20,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.DetectedVersion;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistrySetBuilder;
@@ -31,7 +32,9 @@ import net.minecraft.data.registries.RegistriesDatapackGenerator;
 import net.minecraft.data.registries.RegistryPatchGenerator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.packs.FeatureFlagsMetadataSection;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
@@ -46,6 +49,10 @@ public sealed abstract class PackGeneratorImpl<TSelf extends PackGenerator<TSelf
     protected abstract FeatureFlagSet enabledFeatures();
 
     protected abstract PackOutput createPackOutput(Path outputDir);
+
+    protected PackType packType() {
+        return PackType.SERVER_DATA;
+    }
 
     public void defaultDescription(Supplier<Component> description) {
         if(this.description == null)
@@ -113,12 +120,17 @@ public sealed abstract class PackGeneratorImpl<TSelf extends PackGenerator<TSelf
             description = Component.empty();
 
         var generatedFeatures = context.enabledFeatures().subtract(FeatureFlags.VANILLA_SET);
+        var packType = packType();
+        var metadataGenerator = new PackMetadataGenerator(output).add(PackMetadataSection.TYPE, new PackMetadataSection(description, DetectedVersion.BUILT_IN.getPackVersion(packType)));
 
-        if(generatedFeatures.isEmpty())
-            providerConsumer.accept(PackMetadataGenerator.forFeaturePack(output, description));
-        else
-            providerConsumer.accept(PackMetadataGenerator.forFeaturePack(output, description, generatedFeatures));
+        if(!generatedFeatures.isEmpty()) {
+            if(packType != PackType.SERVER_DATA)
+                throw new IllegalStateException("FeatureFlags are only supported by packs of type: SERVER_DATA");
 
+            metadataGenerator = metadataGenerator.add(FeatureFlagsMetadataSection.TYPE, new FeatureFlagsMetadataSection(generatedFeatures));
+        }
+
+        providerConsumer.accept(metadataGenerator);
         providerListeners.keySet().forEach(providerType -> registerProvider(providerType, context, output, registries, providerConsumer));
     }
 
