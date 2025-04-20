@@ -36,21 +36,22 @@ jobs:
       java-vendor: temurin
       version: ${{ needs.generate-version.outputs.version }}
 
-  publish-pr:
-    name: Publish PR
+  publish-maven:
+    name: Publish Maven
     needs: [ generate-version, build-pr, check-local-changes ]
     if: success()
-    uses: ApexStudios-Dev/.github/.github/workflows/_publish-pr.yml@better-workflow # TODO: Change to 'master'
+    uses: ApexStudios-Dev/.github/.github/workflows/_publish-maven.yml@better-workflow # TODO: Change to 'master'
     secrets: inherit
     with:
       java-version: 21
       java-vendor: temurin
       version: ${{ needs.generate-version.outputs.version }}
+      publish-task: ':publishReleasePublicationToApexStudios-PrivateRepository'
 
   test:
     name: Test Production
     runs-on: apexstudios
-    needs: [ generate-version, publish-pr ]
+    needs: [ generate-version, publish-maven ]
     if: success()
     steps:
       - name: Prepare Environment
