@@ -3,19 +3,21 @@ name: Publish
 on:
   workflow_dispatch:
   push:
-    branches: [ "**/main" ]
-    paths: [ "**/src/**" ]
+    branches: [ '**/main' ]
+    paths: [ '**/src/**' ]
 
 jobs:
-  publish:
-    name: Publish ApexCore
-    uses: ApexStudios-Dev/.github/.github/workflows/publish-mod.yml@master
+  publish-mod:
+    uses: ApexStudios-Dev/.github/.github/workflows/_publish-mod.yml@master
     secrets: inherit
     with:
-      display_name: ApexCore
-      logo_url: https://raw.githubusercontent.com/ApexStudios-Dev/.github/refs/heads/master/assets/minecraft/new/apexcore.png
+      java-version: 21
+      java-vendor: temurin
+      publish-task: ':publishReleasePublicationToApexStudios-ReleasesRepository'
+      curseforge-id: '550778'
+      modrinth-id: 'xl3myxch'
+      artifact-id: apexcore
+      display-name: ApexCore
+      release-type: release
+      logo-url: 'https://raw.githubusercontent.com/ApexStudios-Dev/.github/refs/heads/master/assets/minecraft/apexcore/banner.png'
       color: 0x3358FA
-      release_type: release
-      artifact_id: apexcore
-      curseforge_id: "550778"
-      modrinth_id: xl3myxch
