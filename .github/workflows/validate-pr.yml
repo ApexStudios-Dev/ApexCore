@@ -13,6 +13,14 @@ jobs:
     name: Generate Version
     uses: ApexStudios-Dev/.github/.github/workflows/_generate-version.yml@better-workflow # TODO: Change to 'master'
 
+  print-version:
+    name: Print Version
+    runs-on: ubuntu-latest
+    if: success()
+    needs: generate-version
+    steps:
+      - run: echo ${{ needs.generate-version.outputs.version }}
+
   build-pr:
     name: Build PR
     needs: generate-version
@@ -22,41 +30,41 @@ jobs:
       java-version: 21
       java-vendor: temurin
       version: ${{ needs.generate-version.outputs.version }}
-
-  check-local-changes:
-    name: Check local changes
-    needs: generate-version
-    if: success()
-    uses: ApexStudios-Dev/.github/.github/workflows/_check-local-changes.yml@better-workflow # TODO: Change to 'master'
-    with:
-      java-version: 21
-      java-vendor: temurin
-      version: ${{ needs.generate-version.outputs.version }}
-
-  publish-pr:
-    name: Publish PR
-    needs: [ generate-version, build-pr, check-local-changes ]
-    if: success()
-    uses: ApexStudios-Dev/.github/.github/workflows/_publish-pr.yml@better-workflow # TODO: Change to 'master'
-    with:
-      java-version: 21
-      java-vendor: temurin
-      version: ${{ needs.generate-version.outputs.version }}
-
-  test:
-    name: Test Production
-    runs-on: apexstudios
-    needs: [ generate-version, publish-pr ]
-    if: success()
-    steps:
-      - name: Prepare Environment
-        run: |
-          mkdir mods
-          wget -O "mods/apexcore-${{ needs.generate-version.outputs.version }}.jar" "https://maven.apexstudios.dev/private/dev/apexstudios/apexcore/${{ needs.generate-version.outputs.version }}/apexcore-${{ needs.generate-version.outputs.version }}.jar"
-
-      - name: Test Production Server
-        uses: ApexStudios-Dev/.github/actions/test-production-server@better-workflow # TODO: Change to 'master'
-        with:
-          java-version: 21
-          java-vendor: temurin
-          neoforge-version: 21.5.34-beta
+#
+#  check-local-changes:
+#    name: Check local changes
+#    needs: generate-version
+#    if: success()
+#    uses: ApexStudios-Dev/.github/.github/workflows/_check-local-changes.yml@better-workflow # TODO: Change to 'master'
+#    with:
+#      java-version: 21
+#      java-vendor: temurin
+#      version: ${{ needs.generate-version.outputs.version }}
+#
+#  publish-pr:
+#    name: Publish PR
+#    needs: [ generate-version, build-pr, check-local-changes ]
+#    if: success()
+#    uses: ApexStudios-Dev/.github/.github/workflows/_publish-pr.yml@better-workflow # TODO: Change to 'master'
+#    with:
+#      java-version: 21
+#      java-vendor: temurin
+#      version: ${{ needs.generate-version.outputs.version }}
+#
+#  test:
+#    name: Test Production
+#    runs-on: apexstudios
+#    needs: [ generate-version, publish-pr ]
+#    if: success()
+#    steps:
+#      - name: Prepare Environment
+#        run: |
+#          mkdir mods
+#          wget -O "mods/apexcore-${{ needs.generate-version.outputs.version }}.jar" "https://maven.apexstudios.dev/private/dev/apexstudios/apexcore/${{ needs.generate-version.outputs.version }}/apexcore-${{ needs.generate-version.outputs.version }}.jar"
+#
+#      - name: Test Production Server
+#        uses: ApexStudios-Dev/.github/actions/test-production-server@better-workflow # TODO: Change to 'master'
+#        with:
+#          java-version: 21
+#          java-vendor: temurin
+#          neoforge-version: 21.5.34-beta
