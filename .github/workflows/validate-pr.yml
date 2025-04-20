@@ -47,7 +47,7 @@ jobs:
         uses: ApexStudios-Dev/.github/actions/setup-gradle@better-workflow # TODO: Change to 'master'
 
       - name: Build with Gradle
-        run: gradlew :build
+        run: ./gradlew :build
         env:
           VERSION: ${{ needs.version.outputs.version }}
 
@@ -70,7 +70,7 @@ jobs:
         uses: ApexStudios-Dev/.github/actions/setup-gradle@better-workflow # TODO: Change to 'master'
 
       - name: Run with Gradle
-        run: gradlew :runData
+        run: ./gradlew :runData
         env:
           VERSION: ${{ needs.version.outputs.version }}
 
@@ -103,7 +103,7 @@ jobs:
         uses: ApexStudios-Dev/.github/actions/setup-gradle@better-workflow # TODO: Change to 'master'
 
       - name: Publish with Gradle
-        run: gradlew :publishReleasePublicationToApexStudios-PrivateRepository
+        run: ./gradlew :publishReleasePublicationToApexStudios-PrivateRepository
         env:
           VERSION: ${{ needs.version.outputs.version }}
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
