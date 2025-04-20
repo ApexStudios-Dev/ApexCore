@@ -9,55 +9,55 @@ on:
       - reopened
 
 jobs:
-  generate-version:
-    name: Generate Version
-    uses: ApexStudios-Dev/.github/.github/workflows/_generate-version.yml@better-workflow # TODO: Change to 'master'
+  generate-vars:
+    name: Generate Vars
+    uses: ApexStudios-Dev/.github/.github/workflows/_generate-vars.yml@better-workflow # TODO: Change to 'master'
     secrets: inherit
 
   build-pr:
     name: Build PR
-    needs: generate-version
+    needs: generate-vars
     if: success()
     uses: ApexStudios-Dev/.github/.github/workflows/_build-pr.yml@better-workflow # TODO: Change to 'master'
     secrets: inherit
     with:
       java-version: 21
       java-vendor: temurin
-      version: ${{ needs.generate-version.outputs.version }}
+      version: ${{ needs.generate-vars.outputs.version }}
 
   check-local-changes:
     name: Check local changes
-    needs: generate-version
+    needs: generate-vars
     if: success()
     uses: ApexStudios-Dev/.github/.github/workflows/_check-local-changes.yml@better-workflow # TODO: Change to 'master'
     secrets: inherit
     with:
       java-version: 21
       java-vendor: temurin
-      version: ${{ needs.generate-version.outputs.version }}
+      version: ${{ needs.generate-vars.outputs.version }}
 
   publish-maven:
     name: Publish Maven
-    needs: [ generate-version, build-pr, check-local-changes ]
+    needs: [ generate-vars, build-pr, check-local-changes ]
     if: success()
     uses: ApexStudios-Dev/.github/.github/workflows/_publish-maven.yml@better-workflow # TODO: Change to 'master'
     secrets: inherit
     with:
       java-version: 21
       java-vendor: temurin
-      version: ${{ needs.generate-version.outputs.version }}
+      version: ${{ needs.generate-vars.outputs.version }}
       publish-task: ':publishReleasePublicationToApexStudios-PrivateRepository'
 
   test:
     name: Test Production
     runs-on: apexstudios
-    needs: [ generate-version, publish-maven ]
+    needs: [ generate-vars, publish-maven ]
     if: success()
     steps:
       - name: Prepare Environment
         run: |
           mkdir mods
-          wget -O "mods/apexcore-${{ needs.generate-version.outputs.version }}.jar" "https://maven.apexstudios.dev/private/dev/apexstudios/apexcore/${{ needs.generate-version.outputs.version }}/apexcore-${{ needs.generate-version.outputs.version }}.jar"
+          wget -O "mods/apexcore-${{ needs.generate-vars.outputs.version }}.jar" "https://maven.apexstudios.dev/private/dev/apexstudios/apexcore/${{ needs.generate-vars.outputs.version }}/apexcore-${{ needs.generate-vars.outputs.version }}.jar"
 
       - name: Test Production Server
         uses: ApexStudios-Dev/.github/actions/test-production-server@better-workflow # TODO: Change to 'master'
