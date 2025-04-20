@@ -123,7 +123,7 @@ jobs:
 
       - name: Install NeoForge
         run: |
-          curl -O "${{ env.NEOFORGE_MAVEN }}/net/neoforged/neoforge/${{ env.NEOFORGE_VERSION }}/neoforge-${{ env.NEOFORGE_VERSION }}-installer.jar"
+          wget "${{ env.NEOFORGE_MAVEN }}/net/neoforged/neoforge/${{ env.NEOFORGE_VERSION }}/neoforge-${{ env.NEOFORGE_VERSION }}-installer.jar"
           java -jar "neoforge-${{ env.NEOFORGE_VERSION }}-installer.jar" --install-server
 
       - name: Prepare Environment
@@ -131,7 +131,7 @@ jobs:
           touch eula.txt
           echo "eula=true" >> eula.txt
           mkdir mods
-          curl --output-dir mods -O "https://maven.apexstudios.dev/private/dev/apexstudios/apexcore/${{ needs.version.outputs.version }}/apexcore-${{ needs.version.outputs.version }}.jar"
+          wget -O "mods/apexcore-${{ needs.version.outputs.version }}.jar" "https://maven.apexstudios.dev/private/dev/apexstudios/apexcore/${{ needs.version.outputs.version }}/apexcore-${{ needs.version.outputs.version }}.jar"
 
       - name: Run Production Server
         run: ./run.sh
