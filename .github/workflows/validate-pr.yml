@@ -130,9 +130,11 @@ jobs:
         run: |
           touch eula.txt
           echo "eula=true" >> eula.txt
+          mkdir mods
+          curl --output-dir mods -O "https://maven.apexstudios.dev/private/dev/apexstudios/apexcore/${{ needs.version.outputs.version }}/apexcore-${{ needs.version.outputs.version }}.jar"
 
       - name: Run Production Server
-        run: run.sh
+        run: ./run.sh
         env:
           # neoforge uses this env var to shutdown server after first tick
           # neodevs internal 'test-production-server' tasks fail if this file does not exist
