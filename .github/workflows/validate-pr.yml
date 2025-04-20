@@ -11,14 +11,14 @@ on:
 jobs:
   generate-vars:
     name: Generate Vars
-    uses: ApexStudios-Dev/.github/.github/workflows/_generate-vars.yml@better-workflow # TODO: Change to 'master'
+    uses: ApexStudios-Dev/.github/.github/workflows/_generate-vars.yml@master
     secrets: inherit
 
   build:
     name: Build
     needs: generate-vars
     if: success()
-    uses: ApexStudios-Dev/.github/.github/workflows/_build.yml@better-workflow # TODO: Change to 'master'
+    uses: ApexStudios-Dev/.github/.github/workflows/_build.yml@master
     secrets: inherit
     with:
       java-version: 21
@@ -29,7 +29,7 @@ jobs:
     name: Check local changes
     needs: generate-vars
     if: success()
-    uses: ApexStudios-Dev/.github/.github/workflows/_check-local-changes.yml@better-workflow # TODO: Change to 'master'
+    uses: ApexStudios-Dev/.github/.github/workflows/_check-local-changes.yml@master
     secrets: inherit
     with:
       java-version: 21
@@ -40,7 +40,7 @@ jobs:
     name: Publish Maven
     needs: [ generate-vars, build, check-local-changes ]
     if: success()
-    uses: ApexStudios-Dev/.github/.github/workflows/_publish-maven.yml@better-workflow # TODO: Change to 'master'
+    uses: ApexStudios-Dev/.github/.github/workflows/_publish-maven.yml@master
     secrets: inherit
     with:
       java-version: 21
@@ -60,7 +60,7 @@ jobs:
           wget -O "mods/apexcore-${{ needs.generate-vars.outputs.version }}.jar" "https://maven.apexstudios.dev/private/dev/apexstudios/apexcore/${{ needs.generate-vars.outputs.version }}/apexcore-${{ needs.generate-vars.outputs.version }}.jar"
 
       - name: Test Production Server
-        uses: ApexStudios-Dev/.github/actions/test-production-server@better-workflow # TODO: Change to 'master'
+        uses: ApexStudios-Dev/.github/actions/test-production-server@master
         with:
           java-version: 21
           java-vendor: temurin

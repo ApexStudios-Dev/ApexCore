@@ -8,7 +8,7 @@ on:
 
 jobs:
   publish-mod:
-    uses: ApexStudios-Dev/.github/.github/workflows/_publish-mod.yml@better-workflow # TODO: Change to 'master'
+    uses: ApexStudios-Dev/.github/.github/workflows/_publish-mod.yml@master
     secrets: inherit
     with:
       java-version: 21
