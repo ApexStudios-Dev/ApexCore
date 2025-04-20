@@ -14,11 +14,11 @@ jobs:
     uses: ApexStudios-Dev/.github/.github/workflows/_generate-vars.yml@better-workflow # TODO: Change to 'master'
     secrets: inherit
 
-  build-pr:
-    name: Build PR
+  build:
+    name: Build
     needs: generate-vars
     if: success()
-    uses: ApexStudios-Dev/.github/.github/workflows/_build-pr.yml@better-workflow # TODO: Change to 'master'
+    uses: ApexStudios-Dev/.github/.github/workflows/_build.yml@better-workflow # TODO: Change to 'master'
     secrets: inherit
     with:
       java-version: 21
@@ -38,7 +38,7 @@ jobs:
 
   publish-maven:
     name: Publish Maven
-    needs: [ generate-vars, build-pr, check-local-changes ]
+    needs: [ generate-vars, build, check-local-changes ]
     if: success()
     uses: ApexStudios-Dev/.github/.github/workflows/_publish-maven.yml@better-workflow # TODO: Change to 'master'
     secrets: inherit
