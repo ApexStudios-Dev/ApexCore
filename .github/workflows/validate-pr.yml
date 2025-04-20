@@ -12,12 +12,14 @@ jobs:
   generate-version:
     name: Generate Version
     uses: ApexStudios-Dev/.github/.github/workflows/_generate-version.yml@better-workflow # TODO: Change to 'master'
+    secrets: inherit
 
   build-pr:
     name: Build PR
     needs: generate-version
     if: success()
     uses: ApexStudios-Dev/.github/.github/workflows/_build-pr.yml@better-workflow # TODO: Change to 'master'
+    secrets: inherit
     with:
       java-version: 21
       java-vendor: temurin
@@ -28,6 +30,7 @@ jobs:
     needs: generate-version
     if: success()
     uses: ApexStudios-Dev/.github/.github/workflows/_check-local-changes.yml@better-workflow # TODO: Change to 'master'
+    secrets: inherit
     with:
       java-version: 21
       java-vendor: temurin
@@ -38,6 +41,7 @@ jobs:
     needs: [ generate-version, build-pr, check-local-changes ]
     if: success()
     uses: ApexStudios-Dev/.github/.github/workflows/_publish-pr.yml@better-workflow # TODO: Change to 'master'
+    secrets: inherit
     with:
       java-version: 21
       java-vendor: temurin
