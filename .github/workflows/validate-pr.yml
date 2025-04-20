@@ -43,7 +43,7 @@ jobs:
         uses: ApexStudios-Dev/.github/actions/setup-gradle@better-workflow # TODO: Change to 'master'
 
       - name: Build with Gradle
-        run: ./gradlew :assemble :checkFormatting
+        run: ./gradlew :build
         env:
           VERSION: ${{ needs.version.outputs.version }}
 
