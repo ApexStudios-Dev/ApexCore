@@ -1,0 +1,104 @@
+name: Test PR
+
+on:
+  pull_request: # TODO: Change to 'pull_request_target'
+    types:
+      - synchronize
+      - opened
+      - ready_for_review
+      - reopened
+
+env:
+  JAVA_VERSION: 21
+  JAVA_VENDOR: temurin
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout Repository
+        uses: ApexStudios-Dev/.github/actions/checkout@better-workflow # TODO: Change to 'master'
+
+      - name: Generate version
+        id: version
+        uses: ApexStudios-Dev/.github/actions/version@better-workflow # TODO: Change to 'master'
+
+  build:
+    runs-on: apexstudios
+    needs: version
+    if: success()
+    steps:
+      - name: Checkout Repository
+        uses: ApexStudios-Dev/.github/actions/checkout@better-workflow # TODO: Change to 'master'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_VENDOR }}
+
+      - name: Setup Gradle
+        uses: ApexStudios-Dev/.github/actions/setup-gradle@better-workflow # TODO: Change to 'master'
+
+      - name: Build with Gradle
+        run: ./gradlew :assemble :checkFormatting
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+
+  check-local-changes:
+    runs-on: apexstudios
+    needs: version
+    if: success()
+    steps:
+      - name: Checkout Repository
+        uses: ApexStudios-Dev/.github/actions/checkout@better-workflow # TODO: Change to 'master'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_VENDOR }}
+
+      - name: Setup Gradle
+        uses: ApexStudios-Dev/.github/actions/setup-gradle@better-workflow # TODO: Change to 'master'
+
+      - name: Run with Gradle
+        run: ./gradlew :runData
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+
+      # This is needed otherwise the 'git status' below reports as 'gradlew' being changed
+      # Tried running 'git update-index --chmod=+x ./gradlew' to have perms tracked but this did not work
+      - name: Unmark Gradle as Executable
+        run: chmod -x ./gradlew
+
+      - name: Check no local changes are present
+        run: |
+          git status
+          if [ -n "$(git status --porcelain)" ]; then exit 1; fi
+
+  publish:
+    runs-on: apexstudios
+    needs: [ version, build, check-local-changes ]
+    if: success()
+    steps:
+      - name: Checkout Repository
+        uses: ApexStudios-Dev/.github/actions/checkout@better-workflow # TODO: Change to 'master'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_VENDOR }}
+
+      - name: Setup Gradle
+        uses: ApexStudios-Dev/.github/actions/setup-gradle@better-workflow # TODO: Change to 'master'
+
+      - name: Publish with Gradle
+        run: ./gradlew :publishReleasePublicationToApexStudios-PrivateRepository
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
