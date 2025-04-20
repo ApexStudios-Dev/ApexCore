@@ -1,12 +1,6 @@
 name: Publish
 
 on:
-  pull_request:
-    types:
-      - synchronize
-      - opened
-      - ready_for_review
-      - reopened
   workflow_dispatch:
   push:
     branches: [ '**/main' ]
@@ -20,8 +14,8 @@ jobs:
       java-version: 21
       java-vendor: temurin
       publish-task: ':publishReleasePublicationToApexStudios-ReleasesRepository'
-      curseforge-id: '835372' # '550778'
-      modrinth-id: 'EjjiYArZ' # 'xl3myxch'
+      curseforge-id: '550778'
+      modrinth-id: 'xl3myxch'
       artifact-id: apexcore
       display-name: ApexCore
       release-type: release
