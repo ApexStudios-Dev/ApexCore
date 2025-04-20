@@ -21,7 +21,7 @@ jobs:
     with:
       java-version: 21
       java-vendor: temurin
-      version: ${{ needs.version.outputs.version }}
+      version: ${{ needs.generate-version.outputs.version }}
 
   check-local-changes:
     name: Check local changes
@@ -31,7 +31,7 @@ jobs:
     with:
       java-version: 21
       java-vendor: temurin
-      version: ${{ needs.version.outputs.version }}
+      version: ${{ needs.generate-version.outputs.version }}
 
   publish-pr:
     name: Publish PR
@@ -41,7 +41,7 @@ jobs:
     with:
       java-version: 21
       java-vendor: temurin
-      version: ${{ needs.version.outputs.version }}
+      version: ${{ needs.generate-version.outputs.version }}
 
   test:
     name: Test Production
@@ -52,7 +52,7 @@ jobs:
       - name: Prepare Environment
         run: |
           mkdir mods
-          wget -O "mods/apexcore-${{ needs.version.outputs.version }}.jar" "https://maven.apexstudios.dev/private/dev/apexstudios/apexcore/${{ needs.version.outputs.version }}/apexcore-${{ needs.version.outputs.version }}.jar"
+          wget -O "mods/apexcore-${{ needs.generate-version.outputs.version }}.jar" "https://maven.apexstudios.dev/private/dev/apexstudios/apexcore/${{ needs.generate-version.outputs.version }}/apexcore-${{ needs.generate-version.outputs.version }}.jar"
 
       - name: Test Production Server
         uses: ApexStudios-Dev/.github/actions/test-production-server@better-workflow # TODO: Change to 'master'
