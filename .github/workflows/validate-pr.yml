@@ -8,152 +8,55 @@ on:
       - ready_for_review
       - reopened
 
-env:
-  JAVA_VERSION: 21
-  JAVA_VENDOR: temurin
-  NEOFORGE_VERSION: 21.5.34-beta
-  NEOFORGE_MAVEN: 'https://maven.neoforged.net/releases'
-
 jobs:
-  version:
+  generate-version:
     name: Generate Version
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-    steps:
-      - name: Checkout Repository
-        uses: ApexStudios-Dev/.github/actions/checkout@better-workflow # TODO: Change to 'master'
+    uses: ApexStudios-Dev/.github/.github/workflows/_generate-version.yml@better-workflow # TODO: Change to 'master'
 
-      - name: Generate version
-        id: version
-        uses: ApexStudios-Dev/.github/actions/version@better-workflow # TODO: Change to 'master'
-
-  build:
-    name: Build
-    runs-on: apexstudios
-    needs: version
+  build-pr:
+    name: Build PR
+    needs: generate-version
     if: success()
-    steps:
-      - name: Checkout Repository
-        uses: ApexStudios-Dev/.github/actions/checkout@better-workflow # TODO: Change to 'master'
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.JAVA_VENDOR }}
-
-      - name: Setup Gradle
-        uses: ApexStudios-Dev/.github/actions/setup-gradle@better-workflow # TODO: Change to 'master'
-
-      - name: Build with Gradle
-        run: ./gradlew :build
-        env:
-          VERSION: ${{ needs.version.outputs.version }}
+    uses: ApexStudios-Dev/.github/.github/workflows/_build-pr.yml@better-workflow # TODO: Change to 'master'
+    with:
+      java-version: 21
+      java-vendor: temurin
+      version: ${{ needs.version.outputs.version }}
 
   check-local-changes:
     name: Check local changes
-    runs-on: apexstudios
-    needs: version
+    needs: generate-version
     if: success()
-    steps:
-      - name: Checkout Repository
-        uses: ApexStudios-Dev/.github/actions/checkout@better-workflow # TODO: Change to 'master'
+    uses: ApexStudios-Dev/.github/.github/workflows/_check-local-changes.yml@better-workflow # TODO: Change to 'master'
+    with:
+      java-version: 21
+      java-vendor: temurin
+      version: ${{ needs.version.outputs.version }}
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.JAVA_VENDOR }}
-
-      - name: Setup Gradle
-        uses: ApexStudios-Dev/.github/actions/setup-gradle@better-workflow # TODO: Change to 'master'
-
-      - name: Run with Gradle
-        run: ./gradlew :runData
-        env:
-          VERSION: ${{ needs.version.outputs.version }}
-
-      # This is needed otherwise the 'git status' below reports as 'gradlew' being changed
-      # Tried running 'git update-index --chmod=+x gradlew' to have perms tracked but this did not work
-      - name: Unmark Gradle as Executable
-        run: chmod -x gradlew
-
-      - name: Check no local changes are present
-        run: |
-          git status
-          if [ -n "$(git status --porcelain)" ]; then exit 1; fi
-
-  publish:
-    name: Publish
-    runs-on: apexstudios
-    needs: [ version, build, check-local-changes ]
+  publish-pr:
+    name: Publish PR
+    needs: [ generate-version, build-pr, check-local-changes ]
     if: success()
-    steps:
-      - name: Checkout Repository
-        uses: ApexStudios-Dev/.github/actions/checkout@better-workflow # TODO: Change to 'master'
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.JAVA_VENDOR }}
-
-      - name: Setup Gradle
-        uses: ApexStudios-Dev/.github/actions/setup-gradle@better-workflow # TODO: Change to 'master'
-
-      - name: Publish with Gradle
-        run: ./gradlew :publishReleasePublicationToApexStudios-PrivateRepository
-        env:
-          VERSION: ${{ needs.version.outputs.version }}
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+    uses: ApexStudios-Dev/.github/.github/workflows/_publish-pr.yml@better-workflow # TODO: Change to 'master'
+    with:
+      java-version: 21
+      java-vendor: temurin
+      version: ${{ needs.version.outputs.version }}
 
   test:
     name: Test Production
     runs-on: apexstudios
-    needs: [ version, publish ]
+    needs: [ generate-version, publish-pr ]
     if: success()
     steps:
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.JAVA_VENDOR }}
-
-      - name: Install NeoForge
-        run: |
-          wget "${{ env.NEOFORGE_MAVEN }}/net/neoforged/neoforge/${{ env.NEOFORGE_VERSION }}/neoforge-${{ env.NEOFORGE_VERSION }}-installer.jar"
-          java -jar "neoforge-${{ env.NEOFORGE_VERSION }}-installer.jar" --install-server
-
       - name: Prepare Environment
         run: |
-          touch eula.txt
-          echo "eula=true" >> eula.txt
           mkdir mods
           wget -O "mods/apexcore-${{ needs.version.outputs.version }}.jar" "https://maven.apexstudios.dev/private/dev/apexstudios/apexcore/${{ needs.version.outputs.version }}/apexcore-${{ needs.version.outputs.version }}.jar"
 
-      - name: Run Production Server
-        run: ./run.sh
-        env:
-          # neoforge uses this env var to shutdown server after first tick
-          # neodevs internal 'test-production-server' tasks fail if this file does not exist
-          # after server has ran, we mimic the same functionality below
-          # https://github.com/neoforged/NeoForge/blob/ea51140336afccf0495a31a6e0e795ca702d361a/src/main/java/net/neoforged/neoforge/common/util/SelfTest.java
-          NEOFORGE_DEDICATED_SERVER_SELFTEST: ${{ github.workspace }}/server_self_test.txt
-
-      - name: Cleanup Environment
-        if: always()
-        run: rm -f eula.txt
-
-      - name: Upload Environment
-        if: failure()
-        uses: actions/upload-artifact@v4
+      - name: Test Production Server
+        uses: ApexStudios-Dev/.github/actions/test-production-server@better-workflow # TODO: Change to 'master'
         with:
-          name: environment
-          path: ./
-
-      # kill the workflow if self test file was not generated
-      # this could mean server ran into some error/hard crashed before neos self test could shut it down
-      - name: Validate Self Test
-        run: if [ ! -f "${{ github.workspace }}/server_self_test.txt" ]; then exit 1; fi
+          java-version: 21
+          java-vendor: temurin
+          neoforge-version: 21.5.34-beta
