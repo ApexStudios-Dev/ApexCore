@@ -3,6 +3,9 @@ name: Publish Assets
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   generate-vars:
     name: Generate Vars
@@ -21,4 +24,3 @@ jobs:
           mod-id: apexcore
           mod-version: ${{ needs.generate-vars.outputs.version }}
           mod-src-dir: src
-          github-token: ${{ secrets.GITHUB_TOKEN }}

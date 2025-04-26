@@ -6,6 +6,9 @@ on:
     branches: [ '**/main' ]
     paths: [ '**/src/**' ]
 
+permissions:
+  contents: write
+
 jobs:
   publish-mod:
     uses: ApexStudios-Dev/.github/.github/workflows/_publish-mod.yml@master
