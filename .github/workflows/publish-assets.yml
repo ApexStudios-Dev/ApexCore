@@ -1,0 +1,24 @@
+name: Publish Assets
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-vars:
+    name: Generate Vars
+    uses: ApexStudios-Dev/.github/.github/workflows/_generate-vars.yml@master
+    secrets: inherit
+
+  publish-assets:
+    name: Publish Assets
+    runs-on: ubuntu-latest
+    needs: generate-vars
+    steps:
+      - name: Publish assets
+        uses: ApexStudios-Dev/.github/actions/publish-assets@master
+        with:
+          mod-name: ApexCore
+          mod-id: apexcore
+          mod-version: ${{ needs.generate-vars.outputs.version }}
+          mod-src-dir: src
+          github-token: ${{ secrets.GITHUB_TOKEN }}
