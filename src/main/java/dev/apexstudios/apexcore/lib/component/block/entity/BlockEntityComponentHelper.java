@@ -13,43 +13,21 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.InsideBlockEffectApplier;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.redstone.Orientation;
-import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 public interface BlockEntityComponentHelper {
     String NBT_COMPONENTS = "Components";
 
     // region: Callbacks
-    static void playerDestroy(BlockEntityComponentHolder holder, Level level, Player player, BlockPos pos, BlockState blockState, ItemStack stack) {
-        holder.getComponents().forEach(component -> component.playerDestroy(level, player, pos, blockState, stack));
-    }
-
-    static void setPlacedBy(BlockEntityComponentHolder holder, Level level, BlockPos pos, BlockState blockState, @Nullable LivingEntity placer, ItemStack stack) {
-        holder.getComponents().forEach(component -> component.setPlacedBy(level, pos, blockState, placer, stack));
-    }
-
     static BlockState playerWillDestroy(BlockEntityComponentHolder holder, Level level, BlockPos pos, BlockState blockState, Player player) {
         var result = blockState;
 
@@ -60,48 +38,8 @@ public interface BlockEntityComponentHelper {
         return result;
     }
 
-    static BlockState updateShape(BlockEntityComponentHolder holder, BlockState blockState, LevelReader level, ScheduledTickAccess tickAccess, BlockPos pos, Direction facing, BlockPos neighborPos, BlockState neighborBlockState, RandomSource random) {
-        var result = blockState;
-
-        for(var component : holder.getComponents()) {
-            result = component.updateShape(result, level, tickAccess, pos, facing, neighborPos, neighborBlockState, random);
-        }
-
-        return result;
-    }
-
-    static void neighborChanged(BlockEntityComponentHolder holder, BlockState blockState, Level level, BlockPos pos, Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {
-        holder.getComponents().forEach(component -> component.neighborChanged(blockState, level, pos, neighborBlock, orientation, movedByPiston));
-    }
-
-    static void onPlace(BlockEntityComponentHolder holder, BlockState blockState, Level level, BlockPos pos, BlockState oldBlockState, boolean movedByPiston) {
-        holder.getComponents().forEach(component -> component.onPlace(blockState, level, pos, oldBlockState, movedByPiston));
-    }
-
     static void preRemoveSideEffects(BlockEntityComponentHolder holder, BlockPos pos, BlockState blockState) {
         holder.getComponents().forEach(component -> component.preRemoveSideEffects(pos, blockState));
-    }
-
-    static InteractionResult useItemOn(BlockEntityComponentHolder holder, ItemStack stack, BlockState blockState, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
-        for(var component : holder.getComponents()) {
-            var interactionResult = component.useItemOn(stack, blockState, level, pos, player, hand, result);
-
-            if(interactionResult.consumesAction())
-                return interactionResult;
-        }
-
-        return InteractionResult.PASS;
-    }
-
-    static InteractionResult useWithoutItem(BlockEntityComponentHolder holder, BlockState blockState, Level level, BlockPos pos, Player player, BlockHitResult result) {
-        for(var component : holder.getComponents()) {
-            var interactionResult = component.useWithoutItem(blockState, level, pos, player, result);
-
-            if(interactionResult.consumesAction())
-                return interactionResult;
-        }
-
-        return InteractionResult.PASS;
     }
 
     static int getAnalogOutputSignal(BlockEntityComponentHolder holder, BlockState blockState, Level level, BlockPos pos) {
@@ -158,15 +96,6 @@ public interface BlockEntityComponentHelper {
         return multiBlock == null || multiBlock.indexOf(blockState) == MultiBlockComponent.ORIGIN_INDEX;
     }
 
-    static boolean triggerEvent(BlockEntityComponentHolder holder, int id, int event) {
-        for(var component : holder.getComponents()) {
-            if(component.triggerEvent(id, event))
-                return true;
-        }
-
-        return false;
-    }
-
     static void applyImplicitComponents(BlockEntityComponentHolder holder, DataComponentGetter getter) {
         holder.getComponents().forEach(component -> component.applyImplicitComponents(getter));
     }
@@ -193,39 +122,6 @@ public interface BlockEntityComponentHelper {
 
             if(componentsTag.isEmpty())
                 tag.remove(NBT_COMPONENTS);
-        }
-    }
-
-    static void entityInside(BlockEntityComponentHolder holder, BlockState blockState, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier applier) {
-        holder.getComponents().forEach(component -> component.entityInside(blockState, level, pos, entity, applier));
-    }
-
-    static void handlePrecipitation(BlockEntityComponentHolder holder, BlockState blockState, Level level, BlockPos pos, Biome.Precipitation precipitation) {
-        holder.getComponents().forEach(component -> component.handlePrecipitation(blockState, level, pos, precipitation));
-    }
-
-    static void stepOn(BlockEntityComponentHolder holder, Level level, BlockPos pos, BlockState blockState, Entity entity) {
-        holder.getComponents().forEach(component -> component.stepOn(level, pos, blockState, entity));
-    }
-
-    static boolean updateEntityMovementAfterFallOn(BlockEntityComponentHolder holder, BlockGetter level, Entity entity) {
-        for(var component : holder.getComponents()) {
-            if(component.updateEntityMovementAfterFallOn(level, entity))
-                return true;
-        }
-
-        return false;
-    }
-
-    static void modifyCloneItemStack(BlockEntityComponentHolder holder, ItemStack stack, LevelReader level, BlockPos pos, BlockState blockState, boolean includeData) {
-        for(var component : holder.getComponents()) {
-            component.modifyCloneItemStack(stack, level, pos, blockState, includeData);
-        }
-    }
-
-    static void modifyCloneItemStack(BlockEntityComponentHolder holder, ItemStack stack, LevelReader level, BlockPos pos, BlockState blockState, boolean includeData, Player player) {
-        for(var component : holder.getComponents()) {
-            component.modifyCloneItemStack(stack, level, pos, blockState, includeData, player);
         }
     }
     // endregion

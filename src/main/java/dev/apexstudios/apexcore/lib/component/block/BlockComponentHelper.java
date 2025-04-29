@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,19 +23,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
-import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -84,22 +80,8 @@ public interface BlockComponentHelper {
         return result;
     }
 
-    static void playerDestroy(BlockComponentHolder holder, Level level, Player player, BlockPos pos, BlockState blockState, ItemStack stack) {
-        holder.getComponents().forEach(component -> component.playerDestroy(level, player, pos, blockState, stack));
-    }
-
     static void setPlacedBy(BlockComponentHolder holder, Level level, BlockPos pos, BlockState blockState, @Nullable LivingEntity placer, ItemStack stack) {
         holder.getComponents().forEach(component -> component.setPlacedBy(level, pos, blockState, placer, stack));
-    }
-
-    static BlockState playerWillDestroy(BlockComponentHolder holder, Level level, BlockPos pos, BlockState blockState, Player player) {
-        var result = blockState;
-
-        for(var component : holder.getComponents()) {
-            result = component.playerWillDestroy(level, pos, blockState, player);
-        }
-
-        return result;
     }
 
     static BlockState updateShape(BlockComponentHolder holder, BlockState blockState, LevelReader level, ScheduledTickAccess tickAccess, BlockPos pos, Direction facing, BlockPos neighborPos, BlockState neighborBlockState, RandomSource random) {
@@ -110,10 +92,6 @@ public interface BlockComponentHelper {
         }
 
         return result;
-    }
-
-    static void neighborChanged(BlockComponentHolder holder, BlockState blockState, Level level, BlockPos pos, Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {
-        holder.getComponents().forEach(component -> component.neighborChanged(blockState, level, pos, neighborBlock, orientation, movedByPiston));
     }
 
     static void onPlace(BlockComponentHolder holder, BlockState blockState, Level level, BlockPos pos, BlockState oldBlockState, boolean movedByPiston) {
@@ -221,10 +199,6 @@ public interface BlockComponentHelper {
         }
 
         return fluidState;
-    }
-
-    static void onExplosionHit(BlockComponentHolder holder, BlockState blockState, ServerLevel level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> dropsConsumer) {
-        holder.getComponents().forEach(component -> component.onExplosionHit(blockState, level, pos, explosion, dropsConsumer));
     }
 
     static boolean updateEntityMovementAfterFallOn(BlockComponentHolder holder, BlockGetter level, Entity entity) {
