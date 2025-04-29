@@ -1,11 +1,9 @@
 package dev.apexstudios.apexcore.lib.component.block.entity.types;
 
 import dev.apexstudios.apexcore.core.ApexCore;
-import dev.apexstudios.apexcore.lib.component.ComponentBuilder;
-import dev.apexstudios.apexcore.lib.component.ComponentHolder;
-import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.entity.BaseBlockEntityComponent;
-import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponent;
+import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponentHolder;
+import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponentType;
 import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponentTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -20,14 +18,14 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 public final class LockBlockEntityComponent extends BaseBlockEntityComponent {
-    public static final ComponentType<BlockEntityComponent, LockBlockEntityComponent, BlockEntity, ComponentBuilder> COMPONENT_TYPE = ComponentType.registerBlockEntity(
+    public static final BlockEntityComponentType<LockBlockEntityComponent, Object> COMPONENT_TYPE = BlockEntityComponentType.register(
             ApexCore.identifier("lock"),
             LockBlockEntityComponent::new
     );
 
     private LockCode lockCode = LockCode.NO_LOCK;
 
-    private LockBlockEntityComponent(ComponentHolder<BlockEntityComponent, BlockEntity> holder) {
+    private LockBlockEntityComponent(BlockEntityComponentHolder holder) {
         super(holder);
     }
 
@@ -69,10 +67,10 @@ public final class LockBlockEntityComponent extends BaseBlockEntityComponent {
     }
 
     public static boolean isLocked(BlockEntity blockEntity, Player player) {
-        if(!(blockEntity instanceof ComponentHolder))
+        if(!(blockEntity instanceof BlockEntityComponentHolder holder))
             return false;
 
-        var component = ((ComponentHolder<BlockEntityComponent, BlockEntity>) blockEntity).getComponent(BlockEntityComponentTypes.LOCK);
+        var component = holder.getComponent(BlockEntityComponentTypes.LOCK);
         return component != null && !component.canAccess(player.getMainHandItem());
     }
 

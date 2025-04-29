@@ -1,23 +1,20 @@
 package dev.apexstudios.apexcore.lib.component.block.types;
 
 import dev.apexstudios.apexcore.core.ApexCore;
-import dev.apexstudios.apexcore.lib.component.ComponentBuilder;
-import dev.apexstudios.apexcore.lib.component.ComponentHolder;
-import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.BaseBlockComponent;
-import dev.apexstudios.apexcore.lib.component.block.BlockComponent;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentHolder;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
 
 public final class BounceBlockComponent extends BaseBlockComponent {
-    public static final ComponentType<BlockComponent, BounceBlockComponent, Block, ComponentBuilder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final BlockComponentType<BounceBlockComponent, Object> COMPONENT_TYPE = BlockComponentType.register(
             ApexCore.identifier("bounce"),
             BounceBlockComponent::new
     );
 
-    private BounceBlockComponent(ComponentHolder<BlockComponent, Block> holder) {
+    private BounceBlockComponent(BlockComponentHolder holder) {
         super(holder);
     }
 

@@ -3,7 +3,6 @@ package dev.apexstudios.apexcore.lib.component.block.entity;
 import com.google.errorprone.annotations.ForOverride;
 import dev.apexstudios.apexcore.lib.block.BlockEvents;
 import dev.apexstudios.apexcore.lib.component.Component;
-import dev.apexstudios.apexcore.lib.component.ComponentHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentGetter;
@@ -12,7 +11,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-public interface BlockEntityComponent extends Component<BlockEntityComponent, BlockEntity>, ComponentHolder<BlockEntityComponent, BlockEntity>, BlockEvents {
+public interface BlockEntityComponent extends Component<
+        BlockEntityComponent,
+        BlockEntity,
+        BlockEntityComponentHolder,
+        BlockEntityComponentType<? extends BlockEntityComponent, ?>
+>, BlockEntityComponentHolder, BlockEvents {
     @ForOverride
     default void loadNbt(CompoundTag tag, HolderLookup.Provider registries) {
 

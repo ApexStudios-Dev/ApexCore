@@ -1,12 +1,10 @@
 package dev.apexstudios.apexcore.lib.component.block.types;
 
 import dev.apexstudios.apexcore.core.ApexCore;
-import dev.apexstudios.apexcore.lib.component.ComponentBuilder;
-import dev.apexstudios.apexcore.lib.component.ComponentHolder;
-import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.BaseBlockComponent;
-import dev.apexstudios.apexcore.lib.component.block.BlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponentHelper;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentHolder;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentType;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponentTypes;
 import dev.apexstudios.apexcore.lib.util.ApexUtil;
 import java.util.Collections;
@@ -31,7 +29,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 public final class DyeableBlockComponent extends BaseBlockComponent {
-    public static final ComponentType<BlockComponent, DyeableBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final BlockComponentType<DyeableBlockComponent, Builder> COMPONENT_TYPE = BlockComponentType.register(
             ApexCore.identifier("dyeable"),
             Builder::new,
             DyeableBlockComponent::new
@@ -40,7 +38,7 @@ public final class DyeableBlockComponent extends BaseBlockComponent {
     private final EnumProperty<DyeColor> property;
     private final DyeColor defaultColor;
 
-    private DyeableBlockComponent(ComponentHolder<BlockComponent, Block> holder, Builder builder) {
+    private DyeableBlockComponent(BlockComponentHolder holder, Builder builder) {
         super(holder);
 
         builder.allow(builder.defaultColor);
@@ -167,7 +165,7 @@ public final class DyeableBlockComponent extends BaseBlockComponent {
         });
     }
 
-    public static final class Builder implements ComponentBuilder {
+    public static final class Builder {
         private DyeColor defaultColor = DyeColor.WHITE;
         private final Set<DyeColor> colors = EnumSet.allOf(DyeColor.class);
 

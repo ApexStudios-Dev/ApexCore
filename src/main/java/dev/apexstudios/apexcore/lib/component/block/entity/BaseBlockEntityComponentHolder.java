@@ -3,8 +3,6 @@ package dev.apexstudios.apexcore.lib.component.block.entity;
 import com.google.errorprone.annotations.ForOverride;
 import dev.apexstudios.apexcore.lib.block.entity.BaseBlockEntity;
 import dev.apexstudios.apexcore.lib.component.ComponentHelper;
-import dev.apexstudios.apexcore.lib.component.ComponentHolder;
-import dev.apexstudios.apexcore.lib.component.ComponentRegistrar;
 import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.entity.types.LockBlockEntityComponent;
 import dev.apexstudios.apexcore.lib.component.block.entity.types.LootTableBlockEntityComponent;
@@ -48,8 +46,8 @@ import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 
-public class BaseBlockEntityComponentHolder extends BaseBlockEntity implements ComponentHolder<BlockEntityComponent, BlockEntity>, Nameable, MenuProvider {
-    private final Map<ComponentType<BlockEntityComponent, ?, BlockEntity, ?>, BlockEntityComponent> components = ComponentHelper.registerComponents(this, BaseBlockEntityComponentHolder::registerComponents);
+public class BaseBlockEntityComponentHolder extends BaseBlockEntity implements BlockEntityComponentHolder, Nameable, MenuProvider {
+    private final Map<BlockEntityComponentType<? extends BlockEntityComponent, ?>, BlockEntityComponent> components = ComponentHelper.registerComponents(this, BlockEntityComponentRegistrar::new, this::registerComponents);
 
     protected BaseBlockEntityComponentHolder(BlockEntityType<? extends BaseBlockEntityComponentHolder> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
@@ -62,38 +60,58 @@ public class BaseBlockEntityComponentHolder extends BaseBlockEntity implements C
 
     // region: ComponentHolder
     @ForOverride
-    protected void registerComponents(ComponentRegistrar<BlockEntityComponent, BlockEntity> registrar) {
+    protected void registerComponents(BlockEntityComponentRegistrar registrar) {
 
     }
 
-    @Nullable
     @Override
-    public final <TComponent extends BlockEntityComponent> TComponent getComponent(ComponentType<BlockEntityComponent, TComponent, BlockEntity, ?> componentType) {
+    public final <TComponent extends BlockEntityComponent> @Nullable TComponent getComponent(BlockEntityComponentType<TComponent, ?> componentType) {
         return (TComponent) components.get(componentType);
     }
 
     @Override
-    public final <TComponent extends BlockEntityComponent> Optional<TComponent> findComponent(ComponentType<BlockEntityComponent, TComponent, BlockEntity, ?> componentType) {
-        return ComponentHolder.super.findComponent(componentType);
+    public final <TComponent extends BlockEntityComponent> Optional<TComponent> findComponent(BlockEntityComponentType<TComponent, ?> componentType) {
+        return BlockEntityComponentHolder.super.findComponent(componentType);
     }
 
     @Override
-    public final <TComponent extends BlockEntityComponent> TComponent getComponentOrThrow(ComponentType<BlockEntityComponent, TComponent, BlockEntity, ?> componentType) {
-        return ComponentHolder.super.getComponentOrThrow(componentType);
+    public final <TComponent extends BlockEntityComponent> TComponent getComponentOrThrow(BlockEntityComponentType<TComponent, ?> componentType) {
+        return BlockEntityComponentHolder.super.getComponentOrThrow(componentType);
     }
 
     @Override
-    public final <TComponent extends BlockEntityComponent> void runForComponent(ComponentType<BlockEntityComponent, TComponent, BlockEntity, ?> componentType, Consumer<TComponent> action) {
-        ComponentHolder.super.runForComponent(componentType, action);
+    public final <TComponent extends BlockEntityComponent> void runForComponent(BlockEntityComponentType<TComponent, ?> componentType, Consumer<TComponent> action) {
+        BlockEntityComponentHolder.super.runForComponent(componentType, action);
+    }
+
+    @Nullable
+    @Override
+    public final <TComponent extends BlockEntityComponent> TComponent getComponent(ComponentType<BlockEntityComponent, TComponent, BlockEntity, BlockEntityComponentHolder, BlockEntityComponentType<? extends BlockEntityComponent, ?>, ?> componentType) {
+        return BlockEntityComponentHolder.super.getComponent(componentType);
     }
 
     @Override
-    public final boolean hasComponent(ComponentType<BlockEntityComponent, ?, BlockEntity, ?> componentType) {
-        return ComponentHolder.super.hasComponent(componentType);
+    public final <TComponent extends BlockEntityComponent> Optional<TComponent> findComponent(ComponentType<BlockEntityComponent, TComponent, BlockEntity, BlockEntityComponentHolder, BlockEntityComponentType<? extends BlockEntityComponent, ?>, ?> componentType) {
+        return BlockEntityComponentHolder.super.findComponent(componentType);
     }
 
     @Override
-    public final Set<ComponentType<BlockEntityComponent, ?, BlockEntity, ?>> getComponentTypes() {
+    public final <TComponent extends BlockEntityComponent> TComponent getComponentOrThrow(ComponentType<BlockEntityComponent, TComponent, BlockEntity, BlockEntityComponentHolder, BlockEntityComponentType<? extends BlockEntityComponent, ?>, ?> componentType) {
+        return BlockEntityComponentHolder.super.getComponentOrThrow(componentType);
+    }
+
+    @Override
+    public final <TComponent extends BlockEntityComponent> void runForComponent(ComponentType<BlockEntityComponent, TComponent, BlockEntity, BlockEntityComponentHolder, BlockEntityComponentType<? extends BlockEntityComponent, ?>, ?> componentType, Consumer<TComponent> action) {
+        BlockEntityComponentHolder.super.runForComponent(componentType, action);
+    }
+
+    @Override
+    public final boolean hasComponent(BlockEntityComponentType<? extends BlockEntityComponent, ?> componentType) {
+        return components.containsKey(componentType);
+    }
+
+    @Override
+    public final Set<BlockEntityComponentType<? extends BlockEntityComponent, ?>> getComponentTypes() {
         return components.keySet();
     }
 

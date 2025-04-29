@@ -3,7 +3,6 @@ package dev.apexstudios.apexcore.lib.component.block;
 import com.google.errorprone.annotations.ForOverride;
 import dev.apexstudios.apexcore.lib.block.BlockEvents;
 import dev.apexstudios.apexcore.lib.component.Component;
-import dev.apexstudios.apexcore.lib.component.ComponentHolder;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -25,7 +24,12 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import org.jetbrains.annotations.Nullable;
 
-public interface BlockComponent extends Component<BlockComponent, Block>, ComponentHolder<BlockComponent, Block>, BlockEvents {
+public interface BlockComponent extends Component<
+        BlockComponent,
+        Block,
+        BlockComponentHolder,
+        BlockComponentType<? extends BlockComponent, ?>
+>, BlockComponentHolder, BlockEvents {
     @ForOverride
     default BlockState registerDefaultBlockState(BlockState blockState) {
         return blockState;

@@ -1,12 +1,10 @@
 package dev.apexstudios.apexcore.lib.component.block.types;
 
 import dev.apexstudios.apexcore.core.ApexCore;
-import dev.apexstudios.apexcore.lib.component.ComponentBuilder;
-import dev.apexstudios.apexcore.lib.component.ComponentHolder;
-import dev.apexstudios.apexcore.lib.component.ComponentRegistrar;
-import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.BaseBlockComponent;
-import dev.apexstudios.apexcore.lib.component.block.BlockComponent;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentHolder;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentRegistrar;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentType;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -41,7 +39,7 @@ import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
 public final class FluidLoggedBlockComponent extends BaseBlockComponent implements BucketPickup, LiquidBlockContainer {
-    public static final ComponentType<BlockComponent, FluidLoggedBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final BlockComponentType<FluidLoggedBlockComponent, Builder> COMPONENT_TYPE = BlockComponentType.register(
             ApexCore.identifier("fluid_logged"),
             Builder::new,
             FluidLoggedBlockComponent::new
@@ -52,7 +50,7 @@ public final class FluidLoggedBlockComponent extends BaseBlockComponent implemen
     private final UnaryOperator<ItemStack> bucketModifier;
     private final Predicate<FluidState> isMatchingFluid;
 
-    private FluidLoggedBlockComponent(ComponentHolder<BlockComponent, Block> holder, Builder builder) {
+    private FluidLoggedBlockComponent(BlockComponentHolder holder, Builder builder) {
         super(holder);
 
         fluid = builder.fluid instanceof FlowingFluid flowing ? flowing.getSource() : builder.fluid;
@@ -166,21 +164,21 @@ public final class FluidLoggedBlockComponent extends BaseBlockComponent implemen
         return super.updateShape(blockState, level, tickAccess, pos, facing, neighborPos, neighborBlockState, random);
     }
 
-    public static void registerWater(ComponentRegistrar<BlockComponent, Block> registrar) {
+    public static void registerWater(BlockComponentRegistrar registrar) {
         registrar.register(COMPONENT_TYPE, builder -> builder
                 .fluid(Fluids.WATER)
                 .matchingFluid(fluidState -> fluidState.is(FluidTags.WATER))
         );
     }
 
-    public static void registerLava(ComponentRegistrar<BlockComponent, Block> registrar) {
+    public static void registerLava(BlockComponentRegistrar registrar) {
         registrar.register(COMPONENT_TYPE, builder -> builder
                 .fluid(Fluids.LAVA)
                 .matchingFluid(fluidState -> fluidState.is(FluidTags.LAVA))
         );
     }
 
-    public static final class Builder implements ComponentBuilder {
+    public static final class Builder {
         private Fluid fluid = Fluids.WATER;
         private UnaryOperator<ItemStack> bucketModifier = UnaryOperator.identity();
         @Nullable private Predicate<FluidState> isMatchingFluid;

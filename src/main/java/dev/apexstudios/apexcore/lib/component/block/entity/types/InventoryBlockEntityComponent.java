@@ -1,11 +1,9 @@
 package dev.apexstudios.apexcore.lib.component.block.entity.types;
 
 import dev.apexstudios.apexcore.core.ApexCore;
-import dev.apexstudios.apexcore.lib.component.ComponentBuilder;
-import dev.apexstudios.apexcore.lib.component.ComponentHolder;
-import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.entity.BaseBlockEntityComponent;
-import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponent;
+import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponentHolder;
+import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponentType;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.function.Consumer;
@@ -40,7 +38,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 
 public final class InventoryBlockEntityComponent extends BaseBlockEntityComponent {
-    public static final ComponentType<BlockEntityComponent, InventoryBlockEntityComponent, BlockEntity, Builder> COMPONENT_TYPE = ComponentType.registerBlockEntity(
+    public static final BlockEntityComponentType<InventoryBlockEntityComponent, Builder> COMPONENT_TYPE = BlockEntityComponentType.register(
             ApexCore.identifier("inventory"),
             Builder::new,
             InventoryBlockEntityComponent::new
@@ -48,7 +46,7 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
 
     public static final String NBT_INVENTORY = "Inventory";
 
-    private static final ICapabilityProvider<? extends ComponentHolder<BlockEntityComponent, BlockEntity>, @Nullable Direction, IItemHandler> CAPABILITY_PROVIDER = (holder, context) -> {
+    private static final ICapabilityProvider<? extends BlockEntityComponentHolder, @Nullable Direction, IItemHandler> CAPABILITY_PROVIDER = (holder, context) -> {
         var component = holder.getComponent(COMPONENT_TYPE);
         return component == null ? EmptyItemHandler.INSTANCE : component.getItemHandler();
     };
@@ -56,7 +54,7 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
     private final boolean saveToItem;
     private final Inventory inventory;
 
-    private InventoryBlockEntityComponent(ComponentHolder<BlockEntityComponent, BlockEntity> holder, Builder builder) {
+    private InventoryBlockEntityComponent(BlockEntityComponentHolder holder, Builder builder) {
         super(holder);
 
         saveToItem = builder.saveToItem;
@@ -134,15 +132,15 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
         return ItemHandlerHelper.calcRedstoneFromInventory(inventory);
     }
 
-    public static <TBlockEntity extends BlockEntity & ComponentHolder<BlockEntityComponent, BlockEntity>> void registerCapability(BlockEntityType<TBlockEntity> blockEntityType, RegisterCapabilitiesEvent event) {
+    public static <TBlockEntity extends BlockEntity & BlockEntityComponentHolder> void registerCapability(BlockEntityType<TBlockEntity> blockEntityType, RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, blockEntityType, capability());
     }
 
-    public static <TBlockEntity extends BlockEntity & ComponentHolder<BlockEntityComponent, BlockEntity>> ICapabilityProvider<TBlockEntity, @Nullable Direction, IItemHandler> capability() {
+    public static <TBlockEntity extends BlockEntity & BlockEntityComponentHolder> ICapabilityProvider<TBlockEntity, @Nullable Direction, IItemHandler> capability() {
         return (ICapabilityProvider<TBlockEntity, Direction, IItemHandler>) CAPABILITY_PROVIDER;
     }
 
-    public static final class Builder implements ComponentBuilder {
+    public static final class Builder {
         private int limit = Item.ABSOLUTE_MAX_STACK_SIZE;
         private final Int2ObjectMap<Consumer<SlotBuilder>> slots = new Int2ObjectOpenHashMap<>();
         private boolean saveToItem = false;

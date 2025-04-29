@@ -2,13 +2,11 @@ package dev.apexstudios.apexcore.lib.component.block.types;
 
 import com.google.common.collect.Sets;
 import dev.apexstudios.apexcore.core.ApexCore;
-import dev.apexstudios.apexcore.lib.component.ComponentBuilder;
 import dev.apexstudios.apexcore.lib.component.ComponentHelper;
-import dev.apexstudios.apexcore.lib.component.ComponentHolder;
-import dev.apexstudios.apexcore.lib.component.ComponentRegistrar;
-import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.BaseBlockComponent;
-import dev.apexstudios.apexcore.lib.component.block.BlockComponent;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentHolder;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentRegistrar;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentType;
 import dev.apexstudios.apexcore.lib.util.ApexUtil;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -19,7 +17,6 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
@@ -29,7 +26,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.Nullable;
 
 public final class FacingBlockComponent extends BaseBlockComponent {
-    public static final ComponentType<BlockComponent, FacingBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final BlockComponentType<FacingBlockComponent, Builder> COMPONENT_TYPE = BlockComponentType.register(
             ApexCore.identifier("facing"),
             Builder::new,
             FacingBlockComponent::new
@@ -40,7 +37,7 @@ public final class FacingBlockComponent extends BaseBlockComponent {
     private final Function<BlockPlaceContext, Direction> facingForPlacement;
     private final Set<Property<Direction>> compatibilities;
 
-    private FacingBlockComponent(ComponentHolder<BlockComponent, Block> holder, Builder builder) {
+    private FacingBlockComponent(BlockComponentHolder holder, Builder builder) {
         super(holder);
 
         property = EnumProperty.create("facing_component", Direction.class, builder.directions.toArray(Direction[]::new));
@@ -105,7 +102,7 @@ public final class FacingBlockComponent extends BaseBlockComponent {
         return blockState.rotate(mirror.getRotation(get(blockState)));
     }
 
-    public static void registerHorizontal(ComponentRegistrar<BlockComponent, Block> registrar, UnaryOperator<Builder> additional) {
+    public static void registerHorizontal(BlockComponentRegistrar registrar, UnaryOperator<Builder> additional) {
         registrar.register(COMPONENT_TYPE, builder -> additional.apply(builder
                 .allowing(Direction.Plane.HORIZONTAL)
                 .defaultFacing(Direction.NORTH)
@@ -114,11 +111,11 @@ public final class FacingBlockComponent extends BaseBlockComponent {
         ));
     }
 
-    public static void registerHorizontal(ComponentRegistrar<BlockComponent, Block> registrar) {
+    public static void registerHorizontal(BlockComponentRegistrar registrar) {
         registerHorizontal(registrar, UnaryOperator.identity());
     }
 
-    public static final class Builder implements ComponentBuilder {
+    public static final class Builder {
         private final Set<Direction> directions = EnumSet.noneOf(Direction.class);
         @Nullable private Direction defaultFacing = null;
         @Nullable private Function<BlockPlaceContext, Direction> facingForPlacement;

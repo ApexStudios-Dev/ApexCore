@@ -2,12 +2,10 @@ package dev.apexstudios.apexcore.lib.component.block.types;
 
 import dev.apexstudios.apexcore.core.ApexCore;
 import dev.apexstudios.apexcore.core.seat.SeatEntity;
-import dev.apexstudios.apexcore.lib.component.ComponentBuilder;
-import dev.apexstudios.apexcore.lib.component.ComponentHolder;
-import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.BaseBlockComponent;
-import dev.apexstudios.apexcore.lib.component.block.BlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponentHelper;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentHolder;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentType;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponentTypes;
 import dev.apexstudios.apexcore.lib.util.ApexTags;
 import java.util.function.BooleanSupplier;
@@ -32,7 +30,7 @@ import org.apache.commons.lang3.function.TriConsumer;
 import org.jetbrains.annotations.NotNull;
 
 public final class SeatBlockComponent extends BaseBlockComponent {
-    public static final ComponentType<BlockComponent, SeatBlockComponent, Block, ComponentBuilder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final BlockComponentType<SeatBlockComponent, Object> COMPONENT_TYPE = BlockComponentType.register(
             ApexCore.identifier("seat"),
             SeatBlockComponent::new
     );
@@ -43,7 +41,7 @@ public final class SeatBlockComponent extends BaseBlockComponent {
     public static final EntityCapability<Runnable, @NotNull CapabilityContext> UNSEATED_CAPABILITY = EntityCapability.create(ApexCore.identifier("unseated"), Runnable.class, CapabilityContext.class);
     public static final EntityCapability<BooleanSupplier, @NotNull CapabilityContext> MAY_SIT_CAPABILITY = EntityCapability.create(ApexCore.identifier("may_sit"), BooleanSupplier.class, CapabilityContext.class);
 
-    private SeatBlockComponent(ComponentHolder<BlockComponent, Block> holder) {
+    private SeatBlockComponent(BlockComponentHolder holder) {
         super(holder);
     }
 

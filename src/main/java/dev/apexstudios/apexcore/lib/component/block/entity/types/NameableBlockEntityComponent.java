@@ -1,11 +1,9 @@
 package dev.apexstudios.apexcore.lib.component.block.entity.types;
 
 import dev.apexstudios.apexcore.core.ApexCore;
-import dev.apexstudios.apexcore.lib.component.ComponentBuilder;
-import dev.apexstudios.apexcore.lib.component.ComponentHolder;
-import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.entity.BaseBlockEntityComponent;
-import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponent;
+import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponentHolder;
+import dev.apexstudios.apexcore.lib.component.block.entity.BlockEntityComponentType;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
@@ -20,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 public final class NameableBlockEntityComponent extends BaseBlockEntityComponent implements Nameable {
     public static final String NBT_CUSTOM_NAME = "CustomName";
 
-    public static final ComponentType<BlockEntityComponent, NameableBlockEntityComponent, BlockEntity, Builder> COMPONENT_TYPE = ComponentType.registerBlockEntity(
+    public static final BlockEntityComponentType<NameableBlockEntityComponent, Builder> COMPONENT_TYPE = BlockEntityComponentType.register(
             ApexCore.identifier("nameable"),
             Builder::new,
             NameableBlockEntityComponent::new
@@ -29,7 +27,7 @@ public final class NameableBlockEntityComponent extends BaseBlockEntityComponent
     @Nullable private final Component defaultName;
     @Nullable private Component customName = null;
 
-    private NameableBlockEntityComponent(ComponentHolder<BlockEntityComponent, BlockEntity> holder, Builder builder) {
+    private NameableBlockEntityComponent(BlockEntityComponentHolder holder, Builder builder) {
         super(holder);
 
         defaultName = builder.defaultName;
@@ -90,7 +88,7 @@ public final class NameableBlockEntityComponent extends BaseBlockEntityComponent
             tag.store(NBT_CUSTOM_NAME, ComponentSerialization.CODEC, customName);
     }
 
-    public static final class Builder implements ComponentBuilder {
+    public static final class Builder {
         @Nullable private Component defaultName = null;
 
         public Builder defaultName(Component defaultName) {

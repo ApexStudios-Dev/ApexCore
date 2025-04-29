@@ -2,12 +2,10 @@ package dev.apexstudios.apexcore.lib.component.block.types;
 
 import com.google.common.collect.Lists;
 import dev.apexstudios.apexcore.core.ApexCore;
-import dev.apexstudios.apexcore.lib.component.ComponentBuilder;
-import dev.apexstudios.apexcore.lib.component.ComponentHolder;
-import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.BaseBlockComponent;
-import dev.apexstudios.apexcore.lib.component.block.BlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponentHelper;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentHolder;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentType;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponentTypes;
 import dev.apexstudios.apexcore.lib.util.ApexUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -36,7 +34,7 @@ import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
 public final class MultiBlockComponent extends BaseBlockComponent {
-    public static final ComponentType<BlockComponent, MultiBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final BlockComponentType<MultiBlockComponent, Builder> COMPONENT_TYPE = BlockComponentType.register(
             ApexCore.identifier("multi_block"),
             Builder::new,
             MultiBlockComponent::new
@@ -50,14 +48,14 @@ public final class MultiBlockComponent extends BaseBlockComponent {
     private final IntegerProperty property;
     private final BiFunction<BlockState, Vector3ic, Vector3ic> rotationFunction;
 
-    private MultiBlockComponent(ComponentHolder<BlockComponent, Block> holder, Builder builder) {
+    private MultiBlockComponent(BlockComponentHolder holder, Builder builder) {
         super(holder);
 
         localPositions = List.copyOf(builder.positions);
 
         property = PROPERTIES.computeIfAbsent(
                 localPositions.size(),
-                size -> IntegerProperty.create("multi_block_index", MultiBlockComponent.ORIGIN_INDEX, size - 1)
+                size -> IntegerProperty.create("multi_block_index", ORIGIN_INDEX, size - 1)
         );
 
         rotationFunction = Objects.requireNonNullElseGet(builder.rotationFunction, () -> (blockState, pos) -> pos);
@@ -124,7 +122,7 @@ public final class MultiBlockComponent extends BaseBlockComponent {
         var index = indexOf(placementBlockState);
         var origin = getOrigin(pos, placementBlockState);
 
-        for(var i = MultiBlockComponent.ORIGIN_INDEX; i < localPositions.size(); i++){
+        for(var i = ORIGIN_INDEX; i < localPositions.size(); i++){
             if(i == index)
                 continue;
 
@@ -145,7 +143,7 @@ public final class MultiBlockComponent extends BaseBlockComponent {
         var index = indexOf(blockState);
         var origin = getOrigin(pos, blockState);
 
-        for(var i = MultiBlockComponent.ORIGIN_INDEX; i < localPositions.size(); i++){
+        for(var i = ORIGIN_INDEX; i < localPositions.size(); i++){
             if(i == index)
                 continue;
 
@@ -160,7 +158,7 @@ public final class MultiBlockComponent extends BaseBlockComponent {
         var index = indexOf(blockState);
         var origin = getOrigin(pos, blockState);
 
-        for(var i = MultiBlockComponent.ORIGIN_INDEX; i < localPositions.size(); i++){
+        for(var i = ORIGIN_INDEX; i < localPositions.size(); i++){
             if(i == index)
                 continue;
 
@@ -173,9 +171,9 @@ public final class MultiBlockComponent extends BaseBlockComponent {
     }
 
     public static BlockPos getBlockEntityPos(BlockPos pos, BlockState blockState) {
-        var multiBlock = BlockComponentHelper.getComponent(blockState, BlockComponentTypes.MULTI_BLOCK);
+        var multiBlock = BlockComponentHelper.getComponent(blockState, COMPONENT_TYPE);
 
-        if(multiBlock != null && multiBlock.indexOf(blockState) != MultiBlockComponent.ORIGIN_INDEX)
+        if(multiBlock != null && multiBlock.indexOf(blockState) != ORIGIN_INDEX)
             return multiBlock.getOrigin(pos, blockState);
 
         return pos;
@@ -191,7 +189,7 @@ public final class MultiBlockComponent extends BaseBlockComponent {
         return shape.move(-offset.getX(), -offset.getY(), -offset.getZ());
     }
 
-    public static final class Builder implements ComponentBuilder {
+    public static final class Builder {
         private final List<Vector3ic> positions = Lists.newArrayList();
         @Nullable private BiFunction<BlockState, Vector3ic, Vector3ic> rotationFunction = null;
 

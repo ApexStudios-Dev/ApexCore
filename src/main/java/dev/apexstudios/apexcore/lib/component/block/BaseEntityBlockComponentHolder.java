@@ -2,8 +2,6 @@ package dev.apexstudios.apexcore.lib.component.block;
 
 import com.google.errorprone.annotations.ForOverride;
 import dev.apexstudios.apexcore.lib.block.BaseEntityBlock;
-import dev.apexstudios.apexcore.lib.component.ComponentHolder;
-import dev.apexstudios.apexcore.lib.component.ComponentRegistrar;
 import dev.apexstudios.apexcore.lib.component.ComponentType;
 import java.util.Collection;
 import java.util.Map;
@@ -48,8 +46,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class BaseEntityBlockComponentHolder extends BaseEntityBlock implements ComponentHolder<BlockComponent, Block>, BucketPickup, LiquidBlockContainer {
-    private final Map<ComponentType<BlockComponent, ?, Block, ?>, BlockComponent> components = BlockComponentHelper.registerComponents(this, BaseEntityBlockComponentHolder::registerComponents);
+public abstract class BaseEntityBlockComponentHolder extends BaseEntityBlock implements BlockComponentHolder, BucketPickup, LiquidBlockContainer {
+    private final Map<BlockComponentType<? extends BlockComponent, ?>, BlockComponent> components = BlockComponentHelper.registerComponents(this, this::registerComponents);
 
     protected BaseEntityBlockComponentHolder(Properties properties) {
         super(properties);
@@ -67,38 +65,59 @@ public abstract class BaseEntityBlockComponentHolder extends BaseEntityBlock imp
 
     // region: ComponentHolder
     @ForOverride
-    protected void registerComponents(ComponentRegistrar<BlockComponent, Block> registrar) {
+    protected void registerComponents(BlockComponentRegistrar registrar) {
 
     }
 
     @Nullable
     @Override
-    public final <TComponent extends BlockComponent> TComponent getComponent(ComponentType<BlockComponent, TComponent, Block, ?> componentType) {
+    public final <TComponent extends BlockComponent> TComponent getComponent(BlockComponentType<TComponent, ?> componentType) {
         return (TComponent) components.get(componentType);
     }
 
     @Override
-    public final <TComponent extends BlockComponent> Optional<TComponent> findComponent(ComponentType<BlockComponent, TComponent, Block, ?> componentType) {
-        return ComponentHolder.super.findComponent(componentType);
+    public final <TComponent extends BlockComponent> Optional<TComponent> findComponent(BlockComponentType<TComponent, ?> componentType) {
+        return BlockComponentHolder.super.findComponent(componentType);
     }
 
     @Override
-    public final <TComponent extends BlockComponent> TComponent getComponentOrThrow(ComponentType<BlockComponent, TComponent, Block, ?> componentType) {
-        return ComponentHolder.super.getComponentOrThrow(componentType);
+    public final <TComponent extends BlockComponent> TComponent getComponentOrThrow(BlockComponentType<TComponent, ?> componentType) {
+        return BlockComponentHolder.super.getComponentOrThrow(componentType);
     }
 
     @Override
-    public final <TComponent extends BlockComponent> void runForComponent(ComponentType<BlockComponent, TComponent, Block, ?> componentType, Consumer<TComponent> action) {
-        ComponentHolder.super.runForComponent(componentType, action);
+    public final <TComponent extends BlockComponent> void runForComponent(BlockComponentType<TComponent, ?> componentType, Consumer<TComponent> action) {
+        BlockComponentHolder.super.runForComponent(componentType, action);
+    }
+
+    @Nullable
+    @Override
+    public final <TComponent extends BlockComponent> TComponent getComponent(ComponentType<BlockComponent, TComponent, Block, BlockComponentHolder, BlockComponentType<? extends BlockComponent, ?>, ?> componentType) {
+        return BlockComponentHolder.super.getComponent(componentType);
     }
 
     @Override
-    public final boolean hasComponent(ComponentType<BlockComponent, ?, Block, ?> componentType) {
-        return ComponentHolder.super.hasComponent(componentType);
+    public final <TComponent extends BlockComponent> Optional<TComponent> findComponent(ComponentType<BlockComponent, TComponent, Block, BlockComponentHolder, BlockComponentType<? extends BlockComponent, ?>, ?> componentType) {
+        return BlockComponentHolder.super.findComponent(componentType);
     }
 
     @Override
-    public final Set<ComponentType<BlockComponent, ?, Block, ?>> getComponentTypes() {
+    public final <TComponent extends BlockComponent> TComponent getComponentOrThrow(ComponentType<BlockComponent, TComponent, Block, BlockComponentHolder, BlockComponentType<? extends BlockComponent, ?>, ?> componentType) {
+        return BlockComponentHolder.super.getComponentOrThrow(componentType);
+    }
+
+    @Override
+    public final <TComponent extends BlockComponent> void runForComponent(ComponentType<BlockComponent, TComponent, Block, BlockComponentHolder, BlockComponentType<? extends BlockComponent, ?>, ?> componentType, Consumer<TComponent> action) {
+        BlockComponentHolder.super.runForComponent(componentType, action);
+    }
+
+    @Override
+    public final boolean hasComponent(BlockComponentType<? extends BlockComponent, ?> componentType) {
+        return components.containsKey(componentType);
+    }
+
+    @Override
+    public final Set<BlockComponentType<? extends BlockComponent, ?>> getComponentTypes() {
         return components.keySet();
     }
 

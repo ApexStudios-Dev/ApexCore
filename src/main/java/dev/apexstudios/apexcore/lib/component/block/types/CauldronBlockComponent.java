@@ -1,13 +1,11 @@
 package dev.apexstudios.apexcore.lib.component.block.types;
 
 import dev.apexstudios.apexcore.core.ApexCore;
-import dev.apexstudios.apexcore.lib.component.ComponentHolder;
-import dev.apexstudios.apexcore.lib.component.ComponentType;
-import dev.apexstudios.apexcore.lib.component.block.BlockComponent;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentHolder;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CauldronBlock;
 import net.minecraft.world.level.block.LevelEvent;
@@ -17,13 +15,13 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
 public final class CauldronBlockComponent extends BaseCauldronBlockComponent<BaseCauldronBlockComponent.SimpleBuilder> {
-    public static final ComponentType<BlockComponent, CauldronBlockComponent, Block, SimpleBuilder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final BlockComponentType<CauldronBlockComponent, BaseCauldronBlockComponent.SimpleBuilder> COMPONENT_TYPE = BlockComponentType.register(
             ApexCore.identifier("cauldron"),
             BaseCauldronBlockComponent.SimpleBuilder::new,
             CauldronBlockComponent::new
     );
 
-    private CauldronBlockComponent(ComponentHolder<BlockComponent, Block> holder, SimpleBuilder builder) {
+    private CauldronBlockComponent(BlockComponentHolder holder, SimpleBuilder builder) {
         super(holder, builder);
     }
 

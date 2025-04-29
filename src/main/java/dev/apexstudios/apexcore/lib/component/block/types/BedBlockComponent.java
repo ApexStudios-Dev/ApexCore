@@ -4,11 +4,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import dev.apexstudios.apexcore.core.ApexCore;
-import dev.apexstudios.apexcore.lib.component.ComponentBuilder;
-import dev.apexstudios.apexcore.lib.component.ComponentHolder;
-import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.BaseBlockComponent;
-import dev.apexstudios.apexcore.lib.component.block.BlockComponent;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentHolder;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentType;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponentTypes;
 import dev.apexstudios.apexcore.lib.util.ApexUtil;
 import java.util.Optional;
@@ -39,7 +37,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
 // Requires MultiBlock component
 public final class BedBlockComponent extends BaseBlockComponent {
-    public static final ComponentType<BlockComponent, BedBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final BlockComponentType<BedBlockComponent, Builder> COMPONENT_TYPE = BlockComponentType.register(
             ApexCore.identifier("bed"),
             Builder::new,
             BedBlockComponent::new
@@ -49,7 +47,7 @@ public final class BedBlockComponent extends BaseBlockComponent {
 
     private final BiMap<Integer, Integer> indices;
 
-    private BedBlockComponent(ComponentHolder<BlockComponent, Block> holder, Builder builder) {
+    private BedBlockComponent(BlockComponentHolder holder, Builder builder) {
         super(holder);
 
         if(builder.indices.isEmpty())
@@ -147,15 +145,15 @@ public final class BedBlockComponent extends BaseBlockComponent {
         return true;
     }
 
-    public static <TBlock extends Block & ComponentHolder<BlockComponent, Block>> void registerPoi(IEventBus modBus, Supplier<TBlock> blockSupplier) {
+    public static void registerPoi(IEventBus modBus, Supplier<? extends BlockComponentHolder> blockSupplier) {
         modBus.addListener(FMLCommonSetupEvent.class, event -> event.enqueueWork(() -> registerPoi(blockSupplier.get())));
     }
 
-    public static <TBlock extends Block & ComponentHolder<BlockComponent, Block>> void registerPoi(TBlock block) {
-        block.runForComponent(COMPONENT_TYPE, component -> ApexUtil.registerPoiBlockStates(PoiTypes.HOME, block, component::isHead));
+    public static void registerPoi(BlockComponentHolder block) {
+        block.runForComponent(COMPONENT_TYPE, component -> ApexUtil.registerPoiBlockStates(PoiTypes.HOME, block.unwrap(), component::isHead));
     }
 
-    public static final class Builder implements ComponentBuilder {
+    public static final class Builder {
         private final BiMap<Integer, Integer> indices = HashBiMap.create();
 
         public Builder indices(int head, int foot) {

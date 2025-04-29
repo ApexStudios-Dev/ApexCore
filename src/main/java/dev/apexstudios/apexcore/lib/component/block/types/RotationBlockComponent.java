@@ -1,18 +1,15 @@
 package dev.apexstudios.apexcore.lib.component.block.types;
 
 import dev.apexstudios.apexcore.core.ApexCore;
-import dev.apexstudios.apexcore.lib.component.ComponentBuilder;
-import dev.apexstudios.apexcore.lib.component.ComponentHolder;
-import dev.apexstudios.apexcore.lib.component.ComponentRegistrar;
-import dev.apexstudios.apexcore.lib.component.ComponentType;
 import dev.apexstudios.apexcore.lib.component.block.BaseBlockComponent;
-import dev.apexstudios.apexcore.lib.component.block.BlockComponent;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentHolder;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentRegistrar;
+import dev.apexstudios.apexcore.lib.component.block.BlockComponentType;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
 import java.util.function.UnaryOperator;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,7 +19,7 @@ import net.minecraft.world.level.block.state.properties.RotationSegment;
 import org.jetbrains.annotations.Nullable;
 
 public final class RotationBlockComponent extends BaseBlockComponent {
-    public static final ComponentType<BlockComponent, RotationBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
+    public static final BlockComponentType<RotationBlockComponent, Builder> COMPONENT_TYPE = BlockComponentType.register(
             ApexCore.identifier("rotation"),
             Builder::new,
             RotationBlockComponent::new
@@ -34,7 +31,7 @@ public final class RotationBlockComponent extends BaseBlockComponent {
     private final ToIntFunction<BlockPlaceContext> segmentForPlacement;
     private final IntegerProperty property;
 
-    private RotationBlockComponent(ComponentHolder<BlockComponent, Block> holder, Builder builder) {
+    private RotationBlockComponent(BlockComponentHolder holder, Builder builder) {
         super(holder);
 
         if(builder.segments <= 0)
@@ -91,18 +88,18 @@ public final class RotationBlockComponent extends BaseBlockComponent {
         return set(blockState, mirror.mirror(get(blockState), segments));
     }
 
-    public static void register16(ComponentRegistrar<BlockComponent, Block> registrar, UnaryOperator<Builder> additional) {
+    public static void register16(BlockComponentRegistrar registrar, UnaryOperator<Builder> additional) {
         registrar.register(COMPONENT_TYPE, builder -> additional.apply(builder
                 .segments(16)
                 .facingForPlacement(context -> RotationSegment.convertToSegment(context.getRotation() + 180F))
         ));
     }
 
-    public static void register16(ComponentRegistrar<BlockComponent, Block> registrar) {
+    public static void register16(BlockComponentRegistrar registrar) {
         register16(registrar, UnaryOperator.identity());
     }
 
-    public static final class Builder implements ComponentBuilder {
+    public static final class Builder {
         private int segments = -1;
         @Nullable private ToIntFunction<BlockPlaceContext> segmentForPlacement;
 
