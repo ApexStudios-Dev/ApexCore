@@ -82,6 +82,20 @@ public final class BedBlockComponent extends BaseBlockComponent {
         consumer.accept(otherPos, otherBlockState);
     }
 
+    public void runForHead(BlockPos pos, BlockState blockState, BiConsumer<BlockPos, BlockState> consumer) {
+        if(isHead(blockState))
+            consumer.accept(pos, blockState);
+        else
+            runForOpposite(pos, blockState, consumer);
+    }
+
+    public void runForFoot(BlockPos pos, BlockState blockState, BiConsumer<BlockPos, BlockState> consumer) {
+        if(!isHead(blockState))
+            consumer.accept(pos, blockState);
+        else
+            runForOpposite(pos, blockState, consumer);
+    }
+
     public void setOccupied(Level level, BlockPos pos, BlockState blockState, boolean occupied) {
         level.setBlock(pos, blockState.setValue(OCCUPIED, occupied), Block.UPDATE_ALL);
         runForOpposite(pos, blockState, (oppositePos, oppositeBlockState) -> level.setBlock(oppositePos, oppositeBlockState.setValue(OCCUPIED, occupied), Block.UPDATE_ALL));

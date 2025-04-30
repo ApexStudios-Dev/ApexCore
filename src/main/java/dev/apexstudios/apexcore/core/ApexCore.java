@@ -12,11 +12,13 @@ import dev.apexstudios.apexcore.lib.tooltip.TooltipPosition;
 import dev.apexstudios.apexcore.lib.util.ApexPackSources;
 import dev.apexstudios.apexcore.lib.util.ApexTags;
 import java.util.concurrent.atomic.AtomicReference;
+import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LecternBlock;
@@ -24,6 +26,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent;
 
 @Mod(ApexCore.ID)
 public final class ApexCore {
@@ -78,6 +81,39 @@ public final class ApexCore {
                 if (customData.contains("Book"))
                     event.withProperty(LecternBlock.HAS_BOOK, () -> true);
             }
+        });
+
+        NeoForge.EVENT_BUS.addListener(CanPlayerSleepEvent.class, event -> {
+            var blockState = event.getState();
+            var componentHolder = BlockComponentHelper.asHolder(blockState);
+
+            if(componentHolder == null)
+                return;
+
+            var bedComponent = componentHolder.getComponent(BlockComponentTypes.BED);
+
+            if(bedComponent == null)
+                return;
+
+            var vanillaProblem = event.getVanillaProblem();
+            var moddedProblem = event.getProblem();
+            var actualProblem = moddedProblem == null ? vanillaProblem : moddedProblem;
+
+            if(moddedProblem != null && actualProblem != Player.BedSleepingProblem.TOO_FAR_AWAY && actualProblem != Player.BedSleepingProblem.OBSTRUCTED)
+                return;
+
+            event.setProblem(null);
+
+            bedComponent.runForHead(event.getPos(), blockState, (headPos, headBlockState) -> {
+                var entity = event.getEntity();
+                var facingComponent = componentHolder.getComponent(BlockComponentTypes.FACING);
+                var facing = facingComponent == null ? Direction.NORTH : facingComponent.get(headBlockState).getOpposite();
+
+                if(!entity.bedInRange(headPos, facing))
+                    event.setProblem(Player.BedSleepingProblem.TOO_FAR_AWAY);
+                else if(entity.bedBlocked(headPos, facing))
+                    event.setProblem(Player.BedSleepingProblem.OBSTRUCTED);
+            });
         });
     }
 
