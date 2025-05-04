@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -27,7 +26,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
@@ -38,12 +36,10 @@ import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
-import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
@@ -125,13 +121,6 @@ public abstract class BaseEntityBlockComponentHolder extends BaseEntityBlock imp
 
     @MustBeInvokedByOverriders
     @Override
-    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack stack) {
-        BlockComponentHelper.playerDestroy(this, level, player, pos, blockState, stack);
-        super.playerDestroy(level, player, pos, blockState, blockEntity, stack);
-    }
-
-    @MustBeInvokedByOverriders
-    @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState blockState, @Nullable LivingEntity placer, ItemStack stack) {
         BlockComponentHelper.setPlacedBy(this, level, pos, blockState, placer, stack);
         super.setPlacedBy(level, pos, blockState, placer, stack);
@@ -139,23 +128,9 @@ public abstract class BaseEntityBlockComponentHolder extends BaseEntityBlock imp
 
     @MustBeInvokedByOverriders
     @Override
-    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState blockState, Player player) {
-        var result = BlockComponentHelper.playerWillDestroy(this, level, pos, blockState, player);
-        return super.playerWillDestroy(level, pos, result, player);
-    }
-
-    @MustBeInvokedByOverriders
-    @Override
     public BlockState updateShape(BlockState blockState, LevelReader level, ScheduledTickAccess tickAccess, BlockPos pos, Direction facing, BlockPos neighborPos, BlockState neighborBlockState, RandomSource random) {
         var result = BlockComponentHelper.updateShape(this, blockState, level, tickAccess, pos, facing, neighborPos, neighborBlockState, random);
         return super.updateShape(result, level, tickAccess, pos, facing, neighborPos, neighborBlockState, random);
-    }
-
-    @MustBeInvokedByOverriders
-    @Override
-    public void neighborChanged(BlockState blockState, Level level, BlockPos pos, Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {
-        BlockComponentHelper.neighborChanged(this, blockState, level, pos, neighborBlock, orientation, movedByPiston);
-        super.neighborChanged(blockState, level, pos, neighborBlock, orientation, movedByPiston);
     }
 
     @MustBeInvokedByOverriders
@@ -300,13 +275,6 @@ public abstract class BaseEntityBlockComponentHolder extends BaseEntityBlock imp
     public boolean placeLiquid(LevelAccessor level, BlockPos pos, BlockState blockState, FluidState fluidState) {
         var component = getComponent(BlockComponentTypes.FLUID_LOGGED);
         return component != null && component.placeLiquid(level, pos, blockState, fluidState);
-    }
-
-    @MustBeInvokedByOverriders
-    @Override
-    protected void onExplosionHit(BlockState blockState, ServerLevel level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> dropConsumer) {
-        BlockComponentHelper.onExplosionHit(this, blockState, level, pos, explosion, dropConsumer);
-        super.onExplosionHit(blockState, level, pos, explosion, dropConsumer);
     }
 
     @MustBeInvokedByOverriders
