@@ -23,8 +23,10 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.fluids.CauldronFluidContent;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+@ApiStatus.ScheduledForRemoval
 public abstract class BaseCauldronBlockComponent<TBuilder extends BaseCauldronBlockComponent.Builder<TBuilder>> extends BaseBlockComponent {
     private final CauldronInteraction.InteractionMap interactions;
 

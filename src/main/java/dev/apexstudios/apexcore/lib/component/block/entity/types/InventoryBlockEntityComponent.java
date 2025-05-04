@@ -36,9 +36,11 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
 import org.apache.commons.lang3.function.Consumers;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 
+@ApiStatus.ScheduledForRemoval
 public final class InventoryBlockEntityComponent extends BaseBlockEntityComponent {
     public static final ComponentType<BlockEntityComponent, InventoryBlockEntityComponent, BlockEntity, Builder> COMPONENT_TYPE = ComponentType.registerBlockEntity(
             ApexCore.identifier("inventory"),

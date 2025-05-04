@@ -29,8 +29,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.capabilities.EntityCapability;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import org.apache.commons.lang3.function.TriConsumer;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+@ApiStatus.ScheduledForRemoval
 public final class SeatBlockComponent extends BaseBlockComponent {
     public static final ComponentType<BlockComponent, SeatBlockComponent, Block, ComponentBuilder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("seat"),

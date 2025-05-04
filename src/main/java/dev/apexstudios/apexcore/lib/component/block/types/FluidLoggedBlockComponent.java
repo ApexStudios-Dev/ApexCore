@@ -38,8 +38,10 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+@ApiStatus.ScheduledForRemoval
 public final class FluidLoggedBlockComponent extends BaseBlockComponent implements BucketPickup, LiquidBlockContainer {
     public static final ComponentType<BlockComponent, FluidLoggedBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("fluid_logged"),

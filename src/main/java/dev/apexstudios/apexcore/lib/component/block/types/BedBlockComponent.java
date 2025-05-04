@@ -36,8 +36,10 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 // Requires MultiBlock component
+@ApiStatus.ScheduledForRemoval
 public final class BedBlockComponent extends BaseBlockComponent {
     public static final ComponentType<BlockComponent, BedBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("bed"),

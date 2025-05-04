@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.ScheduledForRemoval
 @ApiStatus.NonExtendable
 public interface ComponentType<TBase extends Component<TBase, TObj>, TComponent extends TBase, TObj, TBuilder extends ComponentBuilder> {
     ResourceLocation registryName();

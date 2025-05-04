@@ -23,8 +23,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+@ApiStatus.ScheduledForRemoval
 public interface BlockComponent extends Component<BlockComponent, Block>, ComponentHolder<BlockComponent, Block>, BlockEvents {
     @ForOverride
     default BlockState registerDefaultBlockState(BlockState blockState) {

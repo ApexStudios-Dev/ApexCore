@@ -21,7 +21,9 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.ScheduledForRemoval
 public final class LayeredCauldronBlockComponent extends BaseCauldronBlockComponent<LayeredCauldronBlockComponent.Builder> {
     public static final ComponentType<BlockComponent, LayeredCauldronBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("layered_cauldron"),

@@ -44,6 +44,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+@ApiStatus.ScheduledForRemoval
 public interface BlockComponentHelper {
     // region: Callbacks
     @ApiStatus.Internal

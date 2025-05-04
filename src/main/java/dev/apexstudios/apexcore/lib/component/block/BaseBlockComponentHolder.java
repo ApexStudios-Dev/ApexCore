@@ -44,9 +44,11 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 
+@ApiStatus.ScheduledForRemoval
 public class BaseBlockComponentHolder extends Block implements ComponentHolder<BlockComponent, Block>, BucketPickup, LiquidBlockContainer {
     private final Map<ComponentType<BlockComponent, ?, Block, ?>, BlockComponent> components = BlockComponentHelper.registerComponents(this, BaseBlockComponentHolder::registerComponents);
 

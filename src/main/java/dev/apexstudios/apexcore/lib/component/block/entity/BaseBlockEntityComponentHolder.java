@@ -48,6 +48,7 @@ import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 
+@ApiStatus.ScheduledForRemoval
 public class BaseBlockEntityComponentHolder extends BaseBlockEntity implements ComponentHolder<BlockEntityComponent, BlockEntity>, Nameable, MenuProvider {
     private final Map<ComponentType<BlockEntityComponent, ?, BlockEntity, ?>, BlockEntityComponent> components = ComponentHelper.registerComponents(this, BaseBlockEntityComponentHolder::registerComponents);
 
