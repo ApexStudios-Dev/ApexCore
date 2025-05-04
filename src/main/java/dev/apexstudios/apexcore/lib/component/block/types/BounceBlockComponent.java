@@ -10,7 +10,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.ScheduledForRemoval
 public final class BounceBlockComponent extends BaseBlockComponent {
     public static final ComponentType<BlockComponent, BounceBlockComponent, Block, ComponentBuilder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("bounce"),

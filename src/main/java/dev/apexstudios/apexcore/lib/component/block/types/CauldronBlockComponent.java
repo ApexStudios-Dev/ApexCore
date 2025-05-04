@@ -15,7 +15,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.ScheduledForRemoval
 public final class CauldronBlockComponent extends BaseCauldronBlockComponent<BaseCauldronBlockComponent.SimpleBuilder> {
     public static final ComponentType<BlockComponent, CauldronBlockComponent, Block, SimpleBuilder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("cauldron"),

@@ -9,6 +9,7 @@ import dev.apexstudios.apexcore.lib.component.block.entity.types.NameableBlockEn
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.ScheduledForRemoval
 public interface BlockEntityComponentTypes {
     ComponentType<BlockEntityComponent, NameableBlockEntityComponent, BlockEntity, NameableBlockEntityComponent.Builder> NAMEABLE = NameableBlockEntityComponent.COMPONENT_TYPE;
     ComponentType<BlockEntityComponent, InventoryBlockEntityComponent, BlockEntity, InventoryBlockEntityComponent.Builder> INVENTORY = InventoryBlockEntityComponent.COMPONENT_TYPE;

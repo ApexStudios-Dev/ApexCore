@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 // Provided as an example implementation for ComponentHolder
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 //
 // See BaseBlockComponentHolder & BaseEntityBlockComponentHolder for Block ComponentHolder implementations
 // See BaseBlockEntityComponentHolder for BlockEntity ComponentHolder implementation
+@ApiStatus.ScheduledForRemoval
 public abstract class BaseComponentHolder<TBase extends Component<TBase, TObj>, TObj> implements ComponentHolder<TBase, TObj> {
     private final Map<ComponentType<TBase, ?, TObj, ?>, TBase> components = ComponentHelper.registerComponents(this, BaseComponentHolder::registerComponents);
 

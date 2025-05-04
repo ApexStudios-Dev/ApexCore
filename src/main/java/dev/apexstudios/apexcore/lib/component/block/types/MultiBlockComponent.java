@@ -31,10 +31,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
+@ApiStatus.ScheduledForRemoval
 public final class MultiBlockComponent extends BaseBlockComponent {
     public static final ComponentType<BlockComponent, MultiBlockComponent, Block, Builder> COMPONENT_TYPE = ComponentType.registerBlock(
             ApexCore.identifier("multi_block"),

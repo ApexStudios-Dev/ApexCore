@@ -4,8 +4,10 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+@ApiStatus.ScheduledForRemoval
 public class BaseComponent<TBase extends Component<TBase, TObj>, TObj> implements Component<TBase, TObj> {
     protected final ComponentHolder<TBase, TObj> holder;
 

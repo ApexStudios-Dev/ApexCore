@@ -16,6 +16,7 @@ import dev.apexstudios.apexcore.lib.component.block.types.SeatBlockComponent;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.ScheduledForRemoval
 public interface BlockComponentTypes {
     ComponentType<BlockComponent, CauldronBlockComponent, Block, BaseCauldronBlockComponent.SimpleBuilder> CAULDRON = CauldronBlockComponent.COMPONENT_TYPE;
     ComponentType<BlockComponent, LayeredCauldronBlockComponent, Block, LayeredCauldronBlockComponent.Builder> LAYERED_CAULDRON = LayeredCauldronBlockComponent.COMPONENT_TYPE;

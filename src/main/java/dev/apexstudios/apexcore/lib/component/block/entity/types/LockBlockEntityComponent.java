@@ -18,7 +18,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.ScheduledForRemoval
 public final class LockBlockEntityComponent extends BaseBlockEntityComponent {
     public static final ComponentType<BlockEntityComponent, LockBlockEntityComponent, BlockEntity, ComponentBuilder> COMPONENT_TYPE = ComponentType.registerBlockEntity(
             ApexCore.identifier("lock"),

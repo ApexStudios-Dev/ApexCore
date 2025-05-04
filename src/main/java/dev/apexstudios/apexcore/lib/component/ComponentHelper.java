@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.ScheduledForRemoval
 public interface ComponentHelper {
     @ApiStatus.Internal
     static <TBase extends Component<TBase, TObj>, THolder extends ComponentHolder<TBase, TObj>, TObj> Map<ComponentType<TBase, ?, TObj, ?>, TBase> registerComponents(THolder holder, BiConsumer<THolder, ComponentRegistrar<TBase, TObj>> consumer) {

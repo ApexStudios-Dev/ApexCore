@@ -15,8 +15,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+@ApiStatus.ScheduledForRemoval
 public final class NameableBlockEntityComponent extends BaseBlockEntityComponent implements Nameable {
     public static final String NBT_CUSTOM_NAME = "CustomName";
 
