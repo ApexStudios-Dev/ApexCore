@@ -13,8 +13,7 @@
         "LevelAccessor",
         "LevelMixin",
         "LootTableAccessor",
-        "StateDefinitionBuilderAccessor",
-        "StructureTemplateMixin"
+        "StateDefinitionBuilderAccessor"
     ],
     "client": [],
     "server": [],

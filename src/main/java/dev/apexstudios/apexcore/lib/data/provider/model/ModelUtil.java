@@ -1,6 +1,7 @@
 package dev.apexstudios.apexcore.lib.data.provider.model;
 
 import com.mojang.math.Quadrant;
+import dev.apexstudios.apexcore.lib.block.FacingBlock;
 import dev.apexstudios.apexcore.lib.component.ComponentHolder;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponent;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponentTypes;
@@ -23,6 +24,15 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.properties.Property;
 
 public interface ModelUtil {
+    static <TBlock extends Block & FacingBlock> MultiVariantGenerator facingBlock(TBlock block, Function<Property<Direction>, PropertyDispatch<VariantMutator>> facingDispatchFactory) {
+        return MultiVariantGenerator.dispatch(block, BlockModelGenerators.plainVariant(ModelLocationUtils.getModelLocation(block)))
+                .with(facingDispatchFactory.apply(block.facingProperty()));
+    }
+
+    static <TBlock extends Block & FacingBlock> MultiVariantGenerator facingBlock(TBlock block) {
+        return facingBlock(block, ModelUtil::createHorizontalFacingDispatch);
+    }
+
     static void horizontalFacingBlock(Block block, Property<Direction> property, BlockModelGenerators blockModels) {
         blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(block, BlockModelGenerators.plainVariant(ModelLocationUtils.getModelLocation(block)))
                 .with(createHorizontalFacingDispatch(property))
@@ -42,7 +52,20 @@ public interface ModelUtil {
                 .select(Direction.NORTH, BlockModelGenerators.NOP);
     }
 
-    static <TBlock extends Block & ComponentHolder<BlockComponent, Block>> PropertyDispatch<VariantMutator> createHorizontalFacingDispatch(TBlock block) {
+    static <TBlock extends Block & FacingBlock> PropertyDispatch<VariantMutator> createFacingDispatch(TBlock block, Function<Direction, VariantMutator> facingMutator) {
+        return PropertyDispatch.modify(block.facingProperty()).generate(facingMutator);
+    }
+
+    static <TBlock extends Block & FacingBlock> PropertyDispatch<VariantMutator> createHorizontalFacingDispatch(TBlock block) {
+        return createFacingDispatch(block, facing -> switch (facing) {
+            case EAST -> BlockModelGenerators.Y_ROT_90;
+            case SOUTH -> BlockModelGenerators.Y_ROT_180;
+            case WEST -> BlockModelGenerators.Y_ROT_270;
+            default -> BlockModelGenerators.NOP;
+        });
+    }
+
+    static <TBlock extends Block & ComponentHolder<BlockComponent, Block>> PropertyDispatch<VariantMutator> createHorizontalFacingDispatchLegacy(TBlock block) {
         return createHorizontalFacingDispatch(block.getComponentOrThrow(BlockComponentTypes.FACING).getProperty());
     }
 
@@ -54,7 +77,7 @@ public interface ModelUtil {
     static <TBlock extends Block & ComponentHolder<BlockComponent, Block>> void multiBlockModel(TBlock block, BlockModelGenerators blockModels, IntFunction<ResourceLocation> modelGetter) {
         blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(block)
                 .with(createMultiBlockDispatch(block, modelGetter))
-                .with(createHorizontalFacingDispatch(block))
+                .with(createHorizontalFacingDispatchLegacy(block))
         );
     }
 
@@ -70,7 +93,7 @@ public interface ModelUtil {
     static <TBlock extends Block & ComponentHolder<BlockComponent, Block>, TValue extends Comparable<TValue>> void facingPropertyModel(TBlock block, BlockModelGenerators blockModels, Function<TBlock, Property<TValue>> propertyGetter, Function<TValue, ResourceLocation> modelGetter) {
         blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(block)
                 .with(PropertyDispatch.initial(propertyGetter.apply(block)).generate(value -> BlockModelGenerators.plainVariant(modelGetter.apply(value))))
-                .with(createHorizontalFacingDispatch(block))
+                .with(createHorizontalFacingDispatchLegacy(block))
         );
     }
 
