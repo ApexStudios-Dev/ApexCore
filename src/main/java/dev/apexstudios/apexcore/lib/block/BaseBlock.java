@@ -7,7 +7,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -16,6 +20,7 @@ import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.FluidState;
@@ -25,7 +30,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class BaseBlock extends BaseEntityBlock {
+public class BaseBlock extends BaseEntityBlock {
     public BaseBlock(Properties properties) {
         super(properties);
 
@@ -35,6 +40,10 @@ public abstract class BaseBlock extends BaseEntityBlock {
             defaultBlockState = defaultBlockState.setValue(facing.facingProperty(), facing.defaultFacing());
         if(this instanceof FluidLoggedBlock fluidLogged)
             defaultBlockState = defaultBlockState.setValue(fluidLogged.fluidLoggedProperty(), false);
+        if(this instanceof MultiBlock multiBlock)
+            defaultBlockState = defaultBlockState.setValue(multiBlock.multiBlockPattern().property(), 0);
+        if(this instanceof SeatBlock seat)
+            defaultBlockState = defaultBlockState.setValue(seat.seatOccupiedProperty(), false);
 
         registerDefaultState(defaultBlockState);
     }
@@ -47,6 +56,10 @@ public abstract class BaseBlock extends BaseEntityBlock {
             builder.add(facing.facingProperty());
         if(this instanceof FluidLoggedBlock fluidLogged)
             builder.add(fluidLogged.fluidLoggedProperty());
+        if(this instanceof MultiBlock multiBlock)
+            builder.add(multiBlock.multiBlockPattern().property());
+        if(this instanceof SeatBlock seat)
+            builder.add(seat.seatOccupiedProperty());
     }
 
     @Nullable
@@ -58,6 +71,8 @@ public abstract class BaseBlock extends BaseEntityBlock {
             placementBlockState = placementBlockState.setValue(facing.facingProperty(), facing.facingForPlacement(context));
         if(this instanceof FluidLoggedBlock fluidLogged)
             placementBlockState = placementBlockState.setValue(fluidLogged.fluidLoggedProperty(), fluidLogged.isFluidLoggedForPlacement(context));
+        if(this instanceof MultiBlock multiBlock && !multiBlock.isPlacementValidForMultiBlock(context, placementBlockState))
+            return null;
 
         return placementBlockState;
     }
@@ -102,8 +117,8 @@ public abstract class BaseBlock extends BaseEntityBlock {
 
     @Override
     protected int getAnalogOutputSignal(BlockState blockState, Level level, BlockPos pos) {
-        var inventory = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, blockState, null, null);
-        return inventory == null ? super.getAnalogOutputSignal(blockState, level, pos) : ItemHandlerHelper.calcRedstoneFromInventory(inventory);
+        var inventory = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+        return inventory == null ? 0 : ItemHandlerHelper.calcRedstoneFromInventory(inventory);
     }
 
     @Override
@@ -113,6 +128,15 @@ public abstract class BaseBlock extends BaseEntityBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState blockState, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if(this instanceof SeatBlock seat) {
+            var result = seat.trySit(level, pos, player);
+
+            if(!result.consumesAction())
+                result = seat.tryUnsit(level, pos);
+            if(result.consumesAction())
+                return result;
+        }
+
         var menuProvider = blockState.getMenuProvider(level, pos);
 
         if(menuProvider != null) {
@@ -131,10 +155,44 @@ public abstract class BaseBlock extends BaseEntityBlock {
 
         if(blockState.hasAnalogOutputSignal())
             Containers.updateNeighboursAfterDestroy(blockState, level, pos);
+
+        MultiBlock.destroyBlocks(level, pos, blockState);
     }
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return null;
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState blockState, @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, blockState, placer, stack);
+        MultiBlock.setBlocks(level, pos, blockState);
+    }
+
+    @Override
+    public void stepOn(Level level, BlockPos pos, BlockState blockState, Entity entity) {
+        super.stepOn(level, pos, blockState, entity);
+
+        if(this instanceof SeatBlock seat && !(entity instanceof Player) && entity instanceof LivingEntity living)
+            seat.trySit(level, pos, living);
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    protected MenuProvider getMenuProvider(BlockState blockState, Level level, BlockPos pos) {
+        if(this instanceof MultiBlock multiBlock && !multiBlock.isMultiBlockOrigin(blockState)) {
+            var origin = multiBlock.getMultiBlockOrigin(pos, blockState);
+            var originBlockState = multiBlock.setMultiBlockIndex(blockState, 0);
+            return originBlockState.getMenuProvider(level, origin);
+        }
+
+        return super.getMenuProvider(blockState, level, pos);
     }
 }

@@ -6,12 +6,9 @@
         "BlockAccessor",
         "BlockItemAccessor",
         "BucketItemAccessor",
-        "DoorBlockMixin",
-        "DoublePlantBlockMixin",
         "ItemCooldownsMixin",
         "ItemStackMixin",
         "LevelAccessor",
-        "LevelMixin",
         "LootTableAccessor",
         "StateDefinitionBuilderAccessor"
     ],

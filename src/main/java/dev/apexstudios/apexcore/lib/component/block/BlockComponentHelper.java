@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -26,17 +25,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.ApiStatus;
@@ -88,16 +84,6 @@ public interface BlockComponentHelper {
 
     static void setPlacedBy(ComponentHolder<BlockComponent, Block> holder, Level level, BlockPos pos, BlockState blockState, @Nullable LivingEntity placer, ItemStack stack) {
         holder.getComponents().forEach(component -> component.setPlacedBy(level, pos, blockState, placer, stack));
-    }
-
-    static BlockState updateShape(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, LevelReader level, ScheduledTickAccess tickAccess, BlockPos pos, Direction facing, BlockPos neighborPos, BlockState neighborBlockState, RandomSource random) {
-        var result = blockState;
-
-        for(var component : holder.getComponents()) {
-            result = component.updateShape(result, level, tickAccess, pos, facing, neighborPos, neighborBlockState, random);
-        }
-
-        return result;
     }
 
     static void onPlace(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, Level level, BlockPos pos, BlockState oldBlockState, boolean movedByPiston) {
@@ -173,10 +159,6 @@ public interface BlockComponentHelper {
         holder.getComponents().forEach(component -> component.handlePrecipitation(blockState, level, pos, precipitation));
     }
 
-    static void stepOn(ComponentHolder<BlockComponent, Block> holder, Level level, BlockPos pos, BlockState blockState, Entity entity) {
-        holder.getComponents().forEach(component -> component.stepOn(level, pos, blockState, entity));
-    }
-
     static BlockState rotate(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, Rotation rotation) {
         var result = blockState;
 
@@ -195,37 +177,6 @@ public interface BlockComponentHelper {
         }
 
         return result;
-    }
-
-    static FluidState getFluidState(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, FluidState defaultFluidState) {
-        var fluidState = defaultFluidState;
-
-        for(var component : holder.getComponents()) {
-            fluidState = component.getFluidState(blockState, fluidState);
-        }
-
-        return fluidState;
-    }
-
-    static boolean updateEntityMovementAfterFallOn(ComponentHolder<BlockComponent, Block> holder, BlockGetter level, Entity entity) {
-        for(var component : holder.getComponents()) {
-            if(component.updateEntityMovementAfterFallOn(level, entity))
-                return true;
-        }
-
-        return false;
-    }
-
-    static void modifyCloneItemStack(ComponentHolder<BlockComponent, Block> holder, ItemStack stack, LevelReader level, BlockPos pos, BlockState blockState, boolean includeData) {
-        for(var component : holder.getComponents()) {
-            component.modifyCloneItemStack(stack, level, pos, blockState, includeData);
-        }
-    }
-
-    static void modifyCloneItemStack(ComponentHolder<BlockComponent, Block> holder, ItemStack stack, LevelReader level, BlockPos pos, BlockState blockState, boolean includeData, Player player) {
-        for(var component : holder.getComponents()) {
-            component.modifyCloneItemStack(stack, level, pos, blockState, includeData, player);
-        }
     }
 
     static Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(ComponentHolder<BlockComponent, Block> holder, BlockState blockState, EntityType<?> entityType, LevelReader level, BlockPos pos, float orientation) {

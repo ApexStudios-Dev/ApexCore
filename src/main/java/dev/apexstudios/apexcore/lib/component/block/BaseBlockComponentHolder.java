@@ -10,10 +10,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -24,20 +22,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.BucketPickup;
-import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.ApiStatus;
@@ -45,7 +36,7 @@ import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.ScheduledForRemoval
-public class BaseBlockComponentHolder extends Block implements ComponentHolder<BlockComponent, Block>, BucketPickup, LiquidBlockContainer {
+public class BaseBlockComponentHolder extends Block implements ComponentHolder<BlockComponent, Block> {
     private final Map<ComponentType<BlockComponent, ?, Block, ?>, BlockComponent> components = BlockComponentHelper.registerComponents(this, BaseBlockComponentHolder::registerComponents);
 
     protected BaseBlockComponentHolder(Properties properties) {
@@ -123,13 +114,6 @@ public class BaseBlockComponentHolder extends Block implements ComponentHolder<B
     public void setPlacedBy(Level level, BlockPos pos, BlockState blockState, @Nullable LivingEntity placer, ItemStack stack) {
         BlockComponentHelper.setPlacedBy(this, level, pos, blockState, placer, stack);
         super.setPlacedBy(level, pos, blockState, placer, stack);
-    }
-
-    @MustBeInvokedByOverriders
-    @Override
-    public BlockState updateShape(BlockState blockState, LevelReader level, ScheduledTickAccess tickAccess, BlockPos pos, Direction facing, BlockPos neighborPos, BlockState neighborBlockState, RandomSource random) {
-        var result = BlockComponentHelper.updateShape(this, blockState, level, tickAccess, pos, facing, neighborPos, neighborBlockState, random);
-        return super.updateShape(result, level, tickAccess, pos, facing, neighborPos, neighborBlockState, random);
     }
 
     @MustBeInvokedByOverriders
@@ -215,13 +199,6 @@ public class BaseBlockComponentHolder extends Block implements ComponentHolder<B
 
     @MustBeInvokedByOverriders
     @Override
-    public void stepOn(Level level, BlockPos pos, BlockState blockState, Entity entity) {
-        BlockComponentHelper.stepOn(this, level, pos, blockState, entity);
-        super.stepOn(level, pos, blockState, entity);
-    }
-
-    @MustBeInvokedByOverriders
-    @Override
     protected BlockState rotate(BlockState blockState, Rotation rotation) {
         var result = BlockComponentHelper.rotate(this, blockState, rotation);
         return super.rotate(result, rotation);
@@ -236,91 +213,8 @@ public class BaseBlockComponentHolder extends Block implements ComponentHolder<B
 
     @MustBeInvokedByOverriders
     @Override
-    protected FluidState getFluidState(BlockState blockState) {
-        var defaultFluidState = super.getFluidState(blockState);
-        return BlockComponentHelper.getFluidState(this, blockState, defaultFluidState);
-    }
-
-    @MustBeInvokedByOverriders
-    @Override
-    public ItemStack pickupBlock(@Nullable LivingEntity player, LevelAccessor level, BlockPos pos, BlockState blockState) {
-        var component = getComponent(BlockComponentTypes.FLUID_LOGGED);
-        return component == null ? ItemStack.EMPTY : component.pickupBlock(player, level, pos, blockState);
-    }
-
-    @MustBeInvokedByOverriders
-    @Override
-    public Optional<SoundEvent> getPickupSound() {
-        var component = getComponent(BlockComponentTypes.FLUID_LOGGED);
-        return component == null ? Optional.empty() : component.getPickupSound();
-    }
-
-    @MustBeInvokedByOverriders
-    @Override
-    public Optional<SoundEvent> getPickupSound(BlockState blockState) {
-        var component = getComponent(BlockComponentTypes.FLUID_LOGGED);
-        return component == null ? Optional.empty() : component.getPickupSound(blockState);
-    }
-
-    @MustBeInvokedByOverriders
-    @Override
-    public boolean canPlaceLiquid(@Nullable LivingEntity player, BlockGetter level, BlockPos pos, BlockState blockState, Fluid fluid) {
-        var component = getComponent(BlockComponentTypes.FLUID_LOGGED);
-        return component != null && component.canPlaceLiquid(player, level, pos, blockState, fluid);
-    }
-
-    @MustBeInvokedByOverriders
-    @Override
-    public boolean placeLiquid(LevelAccessor level, BlockPos pos, BlockState blockState, FluidState fluidState) {
-        var component = getComponent(BlockComponentTypes.FLUID_LOGGED);
-        return component != null && component.placeLiquid(level, pos, blockState, fluidState);
-    }
-
-    @MustBeInvokedByOverriders
-    @Override
-    public void updateEntityMovementAfterFallOn(BlockGetter level, Entity entity) {
-        if(!BlockComponentHelper.updateEntityMovementAfterFallOn(this, level, entity))
-            super.updateEntityMovementAfterFallOn(level, entity);
-    }
-
-    @MustBeInvokedByOverriders
-    @Override
-    protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState blockState, boolean includeData) {
-        var stack = super.getCloneItemStack(level, pos, blockState, includeData);
-        BlockComponentHelper.modifyCloneItemStack(this, stack, level, pos, blockState, includeData);
-        return stack;
-    }
-
-    @MustBeInvokedByOverriders
-    @Override
     public Optional<ServerPlayer.RespawnPosAngle> getRespawnPosition(BlockState blockState, EntityType<?> entityType, LevelReader level, BlockPos pos, float orientation) {
         return BlockComponentHelper.getRespawnPosition(this, blockState, entityType, level, pos, orientation).or(() -> super.getRespawnPosition(blockState, entityType, level, pos, orientation));
-    }
-    // endregion
-
-    // region: NeoForgeExtensions
-    @Override
-    public final boolean isBed(BlockState blockState, BlockGetter level, BlockPos pos, LivingEntity sleeper) {
-        return hasComponent(BlockComponentTypes.BED);
-    }
-
-    @Override
-    public final void setBedOccupied(BlockState blockState, Level level, BlockPos pos, LivingEntity sleeper, boolean occupied) {
-        runForComponent(BlockComponentTypes.BED, component -> component.setOccupied(level, pos, blockState, occupied));
-    }
-
-    @Override
-    public final Direction getBedDirection(BlockState blockState, LevelReader level, BlockPos pos) {
-        var facing = getComponent(BlockComponentTypes.FACING);
-        return facing == null ? Direction.NORTH : facing.get(blockState).getOpposite();
-    }
-
-    @MustBeInvokedByOverriders
-    @Override
-    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState blockState, boolean includeData, Player player) {
-        var stack = super.getCloneItemStack(level, pos, blockState, includeData);
-        BlockComponentHelper.modifyCloneItemStack(this, stack, level, pos, blockState, includeData, player);
-        return stack;
     }
     // endregion
 }

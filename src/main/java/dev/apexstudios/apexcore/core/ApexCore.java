@@ -2,7 +2,8 @@ package dev.apexstudios.apexcore.core;
 
 import dev.apexstudios.apexcore.core.seat.SeatSetup;
 import dev.apexstudios.apexcore.core.util.TooltipMutationHandler;
-import dev.apexstudios.apexcore.lib.component.block.BlockComponentHelper;
+import dev.apexstudios.apexcore.lib.block.FacingBlock;
+import dev.apexstudios.apexcore.lib.block.FluidLoggedBlock;
 import dev.apexstudios.apexcore.lib.component.block.BlockComponentTypes;
 import dev.apexstudios.apexcore.lib.placement.PlacementRenderEvent;
 import dev.apexstudios.apexcore.lib.registree.Registree;
@@ -10,14 +11,11 @@ import dev.apexstudios.apexcore.lib.tooltip.RegisterTooltipEvent;
 import dev.apexstudios.apexcore.lib.tooltip.TooltipPosition;
 import dev.apexstudios.apexcore.lib.util.ApexPackSources;
 import dev.apexstudios.apexcore.lib.util.ApexTags;
-import java.util.concurrent.atomic.AtomicReference;
-import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LecternBlock;
@@ -25,7 +23,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
-import net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent;
 
 @Mod(ApexCore.ID)
 public final class ApexCore {
@@ -56,17 +53,14 @@ public final class ApexCore {
 
         NeoForge.EVENT_BUS.addListener(PlacementRenderEvent.DefaultBlockState.class, event -> {
             var blockState = event.defaultBlockState();
-            var newBlockState = new AtomicReference<>(blockState);
-            var holder = BlockComponentHelper.asHolder(blockState);
+            var block = blockState.getBlock();
 
-            if(holder != null) {
-                var context = event.placeContext();
-                holder.runForComponent(BlockComponentTypes.FACING, component -> newBlockState.getAndUpdate(state -> component.setFor(context, state)));
-                holder.runForComponent(BlockComponentTypes.ROTATION, component -> newBlockState.getAndUpdate(state -> component.setFor(context, state)));
-                holder.runForComponent(BlockComponentTypes.FLUID_LOGGED, component -> newBlockState.getAndUpdate(state -> component.setFor(context, state)));
-            }
+            if(block instanceof FacingBlock facing)
+                blockState = blockState.setValue(facing.facingProperty(), facing.facingForPlacement(event.placeContext()));
+            if(block instanceof FluidLoggedBlock fluidLogged)
+                blockState = blockState.setValue(fluidLogged.fluidLoggedProperty(), fluidLogged.isFluidLoggedForPlacement(event.placeContext()));
 
-            event.setDefaultBlockState(newBlockState.get());
+            event.setDefaultBlockState(blockState);
         });
 
         NeoForge.EVENT_BUS.addListener(PlacementRenderEvent.ModifyBlockState.class, event -> {
@@ -81,7 +75,8 @@ public final class ApexCore {
             }
         });
 
-        NeoForge.EVENT_BUS.addListener(CanPlayerSleepEvent.class, event -> {
+        // TODO
+        /*NeoForge.EVENT_BUS.addListener(CanPlayerSleepEvent.class, event -> {
             var blockState = event.getState();
             var componentHolder = BlockComponentHelper.asHolder(blockState);
 
@@ -112,7 +107,7 @@ public final class ApexCore {
                 else if(entity.bedBlocked(headPos, facing))
                     event.setProblem(Player.BedSleepingProblem.OBSTRUCTED);
             });
-        });
+        });*/
     }
 
     public static ResourceLocation identifier(String identifier) {

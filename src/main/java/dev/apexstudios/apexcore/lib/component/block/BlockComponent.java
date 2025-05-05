@@ -6,7 +6,6 @@ import dev.apexstudios.apexcore.lib.component.ComponentHolder;
 import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -19,17 +18,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.ApiStatus;
@@ -79,11 +75,6 @@ public interface BlockComponent extends Component<BlockComponent, Block>, Compon
     }
 
     @ForOverride
-    default FluidState getFluidState(BlockState blockState, FluidState fluidState) {
-        return fluidState;
-    }
-
-    @ForOverride
     default void affectNeighborsAfterRemoval(BlockState blockState, ServerLevel level, BlockPos pos, boolean movedByPiston) {
 
     }
@@ -96,11 +87,6 @@ public interface BlockComponent extends Component<BlockComponent, Block>, Compon
     @ForOverride
     default void setPlacedBy(Level level, BlockPos pos, BlockState blockState, @Nullable LivingEntity placer, ItemStack stack) {
 
-    }
-
-    @ForOverride
-    default BlockState updateShape(BlockState blockState, LevelReader level, ScheduledTickAccess tickAccess, BlockPos pos, Direction facing, BlockPos neighborPos, BlockState neighborBlockState, RandomSource random) {
-        return blockState;
     }
 
     @ForOverride
@@ -131,25 +117,5 @@ public interface BlockComponent extends Component<BlockComponent, Block>, Compon
     @ForOverride
     default void handlePrecipitation(BlockState blockState, Level level, BlockPos pos, Biome.Precipitation precipitation) {
 
-    }
-
-    @ForOverride
-    default void stepOn(Level level, BlockPos pos, BlockState blockState, Entity entity) {
-
-    }
-
-    @ForOverride
-    default boolean updateEntityMovementAfterFallOn(BlockGetter level, Entity entity) {
-        return false;
-    }
-
-    @ForOverride
-    default void modifyCloneItemStack(ItemStack stack, LevelReader level, BlockPos pos, BlockState blockState, boolean includeData) {
-
-    }
-
-    @ForOverride
-    default void modifyCloneItemStack(ItemStack stack, LevelReader level, BlockPos pos, BlockState blockState, boolean includeData, Player player) {
-        modifyCloneItemStack(stack, level, pos, blockState, includeData);
     }
 }
