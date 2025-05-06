@@ -2,8 +2,6 @@ package dev.apexstudios.apexcore.core;
 
 import dev.apexstudios.apexcore.core.seat.SeatSetup;
 import dev.apexstudios.apexcore.core.util.TooltipMutationHandler;
-import dev.apexstudios.apexcore.lib.block.FacingBlock;
-import dev.apexstudios.apexcore.lib.block.FluidLoggedBlock;
 import dev.apexstudios.apexcore.lib.placement.PlacementRenderEvent;
 import dev.apexstudios.apexcore.lib.registree.Registree;
 import dev.apexstudios.apexcore.lib.tooltip.RegisterTooltipEvent;
@@ -48,18 +46,6 @@ public final class ApexCore {
         ));
 
         // modBus.addListener(RegisterTooltipEvent.class, ApexCore::tooltipTests);
-
-        NeoForge.EVENT_BUS.addListener(PlacementRenderEvent.DefaultBlockState.class, event -> {
-            var blockState = event.defaultBlockState();
-            var block = blockState.getBlock();
-
-            if(block instanceof FacingBlock facing)
-                blockState = blockState.setValue(facing.facingProperty(), facing.facingForPlacement(event.placeContext()));
-            if(block instanceof FluidLoggedBlock fluidLogged)
-                blockState = blockState.setValue(fluidLogged.fluidLoggedProperty(), fluidLogged.isFluidLoggedForPlacement(event.placeContext()));
-
-            event.setDefaultBlockState(blockState);
-        });
 
         NeoForge.EVENT_BUS.addListener(PlacementRenderEvent.ModifyBlockState.class, event -> {
             var blockState = event.originalBlockState();

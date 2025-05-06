@@ -14,51 +14,43 @@ import net.minecraft.world.level.LevelWriter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.neoforged.neoforge.capabilities.EntityCapability;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import org.apache.commons.lang3.function.TriConsumer;
 import org.jetbrains.annotations.NotNull;
 
-public interface SeatBlock {
+public interface Seat {
     EntityCapability<Runnable, @NotNull CapabilityContext> SEATED_CAPABILITY = EntityCapability.create(ApexCore.identifier("seated"), Runnable.class, CapabilityContext.class);
     EntityCapability<Runnable, @NotNull CapabilityContext> UNSEATED_CAPABILITY = EntityCapability.create(ApexCore.identifier("unseated"), Runnable.class, CapabilityContext.class);
     EntityCapability<BooleanSupplier, @NotNull CapabilityContext> MAY_SIT_CAPABILITY = EntityCapability.create(ApexCore.identifier("may_sit"), BooleanSupplier.class, CapabilityContext.class);
 
-    default Property<Boolean> seatOccupiedProperty() {
-        return BlockStateProperties.OCCUPIED;
-    }
+    BooleanProperty DEFAULT_PROPERTY = BlockStateProperties.OCCUPIED;
 
     default boolean isSeatOccupied(BlockState blockState) {
-        return blockState.getValue(seatOccupiedProperty());
+        return blockState.getValue(DEFAULT_PROPERTY);
     }
 
     default BlockState setSeatOccupied(BlockState blockState, boolean occupied) {
-        return blockState.setValue(seatOccupiedProperty(), occupied);
-    }
-
-    default InteractionResult trySit(Level level, BlockPos pos, LivingEntity sitter) {
-        return SeatEntity.sit(level, pos, sitter) ? InteractionResult.SUCCESS : InteractionResult.PASS;
-    }
-
-    default InteractionResult tryUnsit(Level level, BlockPos pos) {
-        return SeatEntity.unsit(level, pos) ? InteractionResult.SUCCESS : InteractionResult.PASS;
+        return blockState.setValue(DEFAULT_PROPERTY, occupied);
     }
 
     static boolean isOccupied(BlockState blockState) {
-        return blockState.getBlock() instanceof SeatBlock seat && seat.isSeatOccupied(blockState);
+        if(blockState.getBlock() instanceof Seat seat)
+            return seat.isSeatOccupied(blockState);
+
+        return blockState.getValue(DEFAULT_PROPERTY);
+    }
+
+    static BlockState setOccupied(BlockState blockState, boolean occupied) {
+        if(blockState.getBlock() instanceof Seat seat)
+            return seat.setSeatOccupied(blockState, occupied);
+
+        return blockState.setValue(DEFAULT_PROPERTY, occupied);
     }
 
     static void setOccupied(LevelWriter level, BlockPos pos, BlockState blockState, boolean occupied) {
-        if(!(blockState.getBlock() instanceof SeatBlock seat))
-            return;
-
-        var newBlockState = seat.setSeatOccupied(blockState, occupied);
-
-        if(newBlockState != blockState) {
-            level.setBlock(pos, newBlockState, Block.UPDATE_ALL);
-            MultiBlock.setBlocks(level, pos, newBlockState);
-        }
+        level.setBlock(pos, setOccupied(blockState, occupied), Block.UPDATE_ALL);
     }
 
     static void setOccupied(Level level, BlockPos pos, boolean occupied) {
@@ -98,6 +90,23 @@ public interface SeatBlock {
         for(var entityType : entityTypes) {
             registerCapabilities(event, entityType, seated::accept, unseated::accept);
         }
+    }
+
+    static InteractionResult interactWith(Level level, BlockPos pos, LivingEntity sitter) {
+        var result = trySit(level, pos, sitter);
+
+        if(!result.consumesAction())
+            result = tryUnsit(level, pos);
+
+        return result;
+    }
+
+    static InteractionResult trySit(Level level, BlockPos pos, LivingEntity sitter) {
+        return SeatEntity.sit(level, pos, sitter) ? InteractionResult.SUCCESS : InteractionResult.PASS;
+    }
+
+    static InteractionResult tryUnsit(Level level, BlockPos pos) {
+        return SeatEntity.unsit(level, pos) ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
 
     record CapabilityContext(BlockPos pos, BlockState blockState) { }

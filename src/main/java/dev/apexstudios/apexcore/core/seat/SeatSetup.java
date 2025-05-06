@@ -1,7 +1,7 @@
 package dev.apexstudios.apexcore.core.seat;
 
 import dev.apexstudios.apexcore.core.ApexCore;
-import dev.apexstudios.apexcore.lib.block.SeatBlock;
+import dev.apexstudios.apexcore.lib.block.Seat;
 import dev.apexstudios.apexcore.lib.registree.holder.DeferredEntity;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.world.InteractionResult;
@@ -22,10 +22,10 @@ public interface SeatSetup {
         modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event -> event.registerEntityRenderer(ENTITY.value(), NoopRenderer::new));
 
         modBus.addListener(RegisterCapabilitiesEvent.class, event -> {
-            SeatBlock.registerCapabilities(event, EntityType.CAMEL, (camel, pos, blockState) -> camel.sitDown(), (camel, pos, blockState) -> camel.standUp());
-            SeatBlock.registerCapabilities(event, EntityType.FOX, (fox, pos, blockState) -> fox.setSitting(true), (fox, pos, blockState) -> fox.setSitting(false));
+            Seat.registerCapabilities(event, EntityType.CAMEL, (camel, pos, blockState) -> camel.sitDown(), (camel, pos, blockState) -> camel.standUp());
+            Seat.registerCapabilities(event, EntityType.FOX, (fox, pos, blockState) -> fox.setSitting(true), (fox, pos, blockState) -> fox.setSitting(false));
 
-            SeatBlock.registerCapabilities(
+            Seat.registerCapabilities(
                     event,
                     (tameable, pos, blockState) -> {
                         tameable.setOrderedToSit(true);
@@ -38,7 +38,7 @@ public interface SeatSetup {
                     EntityType.CAT, EntityType.PARROT, EntityType.WOLF
             );
 
-            event.registerEntity(SeatBlock.MAY_SIT_CAPABILITY, EntityType.VILLAGER, (villager, context) -> () -> {
+            event.registerEntity(Seat.MAY_SIT_CAPABILITY, EntityType.VILLAGER, (villager, context) -> () -> {
                 if(villager.level().isDarkOutside())
                     return !villager.getBrain().hasMemoryValue(MemoryModuleType.HOME);
                 return true;
