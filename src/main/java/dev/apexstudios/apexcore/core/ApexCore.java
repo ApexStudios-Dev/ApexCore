@@ -4,7 +4,6 @@ import dev.apexstudios.apexcore.core.seat.SeatSetup;
 import dev.apexstudios.apexcore.core.util.TooltipMutationHandler;
 import dev.apexstudios.apexcore.lib.block.FacingBlock;
 import dev.apexstudios.apexcore.lib.block.FluidLoggedBlock;
-import dev.apexstudios.apexcore.lib.component.block.BlockComponentTypes;
 import dev.apexstudios.apexcore.lib.placement.PlacementRenderEvent;
 import dev.apexstudios.apexcore.lib.registree.Registree;
 import dev.apexstudios.apexcore.lib.tooltip.RegisterTooltipEvent;
@@ -36,7 +35,6 @@ public final class ApexCore {
         REGISTREE.registerEvents(modBus);
 
         ApexTags.register();
-        BlockComponentTypes.register();
         TooltipMutationHandler.register(modBus);
         SeatSetup.register(modBus);
 
