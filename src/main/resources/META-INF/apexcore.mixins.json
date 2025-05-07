@@ -6,8 +6,7 @@
         "BlockItemAccessor",
         "BucketItemAccessor",
         "ItemCooldownsMixin",
-        "LevelAccessor",
-        "LootTableAccessor"
+        "LevelAccessor"
     ],
     "client": [],
     "server": [],
