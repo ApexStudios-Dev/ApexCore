@@ -1,18 +1,12 @@
 package dev.apexstudios.apexcore.lib.util;
 
 import com.google.common.base.Predicates;
-import dev.apexstudios.apexcore.mixin.BlockAccessor;
 import dev.apexstudios.apexcore.mixin.LootTableAccessor;
-import dev.apexstudios.apexcore.mixin.StateDefinitionBuilderAccessor;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -30,9 +24,6 @@ import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.StateHolder;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -46,65 +37,6 @@ import net.neoforged.neoforge.registries.GameData;
 import org.jetbrains.annotations.Nullable;
 
 public interface ApexUtil {
-    static <TOwner, TStateHolder extends StateHolder<TOwner, TStateHolder>> StateDefinition<TOwner, TStateHolder> buildStateDefinition(TOwner owner, Function<TOwner, TStateHolder> defaultStateLookup, StateDefinition.Factory<TOwner, TStateHolder> stateDefinitionFactory, Consumer<StateDefinition.Builder<TOwner, TStateHolder>> propertyRegistrar, Consumer<TStateHolder> defaultStateRegistrar) {
-        var builder = new StateDefinition.Builder<TOwner, TStateHolder>(owner);
-        propertyRegistrar.accept(builder);
-        var stateDefinition = builder.create(defaultStateLookup, stateDefinitionFactory);
-        defaultStateRegistrar.accept(stateDefinition.any());
-        return stateDefinition;
-    }
-
-    static <TOwner, TStateHolder extends StateHolder<TOwner, TStateHolder>, TProperty extends Comparable<TProperty>> StateDefinition<TOwner, TStateHolder> buildStateDefinition(TOwner owner, Function<TOwner, TStateHolder> defaultStateLookup, StateDefinition.Factory<TOwner, TStateHolder> stateDefinitionFactory, Property<TProperty> property, TProperty defaultValue) {
-        return buildStateDefinition(
-                owner,
-                defaultStateLookup,
-                stateDefinitionFactory,
-                registrar -> registrar.add(property),
-                defaultState -> defaultState.setValue(property, defaultValue)
-        );
-    }
-
-    static void replaceBlockStateDefinition(Block block, Iterable<Property<?>> deprecatedProperties, Consumer<Consumer<Property<?>>> propertyRegistrar, UnaryOperator<BlockState> defaultBlockStateRegistrar) {
-        var accessor = (BlockAccessor) block;
-
-        // pull the current default block state
-        // normal usages register the default states in the block ctors
-        // this allows us to keep track of these default states
-        // and patch them into the newly default state below
-        var oldDefaultBlockState = block.defaultBlockState();
-
-        accessor.ApexCore$setStateDefinition(ApexUtil.buildStateDefinition(
-                block,
-                Block::defaultBlockState,
-                BlockState::new,
-                builder -> {
-                    accessor.ApexCore$createBlockStateDefinition(builder);
-                    deprecatedProperties.forEach(property -> ((StateDefinitionBuilderAccessor) builder).ApexCore$getProperties().remove(property.getName()));
-                    propertyRegistrar.accept(builder::add);
-                },
-                defaultBlockState -> {
-                    // register the initial default state
-                    accessor.ApexCore$registerDefaultBlockState(defaultBlockState);
-                    // build the new default state by patching in the old default state values
-                    defaultBlockState = block.withPropertiesOf(oldDefaultBlockState);
-
-                    // patch in default states from caller
-                    defaultBlockState = defaultBlockStateRegistrar.apply(defaultBlockState);
-                    // register this new BlockState as the new default state
-                    accessor.ApexCore$registerDefaultBlockState(defaultBlockState);
-                }
-        ));
-    }
-
-    static <TProperty extends Comparable<TProperty>> void replaceBlockStateDefinition(Block block, Property<TProperty> property, TProperty defaultValue) {
-        replaceBlockStateDefinition(
-                block,
-                Collections.emptyList(),
-                registrar -> registrar.accept(property),
-                defaultBlockState -> defaultBlockState.setValue(property, defaultValue)
-        );
-    }
-
     static boolean isInWorldBounds(LevelHeightAccessor level, BlockPos pos) {
         return !level.isOutsideBuildHeight(pos) && isInWorldBoundsHorizontal(pos);
     }

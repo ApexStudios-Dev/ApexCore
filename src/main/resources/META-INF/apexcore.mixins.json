@@ -3,13 +3,11 @@
     "package": "dev.apexstudios.apexcore.mixin",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
-        "BlockAccessor",
         "BlockItemAccessor",
         "BucketItemAccessor",
         "ItemCooldownsMixin",
         "LevelAccessor",
-        "LootTableAccessor",
-        "StateDefinitionBuilderAccessor"
+        "LootTableAccessor"
     ],
     "client": [],
     "server": [],
