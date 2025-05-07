@@ -1,49 +1,26 @@
 package dev.apexstudios.apexcore.lib.data.provider.loot;
 
-import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
-import net.minecraft.advancements.critereon.DataComponentMatchers;
-import net.minecraft.advancements.critereon.EnchantmentPredicate;
-import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.advancements.critereon.MinMaxBounds;
-import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.component.predicates.DataComponentPredicates;
-import net.minecraft.core.component.predicates.EnchantmentsPredicate;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.packs.VanillaBlockLoot;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.DoorBlock;
-import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.block.state.properties.SlabType;
-import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
-import net.minecraft.world.level.storage.loot.functions.ApplyExplosionDecay;
-import net.minecraft.world.level.storage.loot.functions.CopyComponentsFunction;
 import net.minecraft.world.level.storage.loot.functions.FunctionUserBuilder;
-import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.predicates.ConditionUserBuilder;
-import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.MatchTool;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 
 public interface BlockLootSubProvider extends LootTableSubProvider {
     Set<Item> VANILLA_EXPLOSION_RESISTANT = VanillaBlockLoot.EXPLOSION_RESISTANT;
+    float[] JUNGLE_LEAVES_SAPLING_CHANGES = VanillaBlockLoot.JUNGLE_LEAVES_SAPLING_CHANGES;
+    float[] NORMAL_LEAVES_SAPLING_CHANCES = net.minecraft.data.loot.BlockLootSubProvider.NORMAL_LEAVES_SAPLING_CHANCES;
+    float[] NORMAL_LEAVES_STICK_CHANCES = net.minecraft.data.loot.BlockLootSubProvider.NORMAL_LEAVES_STICK_CHANCES;
 
     default void accept(Holder<Block> block, Supplier<LootTable.Builder> lootTable) {
         accept(block.value(), lootTable);
@@ -61,106 +38,116 @@ public interface BlockLootSubProvider extends LootTableSubProvider {
         accept(block, () -> lootTable);
     }
 
-    // must be called prior to any 'accept' calls
-    void explosionResistant(ItemLike item);
+    LootItemCondition.Builder hasSilkTouch();
 
-    boolean isExplosionResistant(ItemLike item);
+    LootItemCondition.Builder doesNotHaveSilkTouch();
 
-    default LootItemCondition.Builder hasSilkTouch(HolderLookup.Provider registries) {
-        var enchantments = registries.lookupOrThrow(Registries.ENCHANTMENT);
-        return MatchTool.toolMatches(ItemPredicate.Builder.item().withComponents(DataComponentMatchers.Builder.components().partial(DataComponentPredicates.ENCHANTMENTS, EnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(enchantments.getOrThrow(Enchantments.SILK_TOUCH), MinMaxBounds.Ints.atLeast(1))))).build()));
-    }
+    LootItemCondition.Builder hasShears();
 
-    default LootItemCondition.Builder doesNotHaveSilkTouch(HolderLookup.Provider registries) {
-        return hasSilkTouch(registries).invert();
-    }
+    LootItemCondition.Builder hasShearsOrSilkTouch();
 
-    default LootItemCondition.Builder hasShears(HolderLookup.Provider registries) {
-        return MatchTool.toolMatches(ItemPredicate.Builder.item().of(registries.lookupOrThrow(Registries.ITEM), Items.SHEARS));
-    }
+    LootItemCondition.Builder doesNotHaveShearsOrSilkTouch();
 
-    default LootItemCondition.Builder hasShearsOrSilkTouch(HolderLookup.Provider registries) {
-        return hasShears(registries).or(hasSilkTouch(registries));
-    }
+    <T extends FunctionUserBuilder<T>> T applyExplosionDecay(ItemLike item, FunctionUserBuilder<T> functionBuilder);
 
-    default LootItemCondition.Builder doesNotHaveShearsOrSilkTouch(HolderLookup.Provider registries) {
-        return hasShearsOrSilkTouch(registries).invert();
-    }
+    <T extends ConditionUserBuilder<T>> T applyExplosionCondition(ItemLike item, ConditionUserBuilder<T> conditionBuilder);
 
-    default <T extends FunctionUserBuilder<T>> T applyExplosionDecay(ItemLike item, FunctionUserBuilder<T> functionBuilder) {
-        return !isExplosionResistant(item.asItem()) ? functionBuilder.apply(ApplyExplosionDecay.explosionDecay()) : functionBuilder.unwrap();
-    }
+    LootTable.Builder createSingleItemTable(ItemLike item);
 
-    default <T extends ConditionUserBuilder<T>> T applyExplosionCondition(ItemLike item, ConditionUserBuilder<T> conditionBuilder) {
-        return !isExplosionResistant(item.asItem()) ? conditionBuilder.when(ExplosionCondition.survivesExplosion()) : conditionBuilder.unwrap();
-    }
+    LootTable.Builder createSilkTouchDispatchTable(Block block, LootPoolEntryContainer.Builder<?> builder);
 
-    default LootTable.Builder createSingleItemTable(ItemLike item) {
-        return LootTable.lootTable().withPool(applyExplosionCondition(item, LootPool.lootPool().setRolls(ConstantValue.exactly(1F)).add(LootItem.lootTableItem(item))));
-    }
+    LootTable.Builder createShearsDispatchTable(Block block, LootPoolEntryContainer.Builder<?> builder);
 
-    default LootTable.Builder createSilkTouchDispatchTable(HolderLookup.Provider registries, Block block, LootPoolEntryContainer.Builder<?> builder) {
-        return createSelfDropDispatchTable(block, hasSilkTouch(registries), builder);
-    }
+    LootTable.Builder createSilkTouchOrShearsDispatchTable(Block block, LootPoolEntryContainer.Builder<?> builder);
 
-    default LootTable.Builder createShearsDispatchTable(HolderLookup.Provider registries, Block block, LootPoolEntryContainer.Builder<?> builder) {
-        return createSelfDropDispatchTable(block, hasShears(registries), builder);
-    }
+    LootTable.Builder createSingleItemTableWithSilkTouch(Block block, ItemLike item);
 
-    default LootTable.Builder createSilkTouchOrShearsDispatchTable(HolderLookup.Provider registries, Block block, LootPoolEntryContainer.Builder<?> builder) {
-        return createSelfDropDispatchTable(block, hasShearsOrSilkTouch(registries), builder);
-    }
+    LootTable.Builder createSingleItemTable(ItemLike item, NumberProvider count);
 
-    default LootTable.Builder createSingleItemTableWithSilkTouch(HolderLookup.Provider registries, Block block, ItemLike item) {
-        return createSilkTouchDispatchTable(registries, block, applyExplosionCondition(block, LootItem.lootTableItem(item)));
-    }
+    LootTable.Builder createSingleItemTableWithSilkTouch(Block block, ItemLike item, NumberProvider count);
 
-    default LootTable.Builder createSingleItemTable(ItemLike item, NumberProvider count) {
-        return LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(applyExplosionDecay(item, LootItem.lootTableItem(item).apply(SetItemCountFunction.setCount(count)))));
-    }
+    LootTable.Builder createSilkTouchOnlyTable(ItemLike item);
 
-    default LootTable.Builder createSingleItemTableWithSilkTouch(HolderLookup.Provider registries, Block block, ItemLike item, NumberProvider count) {
-        return createSilkTouchDispatchTable(registries, block, applyExplosionDecay(block, LootItem.lootTableItem(item).apply(SetItemCountFunction.setCount(count))));
-    }
+    LootTable.Builder createPotFlowerItemTable(ItemLike item);
 
-    default LootTable.Builder createSilkTouchOnlyTable(HolderLookup.Provider registries, ItemLike item) {
-        return LootTable.lootTable().withPool(LootPool.lootPool().when(hasSilkTouch(registries)).setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(item)));
-    }
+    LootTable.Builder createSlabItemTable(Block block);
 
-    default LootTable.Builder createSlabItemTable(Block block) {
-        return LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(applyExplosionDecay(block, LootItem.lootTableItem(block).apply(SetItemCountFunction.setCount(ConstantValue.exactly(2.0F)).when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(block).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(SlabBlock.TYPE, SlabType.DOUBLE)))))));
-    }
+    <T extends Comparable<T> & StringRepresentable> LootTable.Builder createSinglePropConditionTable(Block block, Property<T> property, T value);
 
-    default <T extends Comparable<T> & StringRepresentable> LootTable.Builder createSinglePropConditionTable(Block block, Property<T> property, T value) {
-        return LootTable.lootTable().withPool(applyExplosionCondition(block, LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(block).when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(block).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(property, value))))));
-    }
+    LootTable.Builder createNameableBlockEntityTable(Block block);
 
-    default LootTable.Builder createNameableBlockEntityTable(Block block) {
-        return LootTable.lootTable().withPool(applyExplosionCondition(block, LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(block).apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY).include(DataComponents.CUSTOM_NAME)))));
-    }
+    LootTable.Builder createShulkerBoxDrop(Block block);
 
-    default LootTable.Builder createDoorTable(Block doorBlock) {
-        return createSinglePropConditionTable(doorBlock, DoorBlock.HALF, DoubleBlockHalf.LOWER);
-    }
+    LootTable.Builder createCopperOreDrops(Block block);
 
-    default void otherWhenSilkTouch(HolderLookup.Provider registries, Block block, Block other) {
-        accept(block, createSilkTouchOnlyTable(registries, other));
-    }
+    LootTable.Builder createLapisOreDrops(Block block);
 
-    default void dropOther(Block block, ItemLike item) {
-        accept(block, createSingleItemTable(item));
-    }
+    LootTable.Builder createRedstoneOreDrops(Block block);
 
-    default void dropWhenSilkTouch(HolderLookup.Provider registries, Block block) {
-        otherWhenSilkTouch(registries, block, block);
-    }
+    LootTable.Builder createBannerDrop(Block block);
 
-    default void dropSelf(Block block) {
-        dropOther(block, block);
-    }
+    LootTable.Builder createBeeNestDrop(Block block);
+
+    LootTable.Builder createBeeHiveDrop(Block block);
+
+    LootTable.Builder createCaveVinesDrop(Block block);
+
+    LootTable.Builder createOreDrop(Block block, Item item);
+
+    LootTable.Builder createMushroomBlockDrop(Block block, ItemLike item);
+
+    LootTable.Builder createGrassDrops(Block block);
+
+    LootTable.Builder createStemDrops(Block block, Item item);
+
+    LootTable.Builder createAttachedStemDrops(Block block, Item item);
+
+    LootTable.Builder createShearsOnlyDrop(ItemLike item);
+
+    LootTable.Builder createShearsOrSilkTouchOnlyDrop(ItemLike item);
+
+    LootTable.Builder createMultifaceBlockDrops(Block block, LootItemCondition.Builder builder);
+
+    LootTable.Builder createMultifaceBlockDrops(Block block);
+
+    LootTable.Builder createMossyCarpetBlockDrops(Block block);
+
+    LootTable.Builder createLeavesDrops(Block leavesBlock, Block saplingBlock, float... chances);
+
+    LootTable.Builder createOakLeavesDrops(Block oakLeavesBlock, Block saplingBlock, float... chances);
+
+    LootTable.Builder createMangroveLeavesDrops(Block block);
+
+    LootTable.Builder createCropDrops(Block cropBlock, Item grownCropItem, Item seedsItem, LootItemCondition.Builder dropGrownCropCondition);
+
+    LootTable.Builder createDoublePlantShearsDrop(Block sheared);
+
+    LootTable.Builder createDoublePlantWithSeedDrops(Block block, Block sheared);
+
+    LootTable.Builder createCandleDrops(Block candleBlock);
+
+    LootTable.Builder createSegmentedBlockDrops(Block block);
+
+    void addNetherVinesDropTable(Block vines, Block plant);
+
+    LootTable.Builder createDoorTable(Block doorBlock);
+
+    void dropPottedContents(Block flowerPot);
+
+    void otherWhenSilkTouch(Block block, Block other);
+
+    void dropOther(Block block, ItemLike item);
+
+    void dropWhenSilkTouch(Block block);
+
+    void dropSelf(Block block);
 
     static LootTable.Builder createSelfDropDispatchTable(Block block, LootItemCondition.Builder conditionBuilder, LootPoolEntryContainer.Builder<?> alternativeBuilder) {
         return net.minecraft.data.loot.BlockLootSubProvider.createSelfDropDispatchTable(block, conditionBuilder, alternativeBuilder);
+    }
+
+    static LootTable.Builder createCandleCakeDrops(Block candleCakeBlock) {
+        return net.minecraft.data.loot.BlockLootSubProvider.createCandleCakeDrops(candleCakeBlock);
     }
 
     static LootTable.Builder noDrop() {

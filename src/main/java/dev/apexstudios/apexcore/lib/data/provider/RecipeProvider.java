@@ -2,7 +2,8 @@ package dev.apexstudios.apexcore.lib.data.provider;
 
 import dev.apexstudios.apexcore.core.data.provider.RecipeProviderImpl;
 import dev.apexstudios.apexcore.lib.data.ProviderType;
-import java.util.Map;
+import java.util.List;
+import java.util.Objects;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.EnterBlockTrigger;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
@@ -19,55 +20,187 @@ import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.equipment.trim.TrimPattern;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SuspiciousEffectHolder;
+import org.jetbrains.annotations.Nullable;
 
 public interface RecipeProvider {
     ProviderType<RecipeProvider> PROVIDER_TYPE = RecipeProviderImpl.PROVIDER_TYPE;
-    Map<BlockFamily.Variant, net.minecraft.data.recipes.RecipeProvider.FamilyRecipeProvider> SHAPE_BUILDERS = net.minecraft.data.recipes.RecipeProvider.SHAPE_BUILDERS;
 
     RecipeOutput output();
 
     HolderGetter<Item> items();
 
-    default Criterion<InventoryChangeTrigger.TriggerInstance> has(MinMaxBounds.Ints count, ItemLike item) {
-        return inventoryTrigger(ItemPredicate.Builder.item().of(items(), item).withCount(count));
-    }
+    void oneToOneConversionRecipe(ItemLike result, ItemLike ingredient, @Nullable String group);
 
-    default Criterion<InventoryChangeTrigger.TriggerInstance> has(ItemLike itemLike) {
-        return inventoryTrigger(ItemPredicate.Builder.item().of(items(), itemLike));
-    }
+    void oneToOneConversionRecipe(ItemLike result, ItemLike ingredient, @Nullable String group, int resultCount);
 
-    default Criterion<InventoryChangeTrigger.TriggerInstance> has(TagKey<Item> tag) {
-        return inventoryTrigger(ItemPredicate.Builder.item().of(items(), tag));
-    }
+    void oreSmelting(List<ItemLike> ingredients, RecipeCategory category, ItemLike result, float experience, int cookingTime, String group);
 
-    default Ingredient tag(TagKey<Item> tag) {
-        return Ingredient.of(items().getOrThrow(tag));
-    }
+    void oreBlasting(List<ItemLike> ingredients, RecipeCategory category, ItemLike result, float experience, int cookingTime, String group);
 
-    default ShapedRecipeBuilder shaped(RecipeCategory category, ItemLike result) {
-        return ShapedRecipeBuilder.shaped(items(), category, result);
-    }
+    <T extends AbstractCookingRecipe> void oreCooking(RecipeSerializer<T> serializer, AbstractCookingRecipe.Factory<T> recipeFactory, List<ItemLike> ingredients, RecipeCategory category, ItemLike result, float experience, int cookingTime, String group, String suffix);
 
-    default ShapedRecipeBuilder shaped(RecipeCategory category, ItemLike result, int count) {
-        return ShapedRecipeBuilder.shaped(items(), category, result, count);
-    }
+    void netheriteSmithing(Item ingredientItem, RecipeCategory category, Item resultItem);
 
-    default ShapelessRecipeBuilder shapeless(RecipeCategory category, ItemStack result) {
-        return ShapelessRecipeBuilder.shapeless(items(), category, result);
-    }
+    void trimSmithing(Item template, ResourceKey<TrimPattern> pattern, ResourceKey<Recipe<?>> recipe);
 
-    default ShapelessRecipeBuilder shapeless(RecipeCategory category, ItemLike result) {
-        return ShapelessRecipeBuilder.shapeless(items(), category, result);
-    }
+    void twoByTwoPacker(RecipeCategory category, ItemLike packed, ItemLike unpacked);
 
-    default ShapelessRecipeBuilder shapeless(RecipeCategory category, ItemLike result, int count) {
-        return ShapelessRecipeBuilder.shapeless(items(), category, result, count);
+    void threeByThreePacker(RecipeCategory category, ItemLike packed, ItemLike unpacked, String criterionName);
+
+    void threeByThreePacker(RecipeCategory category, ItemLike packed, ItemLike unpacked);
+
+    void planksFromLog(ItemLike planks, TagKey<Item> logs, int resultCount);
+
+    void planksFromLogs(ItemLike planks, TagKey<Item> logs, int result);
+
+    void woodFromLogs(ItemLike wood, ItemLike log);
+
+    void woodenBoat(ItemLike boat, ItemLike material);
+
+    void chestBoat(ItemLike boat, ItemLike material);
+
+    RecipeBuilder buttonBuilder(ItemLike button, Ingredient material);
+
+    RecipeBuilder doorBuilder(ItemLike door, Ingredient material);
+
+    RecipeBuilder fenceBuilder(ItemLike fence, Ingredient material);
+
+    RecipeBuilder fenceGateBuilder(ItemLike fenceGate, Ingredient material);
+
+    void pressurePlate(ItemLike pressurePlate, ItemLike material);
+
+    RecipeBuilder pressurePlateBuilder(RecipeCategory category, ItemLike pressurePlate, Ingredient material);
+
+    void slab(RecipeCategory category, ItemLike slab, ItemLike material);
+
+    RecipeBuilder slabBuilder(RecipeCategory category, ItemLike slab, Ingredient material);
+
+    RecipeBuilder stairBuilder(ItemLike stairs, Ingredient material);
+
+    RecipeBuilder trapdoorBuilder(ItemLike trapdoor, Ingredient material);
+
+    RecipeBuilder signBuilder(ItemLike sign, Ingredient material);
+
+    void hangingSign(ItemLike sign, ItemLike material);
+
+    void colorBlockWithDye(List<Item> dyes, List<Item> dyeableItems, String group);
+
+    void colorWithDye(List<Item> dyes, List<Item> dyeableItems, @Nullable Item dye, String group, RecipeCategory category);
+
+    void carpet(ItemLike carpet, ItemLike material);
+
+    void bedFromPlanksAndWool(ItemLike bed, ItemLike wool);
+
+    void banner(ItemLike banner, ItemLike material);
+
+    void stainedGlassFromGlassAndDye(ItemLike stainedGlass, ItemLike dye);
+
+    void stainedGlassPaneFromStainedGlass(ItemLike stainedGlassPane, ItemLike stainedGlass);
+
+    void stainedGlassPaneFromGlassPaneAndDye(ItemLike stainedGlassPane, ItemLike dye);
+
+    void coloredTerracottaFromTerracottaAndDye(ItemLike terracotta, ItemLike dye);
+
+    void concretePowder(ItemLike concretePowder, ItemLike dye);
+
+    void candle(ItemLike candle, ItemLike dye);
+
+    void wall(RecipeCategory category, ItemLike wall, ItemLike material);
+
+    RecipeBuilder wallBuilder(RecipeCategory category, ItemLike wall, Ingredient material);
+
+    void polished(RecipeCategory category, ItemLike result, ItemLike material);
+
+    RecipeBuilder polishedBuilder(RecipeCategory category, ItemLike result, Ingredient material);
+
+    void cut(RecipeCategory category, ItemLike cutResult, ItemLike material);
+
+    ShapedRecipeBuilder cutBuilder(RecipeCategory category, ItemLike cutResult, Ingredient material);
+
+    void chiseled(RecipeCategory category, ItemLike chiseledResult, ItemLike material);
+
+    void mosaicBuilder(RecipeCategory category, ItemLike result, ItemLike material);
+
+    ShapedRecipeBuilder chiseledBuilder(RecipeCategory category, ItemLike chiseledResult, Ingredient material);
+
+    void stonecutterResultFromBase(RecipeCategory category, ItemLike result, ItemLike material);
+
+    void stonecutterResultFromBase(RecipeCategory category, ItemLike result, ItemLike material, int resultCount);
+
+    void smeltingResultFromBase(ItemLike result, ItemLike ingredient);
+
+    void nineBlockStorageRecipes(RecipeCategory unpackedCategory, ItemLike unpacked, RecipeCategory packedCategory, ItemLike packed);
+
+    void nineBlockStorageRecipesWithCustomPacking(RecipeCategory unpackedCategory, ItemLike unpacked, RecipeCategory packedCategory, ItemLike packed, String packedName, String packedGroup);
+
+    void nineBlockStorageRecipesRecipesWithCustomUnpacking(RecipeCategory unpackedCategory, ItemLike unpacked, RecipeCategory packedCategory, ItemLike packed, String unpackedName, String unpackedGroup);
+
+    void nineBlockStorageRecipes(RecipeCategory unpackedCategory, ItemLike unpacked, RecipeCategory packedCategory, ItemLike packed, String packedName, @Nullable String packedGroup, String unpackedName, @Nullable String unpackedGroup);
+
+    void copySmithingTemplate(ItemLike template, ItemLike baseItem);
+
+    void copySmithingTemplate(ItemLike template, Ingredient baseItem);
+
+    <T extends AbstractCookingRecipe> void cookRecipes(String cookingMethod, RecipeSerializer<T> cookingSerializer, AbstractCookingRecipe.Factory<T> recipeFactory, int cookingTime);
+
+    <T extends AbstractCookingRecipe> void simpleCookingRecipe(String cookingMethod, RecipeSerializer<T> cookingSerializer, AbstractCookingRecipe.Factory<T> recipeFactory, int cookingTime, ItemLike material, ItemLike result, float experience);
+
+    void grate(Block grateBlock, Block material);
+
+    void copperBulb(Block bulbBlock, Block material);
+
+    void suspiciousStew(Item flowerItem, SuspiciousEffectHolder effect);
+
+    void generateRecipes(BlockFamily blockFamily, FeatureFlagSet requiredFeatures);
+
+    Block getBaseBlock(BlockFamily family, BlockFamily.Variant variant);
+
+    Criterion<InventoryChangeTrigger.TriggerInstance> has(MinMaxBounds.Ints count, ItemLike item);
+
+    Criterion<InventoryChangeTrigger.TriggerInstance> has(ItemLike itemLike);
+
+    Criterion<InventoryChangeTrigger.TriggerInstance> has(TagKey<Item> tag);
+
+    Ingredient tag(TagKey<Item> tag);
+
+    ShapedRecipeBuilder shaped(RecipeCategory category, ItemLike result);
+
+    ShapedRecipeBuilder shaped(RecipeCategory category, ItemLike result, int count);
+
+    ShapelessRecipeBuilder shapeless(RecipeCategory category, ItemStack result);
+
+    ShapelessRecipeBuilder shapeless(RecipeCategory category, ItemLike result);
+
+    ShapelessRecipeBuilder shapeless(RecipeCategory category, ItemLike result, int count);
+
+    default void variant(BlockFamily family, BlockFamily.Variant variant) {
+        var block = Objects.requireNonNull(family.get(variant));
+        var provider = variantProvider(variant);
+        var baseBlock = getBaseBlock(family, variant);
+
+        if(provider != null) {
+            var builder = provider.create(this, block, baseBlock);
+
+            family.getRecipeGroupPrefix()
+                    .ifPresent(group -> builder.group(group + (variant == BlockFamily.Variant.CUT ? "" : '_' + variant.getRecipeGroup())));
+
+            builder.unlockedBy(family.getRecipeUnlockedBy().orElseGet(() -> getHasName(baseBlock)), has(baseBlock))
+                    .save(output());
+        }
+
+        if(variant == BlockFamily.Variant.CRACKED)
+            smeltingResultFromBase(block, baseBlock);
     }
 
     static Criterion<EnterBlockTrigger.TriggerInstance> insideOf(Block block) {
@@ -94,8 +227,20 @@ public interface RecipeProvider {
         return net.minecraft.data.recipes.RecipeProvider.getItemName(itemLike);
     }
 
-    static String getSimpleRecipeName(ItemLike itemLike) {
-        return net.minecraft.data.recipes.RecipeProvider.getSimpleRecipeName(itemLike);
+    static String getSimpleRecipeName(ItemLike item) {
+        return net.minecraft.data.recipes.RecipeProvider.getSimpleRecipeName(item);
+    }
+
+    static String getConversionRecipeName(ItemLike result, ItemLike ingredient) {
+        return net.minecraft.data.recipes.RecipeProvider.getConversionRecipeName(result, ingredient);
+    }
+
+    static String getSmeltingRecipeName(ItemLike item) {
+        return net.minecraft.data.recipes.RecipeProvider.getSmeltingRecipeName(item);
+    }
+
+    static String getBlastingRecipeName(ItemLike item) {
+        return net.minecraft.data.recipes.RecipeProvider.getBlastingRecipeName(item);
     }
 
     static ResourceKey<Recipe<?>> recipeKey(ResourceLocation recipeId) {
@@ -108,5 +253,16 @@ public interface RecipeProvider {
 
     static ResourceKey<Recipe<?>> recipeKeyWithSuffix(ItemLike item, String suffix) {
         return recipeKey(RecipeBuilder.getDefaultRecipeId(item).withSuffix(suffix));
+    }
+
+    @Nullable
+    static FamilyRecipeProvider variantProvider(BlockFamily.Variant variant) {
+        var vanilla = net.minecraft.data.recipes.RecipeProvider.SHAPE_BUILDERS.get(variant);
+        return vanilla == null ? null : (provider, ingredient, result) -> vanilla.create(((RecipeProviderImpl) provider).delegate, ingredient, result);
+    }
+
+    @FunctionalInterface
+    interface FamilyRecipeProvider {
+        RecipeBuilder create(RecipeProvider provider, ItemLike ingredient, ItemLike result);
     }
 }
