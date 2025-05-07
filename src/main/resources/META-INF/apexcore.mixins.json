@@ -7,7 +7,6 @@
         "BlockItemAccessor",
         "BucketItemAccessor",
         "ItemCooldownsMixin",
-        "ItemStackMixin",
         "LevelAccessor",
         "LootTableAccessor",
         "StateDefinitionBuilderAccessor"

@@ -1,11 +1,8 @@
 package dev.apexstudios.apexcore.core;
 
 import dev.apexstudios.apexcore.core.seat.SeatSetup;
-import dev.apexstudios.apexcore.core.util.TooltipMutationHandler;
 import dev.apexstudios.apexcore.lib.placement.PlacementRenderEvent;
 import dev.apexstudios.apexcore.lib.registree.Registree;
-import dev.apexstudios.apexcore.lib.tooltip.RegisterTooltipEvent;
-import dev.apexstudios.apexcore.lib.tooltip.TooltipPosition;
 import dev.apexstudios.apexcore.lib.util.ApexPackSources;
 import dev.apexstudios.apexcore.lib.util.ApexTags;
 import net.minecraft.core.component.DataComponents;
@@ -33,7 +30,6 @@ public final class ApexCore {
         REGISTREE.registerEvents(modBus);
 
         ApexTags.register();
-        TooltipMutationHandler.register(modBus);
         SeatSetup.register(modBus);
 
         modBus.addListener(AddPackFindersEvent.class, event ->  event.addPackFinders(
@@ -44,8 +40,6 @@ public final class ApexCore {
                 false,
                 Pack.Position.TOP
         ));
-
-        // modBus.addListener(RegisterTooltipEvent.class, ApexCore::tooltipTests);
 
         NeoForge.EVENT_BUS.addListener(PlacementRenderEvent.ModifyBlockState.class, event -> {
             var blockState = event.originalBlockState();
@@ -100,13 +94,5 @@ public final class ApexCore {
 
     public static String id(String identifier) {
         return ID + ResourceLocation.NAMESPACE_SEPARATOR + identifier;
-    }
-
-    private static void tooltipTests(RegisterTooltipEvent event) {
-        for(var position : TooltipPosition.values()) {
-            var name = position.name();
-            event.registerBefore(position, (stack, context, adder, player, flag) -> adder.accept(Component.literal("Before: ").append(name)));
-            event.registerAfter(position, (stack, context, adder, player, flag) -> adder.accept(Component.literal("After: ").append(name)));
-        }
     }
 }
