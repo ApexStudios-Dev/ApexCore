@@ -1,6 +1,5 @@
 package dev.apexstudios.apexcore.lib.util;
 
-import com.google.common.base.Predicates;
 import java.util.function.Predicate;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
@@ -20,9 +19,5 @@ public interface ApexUtil {
             if(filter.test(blockState))
                 registerPoiBlockState(poiType, blockState);
         }
-    }
-
-    static void registerPoiBlockStates(ResourceKey<PoiType> poiType, Block block) {
-        registerPoiBlockStates(poiType, block, Predicates.alwaysTrue());
     }
 }

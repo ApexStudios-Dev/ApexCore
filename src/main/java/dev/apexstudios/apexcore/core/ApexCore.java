@@ -21,10 +21,7 @@ import net.neoforged.neoforge.event.AddPackFindersEvent;
 @Mod(ApexCore.ID)
 public final class ApexCore {
     public static final String ID = "apexcore";
-
     public static final Registree REGISTREE = new Registree(ID);
-    // public static final DeferredBlock<MultiBlock> MULTI_BLOCK = REGISTREE.registerBlock("multi_block", MultiBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE));
-    // public static final DeferredItem<BlockItem> MULTI_BLOCK_ITEM = REGISTREE.registerSimpleBlockItem(MULTI_BLOCK);
 
     public ApexCore(IEventBus modBus) {
         REGISTREE.registerEvents(modBus);
@@ -52,40 +49,6 @@ public final class ApexCore {
                     event.withProperty(LecternBlock.HAS_BOOK, () -> true);
             }
         });
-
-        // TODO
-        /*NeoForge.EVENT_BUS.addListener(CanPlayerSleepEvent.class, event -> {
-            var blockState = event.getState();
-            var componentHolder = BlockComponentHelper.asHolder(blockState);
-
-            if(componentHolder == null)
-                return;
-
-            var bedComponent = componentHolder.getComponent(BlockComponentTypes.BED);
-
-            if(bedComponent == null)
-                return;
-
-            var vanillaProblem = event.getVanillaProblem();
-            var moddedProblem = event.getProblem();
-            var actualProblem = moddedProblem == null ? vanillaProblem : moddedProblem;
-
-            if(moddedProblem != null && actualProblem != Player.BedSleepingProblem.TOO_FAR_AWAY && actualProblem != Player.BedSleepingProblem.OBSTRUCTED)
-                return;
-
-            event.setProblem(null);
-
-            bedComponent.runForHead(event.getPos(), blockState, (headPos, headBlockState) -> {
-                var entity = event.getEntity();
-                var facingComponent = componentHolder.getComponent(BlockComponentTypes.FACING);
-                var facing = facingComponent == null ? Direction.NORTH : facingComponent.get(headBlockState).getOpposite();
-
-                if(!entity.bedInRange(headPos, facing))
-                    event.setProblem(Player.BedSleepingProblem.TOO_FAR_AWAY);
-                else if(entity.bedBlocked(headPos, facing))
-                    event.setProblem(Player.BedSleepingProblem.OBSTRUCTED);
-            });
-        });*/
     }
 
     public static ResourceLocation identifier(String identifier) {
