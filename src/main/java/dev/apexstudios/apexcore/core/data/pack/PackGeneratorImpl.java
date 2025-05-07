@@ -54,6 +54,10 @@ public sealed abstract class PackGeneratorImpl<TSelf extends PackGenerator<TSelf
         return PackType.SERVER_DATA;
     }
 
+    protected boolean isDummy() {
+        return false;
+    }
+
     public void defaultDescription(Supplier<Component> description) {
         if(this.description == null)
             this.description = description.get();
@@ -116,21 +120,24 @@ public sealed abstract class PackGeneratorImpl<TSelf extends PackGenerator<TSelf
     }
 
     private void registerProviders(ProviderContext context, PackOutput output, CompletableFuture<HolderLookup.Provider> registries, Consumer<DataProvider> providerConsumer) {
-        if(description == null)
-            description = Component.empty();
+        if(!isDummy()) {
+            if(description == null)
+                description = Component.empty();
 
-        var generatedFeatures = context.enabledFeatures().subtract(FeatureFlags.VANILLA_SET);
-        var packType = packType();
-        var metadataGenerator = new PackMetadataGenerator(output).add(PackMetadataSection.TYPE, new PackMetadataSection(description, DetectedVersion.BUILT_IN.getPackVersion(packType)));
+            var generatedFeatures = context.enabledFeatures().subtract(FeatureFlags.VANILLA_SET);
+            var packType = packType();
+            var metadataGenerator = new PackMetadataGenerator(output).add(PackMetadataSection.TYPE, new PackMetadataSection(description, DetectedVersion.BUILT_IN.getPackVersion(packType)));
 
-        if(!generatedFeatures.isEmpty()) {
-            if(packType != PackType.SERVER_DATA)
-                throw new IllegalStateException("FeatureFlags are only supported by packs of type: SERVER_DATA");
+            if(!generatedFeatures.isEmpty()) {
+                if(packType != PackType.SERVER_DATA)
+                    throw new IllegalStateException("FeatureFlags are only supported by packs of type: SERVER_DATA");
 
-            metadataGenerator = metadataGenerator.add(FeatureFlagsMetadataSection.TYPE, new FeatureFlagsMetadataSection(generatedFeatures));
+                metadataGenerator = metadataGenerator.add(FeatureFlagsMetadataSection.TYPE, new FeatureFlagsMetadataSection(generatedFeatures));
+            }
+
+            providerConsumer.accept(metadataGenerator);
         }
 
-        providerConsumer.accept(metadataGenerator);
         providerListeners.keySet().forEach(providerType -> registerProvider(providerType, context, output, registries, providerConsumer));
     }
 
