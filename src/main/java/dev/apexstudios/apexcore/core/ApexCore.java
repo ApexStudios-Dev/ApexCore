@@ -12,6 +12,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.LecternBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -37,6 +38,10 @@ public final class ApexCore {
                 false,
                 Pack.Position.TOP
         ));
+
+        NeoForge.EVENT_BUS.addListener(PlacementRenderEvent.DefaultBlockState.class, event -> {
+            event.withProperty(HorizontalDirectionalBlock.FACING, () -> event.placeContext().getHorizontalDirection().getOpposite());
+        });
 
         NeoForge.EVENT_BUS.addListener(PlacementRenderEvent.ModifyBlockState.class, event -> {
             var blockState = event.originalBlockState();
