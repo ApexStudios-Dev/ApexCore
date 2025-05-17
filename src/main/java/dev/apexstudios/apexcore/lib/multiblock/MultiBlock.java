@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import org.jetbrains.annotations.ApiStatus;
@@ -219,5 +221,16 @@ public interface MultiBlock {
             case COUNTERCLOCKWISE_90 -> new Vector3i(position.z(), position.y(), -position.x());
             default -> position;
         };
+    }
+
+    @Nullable
+    static BlockEntity getBlockEntity(BlockGetter level, BlockPos worldPos, BlockState blockState) {
+        var origin = getOrigin(worldPos, blockState);
+        return level.getBlockEntity(origin);
+    }
+
+    @Nullable
+    static BlockEntity getBlockEntity(BlockGetter level, BlockPos worldPos) {
+        return getBlockEntity(level, worldPos, level.getBlockState(worldPos));
     }
 }

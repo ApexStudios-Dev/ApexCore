@@ -1,6 +1,7 @@
 package dev.apexstudios.apexcore.lib.block.entity;
 
 import dev.apexstudios.apexcore.lib.menu.SimpleMenu;
+import dev.apexstudios.apexcore.lib.multiblock.MultiBlock;
 import java.util.Objects;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
@@ -23,11 +24,12 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
@@ -188,11 +190,21 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
     }
     // endregion
 
-    public static ICapabilityProvider<? super InventoryBlockEntity, @Nullable Direction, IItemHandler> inventoryProvider() {
-        return (blockEntity, context) -> blockEntity.getItemHandler();
+    @Nullable
+    public static IItemHandler inventoryProvider(Level level, BlockPos pos, BlockState blockState, @Nullable BlockEntity blockEntity, @Nullable Direction facing) {
+        // while this lookup uses `MultiBlock` it works just fine for none multi block types
+        // if the given block is a multi block, the block entity is looked up using the origin point
+        // if the given block is not a multi block, the block entity is looked up using the given 'pos'
+        if(blockEntity == null)
+            blockEntity = MultiBlock.getBlockEntity(level, pos, blockState);
+        if(blockEntity instanceof InventoryBlockEntity inventory)
+            return inventory.getItemHandler();
+
+        return null;
     }
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event, Supplier<? extends BlockEntityType<? extends InventoryBlockEntity>> blockEntityType) {
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, blockEntityType.get(), inventoryProvider());
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, blockEntityType.get(), (blockEntity, facing) -> blockEntity.getItemHandler());
+        event.registerBlock(Capabilities.ItemHandler.BLOCK, InventoryBlockEntity::inventoryProvider, blockEntityType.get().getValidBlocks().toArray(Block[]::new));
     }
 }

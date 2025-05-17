@@ -12,6 +12,8 @@ import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
 public final class MultiBlockProperty extends Property<Integer> {
+    public static final String DEFAULT_NAME = "multi_block_index";
+
     private final List<Vector3ic> positions;
     private final IntegerProperty internal;
 
@@ -71,6 +73,10 @@ public final class MultiBlockProperty extends Property<Integer> {
         var builder = new Builder();
         consumer.accept(builder);
         return new MultiBlockProperty(name, builder.positions);
+    }
+
+    public static MultiBlockProperty create(Consumer<Builder> consumer) {
+        return create(DEFAULT_NAME, consumer);
     }
 
     public static final class Builder {

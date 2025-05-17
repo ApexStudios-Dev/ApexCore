@@ -10,8 +10,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelWriter;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -31,8 +29,8 @@ public interface Seat {
         return blockState.getValue(DEFAULT_PROPERTY);
     }
 
-    default BlockState setSeatOccupied(BlockState blockState, boolean occupied) {
-        return blockState.setValue(DEFAULT_PROPERTY, occupied);
+    default void setSeatOccupied(Level level, BlockPos pos, BlockState blockState, boolean occupied) {
+        level.setBlockAndUpdate(pos, blockState.setValue(DEFAULT_PROPERTY, occupied));
     }
 
     static boolean isOccupied(BlockState blockState) {
@@ -42,15 +40,11 @@ public interface Seat {
         return blockState.getValue(DEFAULT_PROPERTY);
     }
 
-    static BlockState setOccupied(BlockState blockState, boolean occupied) {
+    static void setOccupied(Level level, BlockPos pos, BlockState blockState, boolean occupied) {
         if(blockState.getBlock() instanceof Seat seat)
-            return seat.setSeatOccupied(blockState, occupied);
-
-        return blockState.setValue(DEFAULT_PROPERTY, occupied);
-    }
-
-    static void setOccupied(LevelWriter level, BlockPos pos, BlockState blockState, boolean occupied) {
-        level.setBlock(pos, setOccupied(blockState, occupied), Block.UPDATE_ALL);
+            seat.setSeatOccupied(level, pos, blockState, occupied);
+        else
+            level.setBlockAndUpdate(pos, blockState.setValue(DEFAULT_PROPERTY, occupied));
     }
 
     static void setOccupied(Level level, BlockPos pos, boolean occupied) {
