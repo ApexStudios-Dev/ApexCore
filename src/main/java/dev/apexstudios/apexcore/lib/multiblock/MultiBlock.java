@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3i;
@@ -232,5 +233,14 @@ public interface MultiBlock {
     @Nullable
     static BlockEntity getBlockEntity(BlockGetter level, BlockPos worldPos) {
         return getBlockEntity(level, worldPos, level.getBlockState(worldPos));
+    }
+
+    static VoxelShape fixShape(VoxelShape shape, BlockState blockState, BlockPos worldPos) {
+        if(!isMultiBlock(blockState))
+            return shape;
+
+        var origin = getOrigin(worldPos, blockState);
+        var offset = worldPos.subtract(origin);
+        return shape.move(offset.multiply(-1));
     }
 }

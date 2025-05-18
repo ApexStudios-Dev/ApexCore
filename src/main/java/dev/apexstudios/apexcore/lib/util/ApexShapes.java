@@ -9,14 +9,26 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public interface ApexShapes {
-    static VoxelShape join(VoxelShape shape, VoxelShape... shapes) {
+    static VoxelShape joinUnoptimized(BooleanOp op, VoxelShape shape, VoxelShape... shapes) {
         var result = shape;
 
         for(var other : shapes) {
-            result = Shapes.joinUnoptimized(result, other, BooleanOp.OR);
+            result = Shapes.joinUnoptimized(result, other, op);
         }
 
-        return result.optimize();
+        return result;
+    }
+
+    static VoxelShape joinUnoptimized(VoxelShape shape, VoxelShape... shapes) {
+        return joinUnoptimized(BooleanOp.OR, shape, shapes);
+    }
+
+    static VoxelShape join(BooleanOp op, VoxelShape shape, VoxelShape... shapes) {
+        return joinUnoptimized(op, shape, shapes).optimize();
+    }
+
+    static VoxelShape join(VoxelShape shape, VoxelShape... shapes) {
+        return joinUnoptimized(shape, shapes).optimize();
     }
 
     static VoxelShape rotateHorizontal(VoxelShape shape, Vec3 center, Direction facing) {
