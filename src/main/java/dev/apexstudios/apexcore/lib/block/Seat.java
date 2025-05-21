@@ -9,10 +9,12 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.EntityCapability;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import org.apache.commons.lang3.function.TriConsumer;
@@ -25,12 +27,23 @@ public interface Seat {
 
     BooleanProperty DEFAULT_PROPERTY = BlockStateProperties.OCCUPIED;
 
+    default Vec3 getSeatPosition(BlockGetter level, BlockPos pos, BlockState blockState) {
+        return Vec3.atCenterOf(pos);
+    }
+
     default boolean isSeatOccupied(BlockState blockState) {
         return blockState.getValue(DEFAULT_PROPERTY);
     }
 
     default void setSeatOccupied(Level level, BlockPos pos, BlockState blockState, boolean occupied) {
         level.setBlockAndUpdate(pos, blockState.setValue(DEFAULT_PROPERTY, occupied));
+    }
+
+    static Vec3 getPosition(BlockGetter level, BlockPos pos, BlockState blockState) {
+        if(blockState.getBlock() instanceof Seat seat)
+            return seat.getSeatPosition(level, pos, blockState);
+
+        return Vec3.atCenterOf(pos);
     }
 
     static boolean isOccupied(BlockState blockState) {
