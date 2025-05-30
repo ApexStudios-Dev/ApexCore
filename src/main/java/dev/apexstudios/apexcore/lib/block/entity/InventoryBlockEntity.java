@@ -2,17 +2,15 @@ package dev.apexstudios.apexcore.lib.block.entity;
 
 import dev.apexstudios.apexcore.lib.menu.SimpleMenu;
 import dev.apexstudios.apexcore.lib.multiblock.MultiBlock;
+import dev.apexstudios.apexcore.lib.util.PortingUtil;
 import java.util.Objects;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.world.Containers;
@@ -29,6 +27,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -131,17 +131,17 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
 
     // region: Overrides
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        customName = parseCustomNameSafe(tag.getCompound(TAG_NAME).orElse(null), registries);
-        inventory.deserializeNBT(registries, tag.getCompoundOrEmpty(TAG_INVENTORY));
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        customName = parseCustomNameSafe(input, TAG_NAME);
+        PortingUtil.readItemHandler(input, inventory, TAG_INVENTORY);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.storeNullable(TAG_NAME, ComponentSerialization.CODEC, registries.createSerializationContext(NbtOps.INSTANCE), customName);
-        tag.put(TAG_INVENTORY, inventory.serializeNBT(registries));
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        output.storeNullable(TAG_NAME, ComponentSerialization.CODEC, customName);
+        PortingUtil.storeItemHandler(output, inventory, TAG_INVENTORY);
     }
 
     @Override
@@ -164,10 +164,10 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public void removeComponentsFromTag(CompoundTag tag) {
-        super.removeComponentsFromTag(tag);
-        tag.remove(TAG_NAME);
-        tag.remove(TAG_INVENTORY);
+    public void removeComponentsFromTag(ValueOutput output) {
+        super.removeComponentsFromTag(output);
+        output.discard(TAG_NAME);
+        output.discard(TAG_INVENTORY);
     }
 
     @Override

@@ -94,7 +94,7 @@ public interface RecipeProvider {
 
     void hangingSign(ItemLike sign, ItemLike material);
 
-    void colorBlockWithDye(List<Item> dyes, List<Item> dyeableItems, String group);
+    void colorItemWithDye(List<Item> p_289675_, List<Item> p_289672_, String p_289641_, RecipeCategory p_423651_);
 
     void colorWithDye(List<Item> dyes, List<Item> dyeableItems, @Nullable Item dye, String group, RecipeCategory category);
 
@@ -105,6 +105,10 @@ public interface RecipeProvider {
     void banner(ItemLike banner, ItemLike material);
 
     void stainedGlassFromGlassAndDye(ItemLike stainedGlass, ItemLike dye);
+
+    void dryGhast(ItemLike p_416739_);
+
+    void harness(ItemLike p_416620_, ItemLike p_416110_);
 
     void stainedGlassPaneFromStainedGlass(ItemLike stainedGlassPane, ItemLike stainedGlass);
 

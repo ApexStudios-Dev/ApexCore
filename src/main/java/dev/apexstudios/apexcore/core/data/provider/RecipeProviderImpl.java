@@ -224,8 +224,8 @@ public final class RecipeProviderImpl implements BaseProvider, RecipeProvider {
     }
 
     @Override
-    public void colorBlockWithDye(List<Item> dyes, List<Item> dyeableItems, String group) {
-        delegate.colorBlockWithDye(dyes, dyeableItems, group);
+    public void colorItemWithDye(List<Item> p_289675_, List<Item> p_289672_, String p_289641_, RecipeCategory p_423651_) {
+        delegate.colorItemWithDye(p_289675_, p_289672_, p_289641_, p_423651_);
     }
 
     @Override
@@ -251,6 +251,16 @@ public final class RecipeProviderImpl implements BaseProvider, RecipeProvider {
     @Override
     public void stainedGlassFromGlassAndDye(ItemLike stainedGlass, ItemLike dye) {
         delegate.stainedGlassFromGlassAndDye(stainedGlass, dye);
+    }
+
+    @Override
+    public void dryGhast(ItemLike p_416739_) {
+        delegate.dryGhast(p_416739_);
+    }
+
+    @Override
+    public void harness(ItemLike p_416620_, ItemLike p_416110_) {
+        harness(p_416620_, p_416110_);
     }
 
     @Override
