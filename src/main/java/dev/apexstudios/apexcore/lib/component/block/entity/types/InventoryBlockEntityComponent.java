@@ -260,7 +260,7 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
         }
     }
 
-    private static final class Inventory extends ItemStackHandler {
+    private final class Inventory extends ItemStackHandler {
         private final int limit;
         private final Int2ObjectMap<SlotBuilder.Limit> slotLimit = new Int2ObjectOpenHashMap<>();
         private final Int2ObjectMap<SlotBuilder.Validator> slotValidator = new Int2ObjectOpenHashMap<>();
@@ -309,6 +309,8 @@ public final class InventoryBlockEntityComponent extends BaseBlockEntityComponen
 
             if(listener != null)
                 listener.invoke(slot, this);
+
+            unwrap().setChanged();
         }
     }
 }
