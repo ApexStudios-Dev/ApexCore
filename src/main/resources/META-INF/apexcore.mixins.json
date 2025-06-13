@@ -1,23 +1,18 @@
 {
-    "required": true,
-    "package": "dev.apexstudios.apexcore.mixin",
-    "compatibilityLevel": "JAVA_21",
-    "mixins": [
-        "BlockAccessor",
-        "BlockItemAccessor",
-        "BucketItemAccessor",
-        "DoorBlockMixin",
-        "DoublePlantBlockMixin",
-        "ItemCooldownsMixin",
-        "ItemStackMixin",
-        "LevelAccessor",
-        "LevelMixin",
-        "LootTableAccessor",
-        "StateDefinitionBuilderAccessor",
-        "StructureTemplateMixin"
-    ],
-    "client": [],
-    "server": [],
-    "minVersion": "0.8",
-    "minMixinExtrasVersion": "0.5.0-beta.4"
+  "required": true,
+  "package": "dev.apexstudios.apexcore.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "BedBlockMixin",
+    "BlockItemAccessor",
+    "BucketItemAccessor",
+    "ItemCooldownsMixin",
+    "LevelAccessor"
+  ],
+  "client": [
+    "BlockRenderDispatcherMixin"
+  ],
+  "server": [],
+  "minVersion": "0.8",
+  "minMixinExtrasVersion": "0.5.0-beta.4"
 }

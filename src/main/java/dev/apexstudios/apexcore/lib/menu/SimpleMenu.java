@@ -12,17 +12,17 @@ import net.neoforged.neoforge.items.SlotItemHandler;
 public class SimpleMenu extends AbstractContainerMenu {
     private final int rowCount;
 
-    public SimpleMenu(MenuType<? extends SimpleMenu> menuType, int containerId, Inventory inventory, IItemHandler itemHandler, int rowCount) {
+    public SimpleMenu(MenuType<? extends SimpleMenu> menuType, int containerId, Inventory inventory, IItemHandler itemHandler) {
         super(menuType, containerId);
 
-        this.rowCount = rowCount;
+        rowCount = itemHandler.getSlots() / SLOTS_PER_ROW;
 
         addItemHandlerSlots(itemHandler);
         addStandardInventorySlots(inventory, 8, 18 + rowCount * SLOT_SIZE + 13);
     }
 
     public SimpleMenu(MenuType<? extends SimpleMenu> menuType, int containerId, Inventory inventory, int rowCount) {
-        this(menuType, containerId, inventory, new ItemStackHandler(rowCount * SLOTS_PER_ROW), rowCount);
+        this(menuType, containerId, inventory, new ItemStackHandler(rowCount * SLOTS_PER_ROW));
     }
 
     public int rowCount() {

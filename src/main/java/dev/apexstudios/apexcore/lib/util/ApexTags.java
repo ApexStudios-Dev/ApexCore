@@ -10,7 +10,7 @@ import net.minecraft.world.level.material.Fluid;
 public interface ApexTags {
     interface Blocks {
         TagKey<Block> RENDER_PLACEMENT_WHITELIST = ApexCore.REGISTREE.tag(Registries.BLOCK, "render_placement");
-        TagKey<Block> SEAT_ORIGIN_ONLY = ApexCore.REGISTREE.tag(Registries.BLOCK, "seat_origin_only");
+        TagKey<Block> SEAT_PER_BLOCK = ApexCore.REGISTREE.tag(Registries.BLOCK, "seat_per_block");
 
         private static void register() {
 
