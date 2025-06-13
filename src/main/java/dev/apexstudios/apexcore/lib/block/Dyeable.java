@@ -20,18 +20,18 @@ public interface Dyeable {
     DyeColor DEFAULT_COLOR = DyeColor.WHITE;
 
     default DyeColor getDyedColor(BlockState blockState) {
-        return blockState.getValue(PROPERTY);
+        return blockState.getValueOrElse(PROPERTY, DEFAULT_COLOR);
     }
 
     default void setDyedColor(Level level, BlockPos pos, BlockState blockState, DyeColor color) {
-        level.setBlockAndUpdate(pos, blockState.setValue(PROPERTY, color));
+        level.setBlockAndUpdate(pos, blockState.trySetValue(PROPERTY, color));
     }
 
     static DyeColor getColor(BlockState blockState) {
         if(blockState.getBlock() instanceof Dyeable dyeable)
             return dyeable.getDyedColor(blockState);
 
-        return blockState.getValue(PROPERTY);
+        return blockState.getValueOrElse(PROPERTY, DEFAULT_COLOR);
     }
 
     static DyeColor getColor(ItemStack stack) {
@@ -42,7 +42,7 @@ public interface Dyeable {
         if(blockState.getBlock() instanceof Dyeable dyeable)
             dyeable.setDyedColor(level, pos, blockState, color);
         else
-            level.setBlockAndUpdate(pos, blockState.setValue(PROPERTY, color));
+            level.setBlockAndUpdate(pos, blockState.trySetValue(PROPERTY, color));
     }
 
     static void setColor(ItemStack stack, DyeColor color) {

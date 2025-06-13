@@ -32,11 +32,11 @@ public interface Seat {
     }
 
     default boolean isSeatOccupied(BlockState blockState) {
-        return blockState.getValue(DEFAULT_PROPERTY);
+        return blockState.getValueOrElse(DEFAULT_PROPERTY, false);
     }
 
     default void setSeatOccupied(Level level, BlockPos pos, BlockState blockState, boolean occupied) {
-        level.setBlockAndUpdate(pos, blockState.setValue(DEFAULT_PROPERTY, occupied));
+        level.setBlockAndUpdate(pos, blockState.trySetValue(DEFAULT_PROPERTY, occupied));
     }
 
     static Vec3 getPosition(BlockGetter level, BlockPos pos, BlockState blockState) {
@@ -50,14 +50,14 @@ public interface Seat {
         if(blockState.getBlock() instanceof Seat seat)
             return seat.isSeatOccupied(blockState);
 
-        return blockState.getValue(DEFAULT_PROPERTY);
+        return blockState.getValueOrElse(DEFAULT_PROPERTY, false);
     }
 
     static void setOccupied(Level level, BlockPos pos, BlockState blockState, boolean occupied) {
         if(blockState.getBlock() instanceof Seat seat)
             seat.setSeatOccupied(level, pos, blockState, occupied);
         else
-            level.setBlockAndUpdate(pos, blockState.setValue(DEFAULT_PROPERTY, occupied));
+            level.setBlockAndUpdate(pos, blockState.trySetValue(DEFAULT_PROPERTY, occupied));
     }
 
     static void setOccupied(Level level, BlockPos pos, boolean occupied) {
