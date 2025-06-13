@@ -2,7 +2,7 @@ package dev.apexstudios.apexcore.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.apexstudios.apexcore.lib.multiblock.MultiBlock;
+import dev.apexstudios.apexcore.lib.block.IRenderBreakingTextureExtension;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockModelShaper;
@@ -33,10 +33,11 @@ public class BlockRenderDispatcherMixin {
             at = @At("TAIL")
     )
     private void ApexCore$renderBreakingTexture(BlockState blockState, BlockPos pos, BlockAndTintGetter level, PoseStack pose, VertexConsumer consumer, CallbackInfo ci) {
-        if(!MultiBlock.isMultiBlock(blockState))
+        var extension = IRenderBreakingTextureExtension.of(blockState);
+
+        if(extension == null || !extension.shouldApplyBreakingTexture(level, pos, blockState))
             return;
 
-        var index = MultiBlock.getIndex(blockState);
         // TODO: is the a better way to grab this?
         // its passed in as a method param by callers
         // but everything seemingly routes back to `GameRenderer#mainCamera`
@@ -51,26 +52,27 @@ public class BlockRenderDispatcherMixin {
         var camOffsetY = pos.getY() - camY;
         var camOffsetZ = pos.getZ() - camZ;
 
-        // render the crack progress for every block in the multi block
-        MultiBlock.forEachPos(pos, blockState, (otherPos, otherBlockState) -> {
-            // current index is handled by vanilla
-            if(MultiBlock.getIndex(otherBlockState) == index)
-                return;
+        pose.pushPose();
+        // we are currently rendering at the `pos` pov
+        // undo this translation and move to `otherPos`
+        pose.translate(-camOffsetX, -camOffsetY, -camOffsetZ);
 
-            pose.pushPose();
-            // we are currently rendering at the `pos` pov
-            // undo this translation and move to `otherPos`
-            pose.translate(-camOffsetX, -camOffsetY, -camOffsetZ);
-            pose.translate(otherPos.getX() - camX, otherPos.getY() - camY, otherPos.getZ() - camZ);
+        extension.translateBreakingTexture(level, pos, blockState, (otherPos, otherBlockState) -> {
+            if(extension.shouldRenderBreakingTexture(level, pos, blockState, otherPos, otherBlockState)) {
+                pose.pushPose();
+                pose.translate(otherPos.getX() - camX, otherPos.getY() - camY, otherPos.getZ() - camZ);
 
-            var model = blockModelShaper.getBlockModel(otherBlockState);
+                var model = blockModelShaper.getBlockModel(otherBlockState);
 
-            singleThreadRandom.setSeed(otherBlockState.getSeed(otherPos));
-            singleThreadPartList.clear();
-            model.collectParts(level, otherPos, otherBlockState, singleThreadRandom, singleThreadPartList);
-            modelRenderer.tesselateBlock(level, singleThreadPartList, otherBlockState, otherPos, pose, $ -> consumer, true, OverlayTexture.NO_OVERLAY);
+                singleThreadRandom.setSeed(otherBlockState.getSeed(otherPos));
+                singleThreadPartList.clear();
+                model.collectParts(level, otherPos, otherBlockState, singleThreadRandom, singleThreadPartList);
+                modelRenderer.tesselateBlock(level, singleThreadPartList, otherBlockState, otherPos, pose, $ -> consumer, true, OverlayTexture.NO_OVERLAY);
 
-            pose.popPose();
+                pose.popPose();
+            }
         });
+
+        pose.popPose();
     }
 }
