@@ -2,7 +2,6 @@ package dev.apexstudios.apexcore.lib.block.entity;
 
 import dev.apexstudios.apexcore.lib.menu.SimpleMenu;
 import dev.apexstudios.apexcore.lib.multiblock.MultiBlock;
-import dev.apexstudios.apexcore.lib.util.PortingUtil;
 import java.util.Objects;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
@@ -37,8 +36,9 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
-    public static final String TAG_INVENTORY = "Inventory";
     public static final String TAG_NAME = "CustomName";
+    public static final String TAG_ITEMS = "Items";
+    public static final String TAG_SIZE = "Size";
 
     protected final ItemStackHandler inventory;
     @Nullable protected Component customName;
@@ -134,14 +134,14 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         customName = parseCustomNameSafe(input, TAG_NAME);
-        PortingUtil.readItemHandler(input, inventory, TAG_INVENTORY);
+        inventory.deserialize(input);
     }
 
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         output.storeNullable(TAG_NAME, ComponentSerialization.CODEC, customName);
-        PortingUtil.storeItemHandler(output, inventory, TAG_INVENTORY);
+        inventory.serialize(output);
     }
 
     @Override
@@ -167,7 +167,8 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
     public void removeComponentsFromTag(ValueOutput output) {
         super.removeComponentsFromTag(output);
         output.discard(TAG_NAME);
-        output.discard(TAG_INVENTORY);
+        output.discard(TAG_ITEMS);
+        output.discard(TAG_SIZE);
     }
 
     @Override
