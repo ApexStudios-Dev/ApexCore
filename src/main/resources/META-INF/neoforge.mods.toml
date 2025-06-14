@@ -16,7 +16,7 @@ issueTrackerURL="https://github.com/ApexStudios-Dev/Issues/issues"
 [[dependencies.apexcore]]
     modId="minecraft"
     type="required"
-    versionRange="[1.21.6,1.21.7)"
+    versionRange="[1.21.6-rc1,1.21.7)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.apexcore]]
