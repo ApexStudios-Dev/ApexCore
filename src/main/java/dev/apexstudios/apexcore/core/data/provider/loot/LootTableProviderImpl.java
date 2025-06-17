@@ -84,20 +84,18 @@ public class LootTableProviderImpl implements BaseProvider, LootTableProvider {
         var validationContext = new ValidationContext(problemCollector, LootContextParamSets.ALL_PARAMS, registryAccess);
 
         for(var lootTable : Sets.difference(requiredLootTables, factoryContext.registry.registryKeySet())) {
-            problemCollector.report("Missing built-in loot table: " + lootTable.location());
+            problemCollector.report(new net.minecraft.data.loot.LootTableProvider.MissingTableProblem(lootTable));
         }
 
         factoryContext.registry.listElements().forEach(holder -> {
             var lootTable = holder.value();
             var lootTableKey = holder.key();
-            lootTable.validate(validationContext.setContextKeySet(lootTable.getParamSet()).enterElement('{' + lootTableKey.location().toString() + '}', lootTableKey));
+            lootTable.validate(validationContext.setContextKeySet(lootTable.getParamSet()).enterElement(new ProblemReporter.RootElementPathElement(lootTableKey), lootTableKey));
         });
 
-        var problems = problemCollector.get();
-
-        if(!problems.isEmpty()) {
+        if(!problemCollector.isEmpty()) {
             var logger = LogUtils.getLogger();
-            problems.forEach((path, problem) -> logger.warn("Found validation problem in {}: {}", path, problem));
+            problemCollector.forEach((path, problem) -> logger.warn("Found validation problem in {}: {}", path, problem));
             throw new IllegalStateException("Failed to validate loot tables, see logs");
         }
 

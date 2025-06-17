@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.TriState;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
@@ -19,7 +18,7 @@ public interface ApexRenderTypes {
             RenderType.TRANSIENT_BUFFER_SIZE, true, true,
             Pipelines.ENTITY_TRANSLUCENT_NO_DEPTH,
             RenderType.CompositeState.builder()
-                    .setTextureState(new RenderStateShard.TextureStateShard(texture, TriState.FALSE, false))
+                    .setTextureState(new RenderStateShard.TextureStateShard(texture, false))
                     .setLightmapState(RenderStateShard.LIGHTMAP)
                     .setOverlayState(RenderStateShard.OVERLAY)
                     .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
