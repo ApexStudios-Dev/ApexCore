@@ -21,11 +21,6 @@ neoForge {
     }
 }
 
-repositories {
-    maven("https://maven.apexstudios.dev/private")
-    apex.neoPrMaven(this, 2297)
-}
-
 dependencies {
     implementation(libs.mixinextras.expressions)
     "dataImplementation"(libs.mixinextras.expressions)
