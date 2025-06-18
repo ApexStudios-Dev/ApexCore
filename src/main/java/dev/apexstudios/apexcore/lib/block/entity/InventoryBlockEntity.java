@@ -2,6 +2,10 @@ package dev.apexstudios.apexcore.lib.block.entity;
 
 import dev.apexstudios.apexcore.lib.menu.SimpleMenu;
 import dev.apexstudios.apexcore.lib.multiblock.MultiBlock;
+import dev.apexstudios.apexcore.lib.transfer.handler.item.IItemResourceHandler;
+import dev.apexstudios.apexcore.lib.transfer.handler.item.ItemStackResourceHandler;
+import dev.apexstudios.apexcore.lib.transfer.resource.item.ItemResource;
+import dev.apexstudios.apexcore.lib.transfer.transaction.TransactionContext;
 import java.util.Objects;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
@@ -28,11 +32,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
@@ -40,7 +40,7 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
     public static final String TAG_ITEMS = "Items";
     public static final String TAG_SIZE = "Size";
 
-    protected final ItemStackHandler inventory;
+    protected final ItemStackResourceHandler inventory;
     @Nullable protected Component customName;
 
     protected InventoryBlockEntity(BlockEntityType<? extends InventoryBlockEntity> blockEntityType, BlockPos pos, BlockState blockState, int rows, int cols) {
@@ -50,27 +50,32 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
     protected InventoryBlockEntity(BlockEntityType<? extends InventoryBlockEntity> blockEntityType, BlockPos pos, BlockState blockState, int slots) {
         super(blockEntityType, pos, blockState);
 
-        inventory = new ItemStackHandler(slots) {
+        inventory = new ItemStackResourceHandler(slots) {
             @Override
-            public int getSlotLimit(int slot) {
-                return InventoryBlockEntity.this.getSlotLimit(slot);
+            public int getDefaultCapacity(int index) {
+                return InventoryBlockEntity.this.getSlotLimit(index);
             }
 
             @Override
-            public ItemStack extractItem(int slot, int amount, boolean simulate) {
-                return canExtract(slot) ? super.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
+            public boolean supportsExtraction(int index) {
+                return InventoryBlockEntity.this.canExtract(index);
             }
 
             @Override
-            public boolean isItemValid(int slot, ItemStack stack) {
-                return canInsert(slot, stack);
+            protected int extractCommon(int index, ItemResource resource, int amount, TransactionContext transaction) {
+                return InventoryBlockEntity.this.canExtract(index) ? super.extractCommon(index, resource, amount, transaction) : 0;
             }
 
             @Override
-            protected void onContentsChanged(int slot) {
-                super.onContentsChanged(slot);
-                onSlotChanged(slot);
-                setChanged();
+            public boolean isValid(int index, ItemResource resource) {
+                return InventoryBlockEntity.this.canInsert(index, resource);
+            }
+
+            @Override
+            protected void onContentsChange(int index) {
+                super.onContentsChange(index);
+                InventoryBlockEntity.this.onSlotChanged(index);
+                InventoryBlockEntity.this.setChanged();
             }
         };
     }
@@ -98,15 +103,15 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
     // endregion
 
     // region: ItemHandler
-    public IItemHandlerModifiable getItemHandler() {
+    public ItemStackResourceHandler getItemHandler() {
         return inventory;
     }
 
     public NonNullList<ItemStack> getItems() {
-        var items = NonNullList.withSize(inventory.getSlots(), ItemStack.EMPTY);
+        var items = NonNullList.withSize(inventory.size(), ItemStack.EMPTY);
 
-        for(var i = 0; i < inventory.getSlots(); i++) {
-            items.set(i, inventory.getStackInSlot(i));
+        for(var i = 0; i < inventory.size(); i++) {
+            items.set(i, inventory.getResource(i).toStack(inventory.getAmount(i)));
         }
 
         return items;
@@ -120,7 +125,7 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
         return true;
     }
 
-    protected boolean canInsert(int slot, ItemStack stack) {
+    protected boolean canInsert(int slot, ItemResource resource) {
         return true;
     }
 
@@ -134,14 +139,14 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         customName = parseCustomNameSafe(input, TAG_NAME);
-        inventory.deserialize(input);
+        // TODO: inventory.deserialize(input);
     }
 
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         output.storeNullable(TAG_NAME, ComponentSerialization.CODEC, customName);
-        inventory.serialize(output);
+        // TODO: inventory.serialize(output);
     }
 
     @Override
@@ -152,7 +157,8 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
         var contents = components.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
 
         for(var i = 0; i < contents.getSlots(); i++) {
-            inventory.setStackInSlot(i, contents.getStackInSlot(i));
+            var stack = contents.getStackInSlot(i);
+            inventory.set(i, ItemResource.of(stack), stack.getCount());
         }
     }
 
@@ -176,8 +182,8 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
         super.preRemoveSideEffects(pos, blockState);
 
         if(level != null) {
-            for(var i = 0; i < inventory.getSlots(); i++) {
-                var stack = inventory.getStackInSlot(i);
+            for(var i = 0; i < inventory.size(); i++) {
+                var stack = inventory.getResource(i).toStack(inventory.getAmount(i));
                 Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), stack);
             }
         }
@@ -187,12 +193,12 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
         var menuType = menuType();
-        return menuType == null ? null : new SimpleMenu((MenuType<? extends SimpleMenu>) menuType, windowId, playerInventory, inventory);
+        return menuType == null ? null : new SimpleMenu((MenuType<? extends SimpleMenu>) menuType, windowId, playerInventory, inventory.toLegacy());
     }
     // endregion
 
     @Nullable
-    public static IItemHandler inventoryProvider(Level level, BlockPos pos, BlockState blockState, @Nullable BlockEntity blockEntity, @Nullable Direction facing) {
+    public static IItemResourceHandler inventoryProvider(Level level, BlockPos pos, BlockState blockState, @Nullable BlockEntity blockEntity, @Nullable Direction facing) {
         // while this lookup uses `MultiBlock` it works just fine for none multi block types
         // if the given block is a multi block, the block entity is looked up using the origin point
         // if the given block is not a multi block, the block entity is looked up using the given 'pos'
@@ -205,11 +211,11 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event, Supplier<? extends BlockEntityType<? extends InventoryBlockEntity>> blockEntityType) {
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, blockEntityType.get(), (blockEntity, facing) -> blockEntity.getItemHandler());
+        IItemResourceHandler.Capability.registerBlockEntityWithLegacyFallback(event, blockEntityType.get(), (blockEntity, facing) -> blockEntity.getItemHandler());
 
         var validBlocks = blockEntityType.get().getValidBlocks();
 
         if(!validBlocks.isEmpty())
-            event.registerBlock(Capabilities.ItemHandler.BLOCK, InventoryBlockEntity::inventoryProvider, validBlocks.toArray(Block[]::new));
+            IItemResourceHandler.Capability.registerBlockWithLegacyFallback(event, InventoryBlockEntity::inventoryProvider, validBlocks.toArray(Block[]::new));
     }
 }
