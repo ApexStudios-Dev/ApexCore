@@ -12,7 +12,6 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
-import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -37,8 +36,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
     public static final String TAG_NAME = "CustomName";
-    public static final String TAG_ITEMS = "Items";
-    public static final String TAG_SIZE = "Size";
 
     protected final ItemStackListHandler inventory;
     @Nullable protected Component customName;
@@ -99,14 +96,14 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         customName = parseCustomNameSafe(input, TAG_NAME);
-        // TODO: inventory.deserialize(input);
+        inventory.deserialize(input);
     }
 
     @Override
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         output.storeNullable(TAG_NAME, ComponentSerialization.CODEC, customName);
-        // TODO: inventory.serialize(output);
+        inventory.serialize(output);
     }
 
     @Override
@@ -133,8 +130,8 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
     public void removeComponentsFromTag(ValueOutput output) {
         super.removeComponentsFromTag(output);
         output.discard(TAG_NAME);
-        output.discard(TAG_ITEMS);
-        output.discard(TAG_SIZE);
+        // must match key inventory is serialized under
+        output.discard("stacks");
     }
 
     @Override
