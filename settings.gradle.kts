@@ -1,17 +1,8 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        mavenLocal()
-
         maven("https://maven.apexstudios.dev/releases")
-    }
-
-    resolutionStrategy {
-        eachPlugin {
-            if(requested.id.namespace == "apex-conventions") {
-                useVersion("0.1.58")
-            }
-        }
+        maven("https://maven.apexstudios.dev/private")
     }
 }
 
