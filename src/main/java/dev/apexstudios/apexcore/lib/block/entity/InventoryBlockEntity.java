@@ -2,6 +2,7 @@ package dev.apexstudios.apexcore.lib.block.entity;
 
 import dev.apexstudios.apexcore.lib.menu.SimpleMenu;
 import dev.apexstudios.apexcore.lib.multiblock.MultiBlock;
+import dev.apexstudios.apexcore.lib.util.ResourceUtil;
 import java.util.Objects;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
@@ -110,13 +111,7 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
     protected void applyImplicitComponents(DataComponentGetter components) {
         super.applyImplicitComponents(components);
         customName = components.get(DataComponents.CUSTOM_NAME);
-
-        var contents = components.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
-
-        for(var i = 0; i < contents.getSlots(); i++) {
-            var stack = contents.getStackInSlot(i);
-            inventory.set(i, ItemResource.of(stack), stack.getCount());
-        }
+        ResourceUtil.fillFrom(components.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY), inventory::set);
     }
 
     @Override
@@ -138,12 +133,8 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
     public void preRemoveSideEffects(BlockPos pos, BlockState blockState) {
         super.preRemoveSideEffects(pos, blockState);
 
-        if(level != null) {
-            for(var i = 0; i < inventory.size(); i++) {
-                var stack = inventory.getResource(i).toStack(inventory.getAmount(i));
-                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), stack);
-            }
-        }
+        if(level != null)
+            ResourceUtil.dropContents(level, pos, inventory);
     }
 
     @Nullable
