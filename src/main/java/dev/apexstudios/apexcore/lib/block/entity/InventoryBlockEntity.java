@@ -30,6 +30,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.transfer.ItemUtil;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.handlers.templates.items.ItemStackListHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
@@ -134,7 +135,7 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
         super.preRemoveSideEffects(pos, blockState);
 
         if(level != null)
-            ResourceUtil.dropContents(level, pos, inventory);
+            ItemUtil.dropContents(level, pos, inventory);
     }
 
     @Nullable
