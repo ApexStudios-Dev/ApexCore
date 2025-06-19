@@ -8,7 +8,7 @@ plugins {
 
 group = "dev.apexstudios"
 
-apex.neoVersion("21.6.139-beta-pr-1115-feat-handler-rework", "1.21.5", "2025.06.15")
+apex.neoVersion("21.6.140-beta-pr-1115-feat-handler-rework", "1.21.5", "2025.06.15")
 apex.extendCompilerErrors()
 
 val single = ApexSingleExtension.getOrCreate(project)
