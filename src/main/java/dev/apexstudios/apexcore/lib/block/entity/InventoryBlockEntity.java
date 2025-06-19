@@ -206,6 +206,10 @@ public class InventoryBlockEntity extends BlockEntity implements MenuProvider {
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event, Supplier<? extends BlockEntityType<? extends InventoryBlockEntity>> blockEntityType) {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, blockEntityType.get(), (blockEntity, facing) -> blockEntity.getItemHandler());
-        event.registerBlock(Capabilities.ItemHandler.BLOCK, InventoryBlockEntity::inventoryProvider, blockEntityType.get().getValidBlocks().toArray(Block[]::new));
+
+        var validBlocks = blockEntityType.get().getValidBlocks();
+
+        if(!validBlocks.isEmpty())
+            event.registerBlock(Capabilities.ItemHandler.BLOCK, InventoryBlockEntity::inventoryProvider, validBlocks.toArray(Block[]::new));
     }
 }
