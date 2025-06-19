@@ -7,14 +7,17 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.transfer.handlers.resources.IIndexModifier;
 import net.neoforged.neoforge.transfer.handlers.resources.IResourceHandler;
 import net.neoforged.neoforge.transfer.resources.ItemResource;
+import org.jetbrains.annotations.ApiStatus;
 
 public interface ResourceUtil {
     // Copied from 'Containers' updated to support 'IResourceHandler<ItemResource>'
+    @ApiStatus.ScheduledForRemoval // TODO: use ItemUtils once variant there are made public
     static void dropContents(Level level, BlockPos pos, IResourceHandler<ItemResource> handler) {
         dropContents(level, pos.getX(), pos.getY(), pos.getZ(), handler);
     }
 
     // Copied from 'Containers' updated to support 'IResourceHandler<ItemResource>'
+    @ApiStatus.ScheduledForRemoval // TODO: use ItemUtils once variant there are made public
     static void dropContents(Level level, double x, double y, double z, IResourceHandler<ItemResource> handler) {
         var size = handler.size();
 
