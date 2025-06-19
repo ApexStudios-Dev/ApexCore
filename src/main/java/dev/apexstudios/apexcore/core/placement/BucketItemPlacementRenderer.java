@@ -19,7 +19,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.transfer.FluidUtil;
+import net.neoforged.neoforge.transfer.handlers.templates.contexts.StackItemContext;
 
 final class BucketItemPlacementRenderer implements BlockPlacementRenderer {
     @Override
@@ -42,12 +43,12 @@ final class BucketItemPlacementRenderer implements BlockPlacementRenderer {
         var enabledFeatures = level.enabledFeatures();
         var canBePlaced = new AtomicBoolean(stack.isItemEnabled(enabledFeatures) && (!(item.content instanceof FeatureElement element) || element.isEnabled(level.enabledFeatures())));
         var pos = new AtomicReference<>(fluidResult.getBlockPos());
-        var containedFluidStack = FluidUtil.getFluidContained(stack);
+        var containedFluid = FluidUtil.getFluidFromContext(new StackItemContext(stack));
 
         if(!accessor.ApexCore$canBlockContainFluid(player, level, pos.get(), level.getBlockState(pos.get())))
             pos.set(pos.get().relative(fluidResult.getDirection()));
 
-        if(containedFluidStack.isPresent() && fluid.getFluidType().isVaporizedOnPlacement(level, pos.get(), containedFluidStack.get()))
+        if(fluid.getFluidType().isVaporizedOnPlacement(level, pos.get(), containedFluid.toStack()))
             canBePlaced.set(false);
         else if(level.dimensionType().ultraWarm() && fluid.is(FluidTags.WATER))
             canBePlaced.set(false);
