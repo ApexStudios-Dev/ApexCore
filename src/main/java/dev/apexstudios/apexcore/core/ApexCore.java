@@ -3,7 +3,6 @@ package dev.apexstudios.apexcore.core;
 import dev.apexstudios.apexcore.core.seat.SeatSetup;
 import dev.apexstudios.apexcore.lib.placement.PlacementRenderEvent;
 import dev.apexstudios.apexcore.lib.registree.Registree;
-import dev.apexstudios.apexcore.lib.transfer.handler.item.IItemResourceHandler;
 import dev.apexstudios.apexcore.lib.util.ApexPackSources;
 import dev.apexstudios.apexcore.lib.util.ApexTags;
 import net.minecraft.core.component.DataComponents;
@@ -17,7 +16,6 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.LecternBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 
@@ -40,8 +38,6 @@ public final class ApexCore {
                 false,
                 Pack.Position.TOP
         ));
-
-        modBus.addListener(RegisterCapabilitiesEvent.class, event -> event.setProxyable(IItemResourceHandler.Capability.BLOCK));
 
         NeoForge.EVENT_BUS.addListener(PlacementRenderEvent.DefaultBlockState.class, event -> {
             event.withProperty(HorizontalDirectionalBlock.FACING, () -> event.placeContext().getHorizontalDirection().getOpposite());
