@@ -21,10 +21,7 @@ public interface PlacementRendererRegistry {
             registrar.accept(new BucketItemPlacementRenderer());
         });
 
-        NeoForge.EVENT_BUS.addListener(RenderLevelStageEvent.class, event -> {
-            if(event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES)
-                return;
-
+        NeoForge.EVENT_BUS.addListener(RenderLevelStageEvent.AfterParticles.class, event -> {
             var camera = event.getCamera();
             var pose = event.getPoseStack();
 
