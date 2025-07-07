@@ -22,7 +22,7 @@ issueTrackerURL="https://github.com/ApexStudios-Dev/Issues/issues"
 [[dependencies.apexcore]]
     modId="neoforge"
     type="required"
-    versionRange="[21.6-beta,21.7)"
+    versionRange="[21.6.16-beta,21.7)"
     ordering="NONE"
     side="BOTH"
 
