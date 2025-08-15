@@ -9,9 +9,11 @@ import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ExplosionParticleInfo;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.TickRateManager;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -49,7 +51,7 @@ public final class FakeLevel extends Level {
     private final Long2ObjectMap<BlockEntity> blockEntities = new Long2ObjectOpenHashMap<>();
 
     public FakeLevel(Level delegate) {
-        super((WritableLevelData) delegate.getLevelData(), delegate.dimension(), delegate.registryAccess(), delegate.dimensionTypeRegistration(), delegate.isClientSide, delegate.isDebug(), 0L, 0);
+        super((WritableLevelData) delegate.getLevelData(), delegate.dimension(), delegate.registryAccess(), delegate.dimensionTypeRegistration(), delegate.isClientSide(), delegate.isDebug(), 0L, 0);
 
         this.delegate = delegate;
     }
@@ -188,7 +190,7 @@ public final class FakeLevel extends Level {
     }
 
     @Override
-    public void explode(@Nullable Entity source, @Nullable DamageSource damageSource, @Nullable ExplosionDamageCalculator damageCalculator, double x, double y, double z, float radius, boolean fire, ExplosionInteraction explosionInteraction, ParticleOptions smallExplosionParticles, ParticleOptions largeExplosionParticles, Holder<SoundEvent> explosionSound) {
+    public void explode(@Nullable Entity source, @Nullable DamageSource damageSource, @Nullable ExplosionDamageCalculator damageCalculator, double x, double y, double z, float radius, boolean fire, ExplosionInteraction explosionInteraction, ParticleOptions smallExplosionParticles, ParticleOptions largeExplosionParticles, WeightedList<ExplosionParticleInfo> weightedList, Holder<SoundEvent> explosionSound) {
 
     }
 

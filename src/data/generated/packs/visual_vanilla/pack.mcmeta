@@ -1,6 +1,7 @@
 {
   "pack": {
     "description": "Enables the Placement Visualizer for all of Vanilla Minecraft",
-    "pack_format": 81
+    "max_format": 84,
+    "min_format": 84
   }
 }

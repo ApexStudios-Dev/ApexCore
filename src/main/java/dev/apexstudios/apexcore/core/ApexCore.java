@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.LecternBlock;
@@ -48,9 +47,9 @@ public final class ApexCore {
 
             if (blockState.is(Blocks.LECTERN)) {
                 var stack = event.placeContext().getItemInHand();
-                var customData = stack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY);
+                var customData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
 
-                if (customData.contains("Book"))
+                if (customData != null && customData.contains("Book"))
                     event.withProperty(LecternBlock.HAS_BOOK, () -> true);
             }
         });

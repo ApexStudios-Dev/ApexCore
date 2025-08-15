@@ -55,7 +55,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.flag.FeatureFlag;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -444,19 +443,19 @@ public class Registree {
         return registerEntity(registryName, factory, category, UnaryOperator.identity());
     }
 
-    public final DeferredItem<SpawnEggItem> registerSpawnEggItem(DeferredHolder<EntityType<?>, EntityType<? extends Mob>> entityType, Supplier<Item.Properties> propertiesFactory) {
-        return registerItem(entityType.getId().getPath() + "_spawn_egg", properties -> new SpawnEggItem(entityType.value(), properties), propertiesFactory);
+    public final DeferredItem<SpawnEggItem> registerSpawnEggItem(DeferredHolder<EntityType<?>, EntityType<?>> entityType, Supplier<Item.Properties> propertiesFactory) {
+        return registerItem(entityType.getId().getPath() + "_spawn_egg", properties -> new SpawnEggItem(properties.spawnEgg(entityType.value())), propertiesFactory);
     }
 
-    public final DeferredItem<SpawnEggItem> registerSpawnEggItem(DeferredHolder<EntityType<?>, EntityType<? extends Mob>> entityType, UnaryOperator<Item.Properties> propertiesMutator) {
+    public final DeferredItem<SpawnEggItem> registerSpawnEggItem(DeferredHolder<EntityType<?>, EntityType<?>> entityType, UnaryOperator<Item.Properties> propertiesMutator) {
         return registerSpawnEggItem(entityType, () -> propertiesMutator.apply(new Item.Properties()));
     }
 
-    public final DeferredItem<SpawnEggItem> registerSpawnEggItem(DeferredHolder<EntityType<?>, EntityType<? extends Mob>> entityType, Item.Properties properties) {
+    public final DeferredItem<SpawnEggItem> registerSpawnEggItem(DeferredHolder<EntityType<?>, EntityType<?>> entityType, Item.Properties properties) {
         return registerSpawnEggItem(entityType, () -> properties);
     }
 
-    public final DeferredItem<SpawnEggItem> registerSpawnEggItem(DeferredHolder<EntityType<?>, EntityType<? extends Mob>> entityType) {
+    public final DeferredItem<SpawnEggItem> registerSpawnEggItem(DeferredHolder<EntityType<?>, EntityType<?>> entityType) {
         return registerSpawnEggItem(entityType, Item.Properties::new);
     }
     // endregion

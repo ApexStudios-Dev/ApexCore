@@ -124,7 +124,11 @@ public interface BlockPlacementRenderer {
         pose.pushPose();
         pose.translate(pos.getX(), pos.getY(), pos.getZ());
 
-        Minecraft.getInstance().getBlockEntityRenderDispatcher().render(blockEntity, 0F, pose, buffers);
+        // TODO: Is this the correct way to render a block entity now?
+        var client = Minecraft.getInstance();
+        var nodes = client.gameRenderer.getSubmitNodeStorage();
+        client.getBlockEntityRenderDispatcher().submit(blockEntity, 0F, pose, null, nodes);
+        client.gameRenderer.getFeatureRenderDispatcher().renderAllFeatures();
 
         pose.popPose();
     }

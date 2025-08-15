@@ -126,7 +126,7 @@ public sealed abstract class PackGeneratorImpl<TSelf extends PackGenerator<TSelf
 
             var generatedFeatures = context.enabledFeatures().subtract(FeatureFlags.VANILLA_SET);
             var packType = packType();
-            var metadataGenerator = new PackMetadataGenerator(output).add(PackMetadataSection.TYPE, new PackMetadataSection(description, DetectedVersion.BUILT_IN.packVersion(packType)));
+            var metadataGenerator = new PackMetadataGenerator(output).add(PackMetadataSection.forPackType(packType), new PackMetadataSection(description, DetectedVersion.BUILT_IN.packVersion(packType).minorRange()));
 
             if(!generatedFeatures.isEmpty()) {
                 if(packType != PackType.SERVER_DATA)
