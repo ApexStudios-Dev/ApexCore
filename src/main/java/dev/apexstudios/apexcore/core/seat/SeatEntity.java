@@ -114,7 +114,7 @@ public final class SeatEntity extends Entity {
         if(Seat.isOccupied(blockState))
             return false;
 
-        if(!level.isClientSide) {
+        if(!level.isClientSide()) {
             var entity = SeatSetup.ENTITY.value().create(level, EntitySpawnReason.SPAWN_ITEM_USE);
 
             if(entity == null)
@@ -154,7 +154,7 @@ public final class SeatEntity extends Entity {
         if(!Seat.isOccupied(blockState))
             return false;
 
-        if(!level.isClientSide) {
+        if(!level.isClientSide()) {
             var seats = level.getEntities(SeatSetup.ENTITY.value(), new AABB(pos).inflate(.5D), Predicates.alwaysTrue());
 
             for(var entity : seats) {
