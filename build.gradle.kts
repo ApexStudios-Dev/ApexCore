@@ -1,9 +1,8 @@
 import dev.apexstudios.gradle.single.ApexSingleExtension
 
 plugins {
-    id("apex-conventions.neoforge") version "0.1.69"
-    id("apex-conventions.immaculate") version "0.1.69"
-    id("apex-conventions.maven-publishing") version "0.1.69"
+    id("apex-conventions.neoforge") version "0.1.74"
+    id("apex-conventions.maven-publishing") version "0.1.74"
 }
 
 group = "dev.apexstudios"
