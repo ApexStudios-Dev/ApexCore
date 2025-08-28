@@ -7,7 +7,7 @@ plugins {
 
 group = "dev.apexstudios"
 
-apex.neoVersion("21.9.0-alpha.25w34b.20250821.203312", "1.21.8", "2025.07.20")
+apex.neoVersion("21.9.0-alpha.25w34b.20250827.140505", "1.21.8", "2025.07.20")
 apex.extendCompilerErrors()
 
 val single = ApexSingleExtension.getOrCreate(project)
