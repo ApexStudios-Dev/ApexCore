@@ -9,20 +9,20 @@ import net.minecraft.world.level.block.state.properties.WoodType;
 
 public final class WoodTypeBuilder {
     private final BlockSetTypeBuilder blockSetType = BlockSetTypeBuilder.builder();
-    private SoundType soundType = SoundType.WOOD;
-    private SoundType hangingSignSoundType = SoundType.HANGING_SIGN;
+    private Supplier<SoundType> soundType = () -> SoundType.WOOD;
+    private Supplier<SoundType> hangingSignSoundType = () -> SoundType.HANGING_SIGN;
     private Supplier<SoundEvent> fenceGateClose = () -> SoundEvents.FENCE_GATE_CLOSE;
     private Supplier<SoundEvent> fenceGateOpen = () -> SoundEvents.FENCE_GATE_OPEN;
 
     private WoodTypeBuilder() {
     }
 
-    public WoodTypeBuilder soundType(SoundType soundType) {
+    public WoodTypeBuilder soundType(Supplier<SoundType> soundType) {
         this.soundType = soundType;
         return this;
     }
 
-    public WoodTypeBuilder hangingSignSoundType(SoundType hangingSignSoundType) {
+    public WoodTypeBuilder hangingSignSoundType(Supplier<SoundType> hangingSignSoundType) {
         this.hangingSignSoundType = hangingSignSoundType;
         return this;
     }
@@ -43,22 +43,22 @@ public final class WoodTypeBuilder {
     }
 
     public WoodTypeBuilder copy(WoodType woodType) {
-        return soundType(woodType.soundType())
-                .hangingSignSoundType(woodType.hangingSignSoundType())
+        return soundType(woodType::soundType)
+                .hangingSignSoundType(woodType::hangingSignSoundType)
                 .fenceGateClose(woodType::fenceGateClose)
                 .fenceGateOpen(woodType::fenceGateOpen)
                 .blockSetType(builder -> builder.copy(woodType.setType()));
     }
 
     public WoodType build(String woodTypeName, String blockSetTypeName) {
-        return WoodType.register(new WoodType(
+        return new WoodType(
                 woodTypeName,
                 blockSetType.build(blockSetTypeName),
-                soundType,
-                hangingSignSoundType,
+                soundType.get(),
+                hangingSignSoundType.get(),
                 fenceGateClose.get(),
                 fenceGateOpen.get()
-        ));
+        );
     }
 
     public WoodType build(String name) {

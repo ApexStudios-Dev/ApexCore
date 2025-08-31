@@ -12,7 +12,7 @@ public final class BlockSetTypeBuilder {
     private boolean canOpenByWindCharge = true;
     private boolean canButtonBeActivatedByArrows = true;
     private BlockSetType.PressurePlateSensitivity pressurePlateSensitivity = BlockSetType.PressurePlateSensitivity.EVERYTHING;
-    private SoundType soundType = SoundType.WOOD;
+    private Supplier<SoundType> soundType = () -> SoundType.WOOD;
     private Supplier<SoundEvent> doorClose = () -> SoundEvents.WOODEN_DOOR_CLOSE;
     private Supplier<SoundEvent> doorOpen = () -> SoundEvents.WOODEN_DOOR_OPEN;
     private Supplier<SoundEvent> trapDoorClose = () -> SoundEvents.WOODEN_TRAPDOOR_CLOSE;
@@ -40,7 +40,7 @@ public final class BlockSetTypeBuilder {
         return this;
     }
 
-    public BlockSetTypeBuilder soundType(SoundType soundType) {
+    public BlockSetTypeBuilder soundType(Supplier<SoundType> soundType) {
         this.soundType = soundType;
         return this;
     }
@@ -94,7 +94,7 @@ public final class BlockSetTypeBuilder {
         return canOpenByHand(blockSetType.canOpenByHand())
                 .canOpenByWindCharge(blockSetType.canOpenByWindCharge())
                 .canButtonBeActivatedByArrows(blockSetType.canButtonBeActivatedByArrows())
-                .soundType(blockSetType.soundType())
+                .soundType(blockSetType::soundType)
                 .doorClose(blockSetType::doorClose)
                 .doorOpen(blockSetType::doorOpen)
                 .pressurePlateSensitivity(blockSetType.pressurePlateSensitivity())
@@ -107,13 +107,13 @@ public final class BlockSetTypeBuilder {
     }
 
     public BlockSetType build(String name) {
-        return BlockSetType.register(new BlockSetType(
+        return new BlockSetType(
                 name,
                 canOpenByHand,
                 canOpenByWindCharge,
                 canButtonBeActivatedByArrows,
                 pressurePlateSensitivity,
-                soundType,
+                soundType.get(),
                 doorClose.get(),
                 doorOpen.get(),
                 trapDoorClose.get(),
@@ -122,7 +122,7 @@ public final class BlockSetTypeBuilder {
                 pressurePlateClickOn.get(),
                 buttonClickOff.get(),
                 buttonClickOn.get()
-        ));
+        );
     }
 
     public static BlockSetTypeBuilder builder() {
