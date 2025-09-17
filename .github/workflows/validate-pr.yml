@@ -63,4 +63,4 @@ jobs:
           java-version: 21
           java-vendor: temurin
           neoforge-version: 21.5.0-alpha.1.21.9-pre1.20250917.001820
-          neoforge-maven: 'https://prmaven.neoforged.net/NeoForge/2639'
+          neoforge-maven: 'https://prmaven.neoforged.net/NeoForge/pr2639'
