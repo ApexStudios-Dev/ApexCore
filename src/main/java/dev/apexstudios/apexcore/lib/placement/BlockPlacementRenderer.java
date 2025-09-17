@@ -5,9 +5,9 @@ import dev.apexstudios.apexcore.core.placement.FluidVertexConsumer;
 import dev.apexstudios.apexcore.core.placement.GhostVertexConsumer;
 import dev.apexstudios.apexcore.lib.level.FakeLevel;
 import dev.apexstudios.apexcore.lib.util.ApexRenderTypes;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
@@ -33,20 +33,18 @@ import org.jetbrains.annotations.Nullable;
 
 @FunctionalInterface
 public interface BlockPlacementRenderer {
-    boolean renderForHand(Level level, Player player, InteractionHand hand, BlockHitResult hitResult, Camera camera, PoseStack pose, MultiBufferSource.BufferSource buffers);
+    boolean renderForHand(Level level, Player player, InteractionHand hand, BlockHitResult hitResult, CameraRenderState camera, PoseStack pose, MultiBufferSource.BufferSource buffers);
 
-    static void renderAt(Camera camera, PoseStack pose, Runnable runnable) {
-        var camPos = camera.getPosition();
-
+    static void renderAt(CameraRenderState camera, PoseStack pose, Runnable runnable) {
         pose.pushPose();
-        pose.translate(-camPos.x, -camPos.y, -camPos.z);
+        pose.translate(-camera.pos.x, -camera.pos.y, -camera.pos.z);
 
         runnable.run();
 
         pose.popPose();
     }
 
-    static void renderLevel(BlockPlaceContext context, PoseStack pose, boolean canBePlaced) {
+    static void renderLevel(BlockPlaceContext context, CameraRenderState camera, PoseStack pose, boolean canBePlaced) {
         var buffers = Minecraft.getInstance().renderBuffers().bufferSource();
 
         renderBlockStates(context, buffers, pose, canBePlaced);
@@ -55,7 +53,7 @@ public interface BlockPlacementRenderer {
         renderFluidStates(context, buffers, pose, canBePlaced);
         buffers.endBatch();
 
-        renderBlockEntities(context, buffers, pose, canBePlaced);
+        renderBlockEntities(context, camera, buffers, pose, canBePlaced);
         buffers.endBatch();
     }
 
@@ -110,13 +108,20 @@ public interface BlockPlacementRenderer {
         pose.popPose();
     }
 
-    static void renderBlockEntities(BlockPlaceContext context, MultiBufferSource.BufferSource buffers, PoseStack pose, boolean canBePlaced) {
+    static void renderBlockEntities(BlockPlaceContext context, CameraRenderState camera, MultiBufferSource.BufferSource buffers, PoseStack pose, boolean canBePlaced) {
         var level = (FakeLevel) context.getLevel();
-        level.positions().forEach(pos -> renderBlockEntity(level.getBlockEntity(pos), buffers, pose, canBePlaced));
+        level.positions().forEach(pos -> renderBlockEntity(level.getBlockEntity(pos), camera, buffers, pose, canBePlaced));
     }
 
-    static void renderBlockEntity(@Nullable BlockEntity blockEntity, MultiBufferSource.BufferSource buffers, PoseStack pose, boolean canBePlaced) {
+    static void renderBlockEntity(@Nullable BlockEntity blockEntity, CameraRenderState camera, MultiBufferSource.BufferSource buffers, PoseStack pose, boolean canBePlaced) {
         if(blockEntity == null)
+            return;
+
+        var client = Minecraft.getInstance();
+        var dispatcher = client.getBlockEntityRenderDispatcher();
+        var renderState = dispatcher.tryExtractRenderState(blockEntity, 0F, null, null);
+
+        if(renderState == null)
             return;
 
         var pos = blockEntity.getBlockPos();
@@ -125,9 +130,8 @@ public interface BlockPlacementRenderer {
         pose.translate(pos.getX(), pos.getY(), pos.getZ());
 
         // TODO: Is this the correct way to render a block entity now?
-        var client = Minecraft.getInstance();
         var nodes = client.gameRenderer.getSubmitNodeStorage();
-        client.getBlockEntityRenderDispatcher().submit(blockEntity, 0F, pose, null, nodes);
+        dispatcher.submit(renderState, pose, nodes, camera);
         client.gameRenderer.getFeatureRenderDispatcher().renderAllFeatures();
 
         pose.popPose();

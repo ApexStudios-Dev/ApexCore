@@ -6,8 +6,8 @@ import dev.apexstudios.apexcore.lib.util.ApexTags;
 import dev.apexstudios.apexcore.mixin.BucketItemAccessor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -23,7 +23,7 @@ import net.neoforged.neoforge.fluids.FluidUtil;
 
 final class BucketItemPlacementRenderer implements BlockPlacementRenderer {
     @Override
-    public boolean renderForHand(Level level, Player player, InteractionHand hand, BlockHitResult hitResult, Camera camera, PoseStack pose, MultiBufferSource.BufferSource buffers) {
+    public boolean renderForHand(Level level, Player player, InteractionHand hand, BlockHitResult hitResult, CameraRenderState camera, PoseStack pose, MultiBufferSource.BufferSource buffers) {
         var stack = player.getItemInHand(hand);
 
         if(!(stack.getItem() instanceof BucketItem item))

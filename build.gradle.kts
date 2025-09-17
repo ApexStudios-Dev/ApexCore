@@ -7,7 +7,7 @@ plugins {
 
 group = "dev.apexstudios"
 
-apex.neoVersion("21.9.0-alpha.25w34b.20250827.140505", "1.21.8", "2025.07.20")
+apex.neoVersion("21.5.0-alpha.1.21.9-pre1.20250917.001820", "1.21.8", "2025.07.20")
 apex.extendCompilerErrors()
 
 val single = ApexSingleExtension.getOrCreate(project)
@@ -18,6 +18,10 @@ neoForge {
         from(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg"))
         publish(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg"))
     }
+}
+
+repositories {
+    apex.neoPrMaven(this, 2639)
 }
 
 dependencies {

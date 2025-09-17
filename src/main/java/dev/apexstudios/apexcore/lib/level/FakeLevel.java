@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.chunk.ChunkSource;
 import net.minecraft.world.level.entity.LevelEntityGetter;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -37,6 +38,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.level.storage.WritableLevelData;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Scoreboard;
@@ -161,6 +163,16 @@ public final class FakeLevel extends Level {
             blockEntity.setRemoved();
             blockEntities.remove(key);
         }
+    }
+
+    @Override
+    public void setRespawnData(LevelData.RespawnData respawnData) {
+
+    }
+
+    @Override
+    public LevelData.RespawnData getRespawnData() {
+        return delegate.getRespawnData();
     }
 
     @Override
@@ -297,6 +309,11 @@ public final class FakeLevel extends Level {
     @Override
     public LevelTickAccess<Fluid> getFluidTicks() {
         return BlackholeTickAccess.emptyLevelList();
+    }
+
+    @Override
+    public WorldBorder getWorldBorder() {
+        return delegate.getWorldBorder();
     }
     // endregion
 }

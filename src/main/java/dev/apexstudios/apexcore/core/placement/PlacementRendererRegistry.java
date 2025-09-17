@@ -3,9 +3,9 @@ package dev.apexstudios.apexcore.core.placement;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.apexstudios.apexcore.lib.placement.BlockPlacementRenderer;
 import dev.apexstudios.apexcore.lib.placement.PlacementRenderEvent;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -43,7 +43,7 @@ public interface PlacementRendererRegistry {
         });
     }
 
-    private static boolean renderForHand(Iterable<BlockPlacementRenderer> renderers, Level level, Player player, InteractionHand hand, BlockHitResult hitResult, Camera camera, PoseStack pose, MultiBufferSource.BufferSource buffers) {
+    private static boolean renderForHand(Iterable<BlockPlacementRenderer> renderers, Level level, Player player, InteractionHand hand, BlockHitResult hitResult, CameraRenderState camera, PoseStack pose, MultiBufferSource.BufferSource buffers) {
         for(var renderer : renderers) {
             if(renderer.renderForHand(level, player, hand, hitResult, camera, pose, buffers))
                 return true;

@@ -38,10 +38,11 @@ public abstract class TemplateClientMultiBlockExtensions implements IClientBlock
         if(shouldApplyCrack(level, pos, blockState)) {
             var side = blockHit.getDirection();
 
-            translate(level, pos, blockState, (otherPos, otherBlockState) -> {
+            // TODO: Where did 'manager.crack' go
+            /*translate(level, pos, blockState, (otherPos, otherBlockState) -> {
                 if(shouldApplyCrack(level, otherPos, otherBlockState))
                     manager.crack(otherPos, side);
-            });
+            });*/
 
             return true;
         }

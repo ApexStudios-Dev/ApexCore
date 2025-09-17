@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -28,7 +28,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 final class BlockItemPlacementRenderer implements BlockPlacementRenderer {
     @Override
-    public boolean renderForHand(Level level, Player player, InteractionHand hand, BlockHitResult hitResult, Camera camera, PoseStack pose, MultiBufferSource.BufferSource buffers) {
+    public boolean renderForHand(Level level, Player player, InteractionHand hand, BlockHitResult hitResult, CameraRenderState camera, PoseStack pose, MultiBufferSource.BufferSource buffers) {
         var stack = player.getItemInHand(hand);
 
         if(!(stack.getItem() instanceof BlockItem item))
@@ -50,7 +50,7 @@ final class BlockItemPlacementRenderer implements BlockPlacementRenderer {
             contextPositions.forEach(pos -> context.getLevel().setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_NONE));
         }
 
-        BlockPlacementRenderer.renderAt(camera, pose, () -> BlockPlacementRenderer.renderLevel(context, pose, canBePlaced.get()));
+        BlockPlacementRenderer.renderAt(camera, pose, () -> BlockPlacementRenderer.renderLevel(context, camera, pose, canBePlaced.get()));
         return true;
     }
 
