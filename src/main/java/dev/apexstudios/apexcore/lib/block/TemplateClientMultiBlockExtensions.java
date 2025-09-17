@@ -1,8 +1,11 @@
 package dev.apexstudios.apexcore.lib.block;
 
 import java.util.function.BiConsumer;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.particle.TerrainParticle;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -38,11 +41,10 @@ public abstract class TemplateClientMultiBlockExtensions implements IClientBlock
         if(shouldApplyCrack(level, pos, blockState)) {
             var side = blockHit.getDirection();
 
-            // TODO: Where did 'manager.crack' go
-            /*translate(level, pos, blockState, (otherPos, otherBlockState) -> {
+            translate(level, pos, blockState, (otherPos, otherBlockState) -> {
                 if(shouldApplyCrack(level, otherPos, otherBlockState))
-                    manager.crack(otherPos, side);
-            });*/
+                    crack((ClientLevel) level, otherPos, side, manager);
+            });
 
             return true;
         }
@@ -58,5 +60,37 @@ public abstract class TemplateClientMultiBlockExtensions implements IClientBlock
     @Override
     public final void translateBreakingTexture(BlockAndTintGetter level, BlockPos pos, BlockState blockState, BiConsumer<BlockPos, BlockState> consumer) {
         translate(level, pos, blockState, consumer);
+    }
+
+    protected static void crack(ClientLevel level, BlockPos pos, Direction direction, ParticleEngine manager) {
+        // Copied from ClientLevel#addBreakingBlockEffect
+        var blockstate = level.getBlockState(pos);
+        var x = pos.getX();
+        var y = pos.getY();
+        var z = pos.getZ();
+        var offset = .1F;
+        var bounds = blockstate.getShape(level, pos).bounds();
+        var crackX = x + level.random.nextDouble() * (bounds.maxX - bounds.minX - .2F) + offset + bounds.minX;
+        var crackY = y + level.random.nextDouble() * (bounds.maxY - bounds.minY - .2F) + offset + bounds.minY;
+        var crackZ = z + level.random.nextDouble() * (bounds.maxZ - bounds.minZ - .2F) + offset + bounds.minZ;
+
+        if(direction == Direction.DOWN)
+            crackY = y + bounds.minY - offset;
+        if(direction == Direction.UP)
+            crackY = y + bounds.maxY + offset;
+        if(direction == Direction.NORTH)
+            crackZ = z + bounds.minZ - offset;
+        if(direction == Direction.SOUTH)
+            crackZ = z + bounds.maxZ + offset;
+        if(direction == Direction.WEST)
+            crackX = x + bounds.minX - offset;
+        if(direction == Direction.EAST)
+            crackX = x + bounds.maxX + offset;
+
+        manager.add(new TerrainParticle(level, crackX, crackY, crackZ, 0D, 0D, 0D, blockstate, pos)
+                .updateSprite(blockstate, pos)
+                .setPower(.2F)
+                .scale(.6F)
+        );
     }
 }
