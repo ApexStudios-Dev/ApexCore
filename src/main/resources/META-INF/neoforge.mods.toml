@@ -16,13 +16,13 @@ issueTrackerURL="https://github.com/ApexStudios-Dev/Issues/issues"
 [[dependencies.apexcore]]
     modId="minecraft"
     type="required"
-    versionRange="[1.21.9-pre1,1.21.10)"
+    versionRange="[1.21.9-pre3,1.21.10)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.apexcore]]
     modId="neoforge"
     type="required"
-    versionRange="[21.5-alpha,21.10)"
+    versionRange="[21.9-alpha,21.10)"
     ordering="NONE"
     side="BOTH"
 
