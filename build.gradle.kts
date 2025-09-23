@@ -23,14 +23,3 @@ neoForge {
 repositories {
     apex.neoPrMaven(this, 2639)
 }
-
-dependencies {
-    implementation(libs.mixinextras.expressions)
-    "dataImplementation"(libs.mixinextras.expressions)
-    annotationProcessor(libs.mixinextras.expressions)
-    jarJar(libs.mixinextras.expressions) {
-        artifact {
-            classifier = "slim"
-        }
-    }
-}
