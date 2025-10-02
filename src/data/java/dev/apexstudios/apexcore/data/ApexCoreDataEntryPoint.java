@@ -16,7 +16,6 @@ import net.minecraft.world.item.BucketItem;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.Tags;
 
 @Mod(value = ApexCore.ID, dist = Dist.CLIENT)
@@ -38,20 +37,6 @@ public final class ApexCoreDataEntryPoint {
                         addTagToNamespace(context, provider, ApexTags.Blocks.RENDER_PLACEMENT_WHITELIST, ResourceLocation.DEFAULT_NAMESPACE, block -> {
                             var item = block.asItem();
                             return item instanceof BlockItem || item instanceof BucketItem;
-                        });
-                    })
-                    .providing(ProviderTypes.FLUID_TAGS, (context, provider) -> {
-                        addTagToNamespace(context, provider, ApexTags.Fluids.RENDER_PLACEMENT_WHITELIST, ResourceLocation.DEFAULT_NAMESPACE, fluid -> {
-                            // neo force enables milk in datagen
-                            // we dont want this as it causes the tag to fail to load
-                            // due to missing references when milk is not enabled
-                            //
-                            // use isBound to future proof if this is ever changed
-                            // we wouldnt then try to query the unbound value
-                            if(NeoForgeMod.MILK.isBound() && fluid.isSame(NeoForgeMod.MILK.value()))
-                                return false;
-
-                            return fluid.isSource(fluid.defaultFluidState());
                         });
                     });
         });

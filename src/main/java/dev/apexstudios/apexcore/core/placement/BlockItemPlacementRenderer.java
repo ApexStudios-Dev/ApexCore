@@ -1,23 +1,22 @@
 package dev.apexstudios.apexcore.core.placement;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import dev.apexstudios.apexcore.core.ApexCore;
 import dev.apexstudios.apexcore.lib.level.FakeLevel;
-import dev.apexstudios.apexcore.lib.placement.BlockPlacementRenderer;
-import dev.apexstudios.apexcore.lib.placement.PlacementRenderEvent;
+import dev.apexstudios.apexcore.lib.placement.BlockPlacementState;
+import dev.apexstudios.apexcore.lib.placement.GetDefaultBlockPlacementStateEvent;
+import dev.apexstudios.apexcore.lib.placement.RegisterBlockPlacementRendererEvent;
+import dev.apexstudios.apexcore.lib.placement.SetBlockPlacementStateEvent;
+import dev.apexstudios.apexcore.lib.placement.SubmitBlockPlacementState;
 import dev.apexstudios.apexcore.lib.util.ApexTags;
 import dev.apexstudios.apexcore.mixin.BlockItemAccessor;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -26,91 +25,114 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 
-final class BlockItemPlacementRenderer implements BlockPlacementRenderer {
-    @Override
-    public boolean renderForHand(Level level, Player player, InteractionHand hand, BlockHitResult hitResult, CameraRenderState camera, PoseStack pose, MultiBufferSource.BufferSource buffers) {
-        var stack = player.getItemInHand(hand);
+final class BlockItemPlacementRenderer {
+    private static final ContextKey<State> KEY = new ContextKey<>(ApexCore.identifier("block_item_placement_render_state"));
 
-        if(!(stack.getItem() instanceof BlockItem item))
-            return false;
-        if(!item.getBlock().builtInRegistryHolder().is(ApexTags.Blocks.RENDER_PLACEMENT_WHITELIST))
-            return false;
+    static void register(RegisterBlockPlacementRendererEvent event) {
+        event.register(KEY, (level, levelState, player, hitResult, placementState) -> {
+            if(!(placementState.stack().getItem() instanceof BlockItem item))
+                return null;
+            if(!item.getBlock().builtInRegistryHolder().is(ApexTags.Blocks.RENDER_PLACEMENT_WHITELIST))
+                return null;
 
-        var canBePlaced = new AtomicBoolean(stack.isItemEnabled(level.enabledFeatures()));
-        var context = buildContext(level, player, hand, stack, item, hitResult, canBePlaced);
-        placeBlock(level, context, item, canBePlaced);
+            var state = new State(level, player, hitResult, placementState);
+            placeBlock(level, player, state);
 
-        if(canBePlaced.get()) {
-            var contextPositions = copyContextBlockStates(level, context);
-            updateContexts(context, contextPositions);
-            validatePlacement(context, canBePlaced, item);
+            if(state.canBePlaced) {
+                var contextPositions = copyContextBlockStates(level, state);
+                updateContexts(state, contextPositions);
+                validatePlacement(state);
 
-            // clear out context positions from level
-            // we only want to render the states we are placing/updating
-            contextPositions.forEach(pos -> context.getLevel().setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_NONE));
-        }
+                // clear out context positions from level
+                // we only want to render the states we are placing/updating
+                contextPositions.forEach(pos -> state.fakeLevel().setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_NONE));
+            }
 
-        BlockPlacementRenderer.renderAt(camera, pose, () -> BlockPlacementRenderer.renderLevel(context, camera, pose, canBePlaced.get()));
-        return true;
+            return state;
+        }, (state, levelState, placementState, pose, collector) -> {
+            var level = state.fakeLevel();
+            level.positions().forEach(pos -> {
+                pose.pushPose();
+                pose.translate(pos.getX(), pos.getY(), pos.getZ());
+
+                SubmitBlockPlacementState.submitGhostBlock(pose, level, pos, level.getBlockState(pos), state.canBePlaced, collector);
+
+                pose.popPose();
+            });
+        });
     }
 
-    private BlockPlaceContext buildContext(Level level, Player player, InteractionHand hand, ItemStack stack, BlockItem item, BlockHitResult hitResult, AtomicBoolean canBePlaced) {
-        var fakeLevel = new FakeLevel(level);
-        var originalContext = new BlockPlaceContext(fakeLevel, player, hand, stack.copy(), hitResult);
+    private static class State {
+        public boolean canBePlaced;
+        public final BlockPlaceContext placeContext;
+        public final BlockItem item;
 
-        if(!originalContext.canPlace())
-            canBePlaced.set(false);
+        public State(Level level, Player player, BlockHitResult hitResult, BlockPlacementState placementState) {
+            var stack = placementState.stack();
 
-        var context = item.updatePlacementContext(originalContext);
+            canBePlaced = stack.isItemEnabled(placementState.enabledFeatures());
+            item = (BlockItem) stack.getItem();
 
-        if(context == null) {
-            context = originalContext;
-            canBePlaced.set(false);
+            var placeContext = new BlockPlaceContext(new FakeLevel(level), player, placementState.hand(), stack, hitResult);
+
+            if(!placeContext.canPlace())
+                canBePlaced = false;
+
+            var context = item.updatePlacementContext(placeContext);
+
+            if(context == null)
+                canBePlaced = false;
+            else
+                placeContext = context;
+
+            this.placeContext = placeContext;
         }
 
-        return context;
+        public FakeLevel fakeLevel() {
+            return (FakeLevel) placeContext.getLevel();
+        }
     }
 
-    private void placeBlock(LevelReader realLevel, BlockPlaceContext context, BlockItem item, AtomicBoolean canBePlaced) {
-        var level = (FakeLevel) context.getLevel();
-        var pos = context.getClickedPos();
-        var stack = context.getItemInHand();
+    private static void placeBlock(LevelReader realLevel, Player player, State state) {
+        var level = state.fakeLevel();
+        var pos = state.placeContext.getClickedPos();
+        var stack = state.placeContext.getItemInHand();
 
-        var accessor = (BlockItemAccessor) item;
-        var blockState = accessor.ApexCore$getPlacementState(context);
+        var accessor = (BlockItemAccessor) state.item;
+        var blockState = accessor.ApexCore$getPlacementState(state.placeContext);
 
         if(blockState == null) {
-            blockState = BlockPlacementRenderer.getDefaultBlockState(realLevel, context, item.getBlock().defaultBlockState());
-            canBePlaced.set(false);
+            blockState = GetDefaultBlockPlacementStateEvent.get(realLevel, state.placeContext, state.item.getBlock().defaultBlockState());
+            state.canBePlaced = false;
         }
 
-        blockState = PlacementRenderEvent.modifyBlockState(realLevel, context, blockState);
+        blockState = SetBlockPlacementStateEvent.set(realLevel, state.placeContext, blockState);
 
         if(blockState.hasProperty(BlockStateProperties.WATERLOGGED))
             blockState = blockState.setValue(BlockStateProperties.WATERLOGGED, false);
 
         // place the origin block as if it came from the block item
-        accessor.ApexCore$placeBlock(context, blockState);
+        accessor.ApexCore$placeBlock(state.placeContext, blockState);
         var fBlockState = accessor.ApexCore$updateBlockStateFromTag(pos, level, stack, blockState);
-        level.runAsServerSide(() -> accessor.ApexCore$updateCustomBlockEntityTag(pos, level, context.getPlayer(), stack, fBlockState));
+        level.runAsServerSide(() -> accessor.ApexCore$updateCustomBlockEntityTag(pos, level, player, stack, fBlockState));
         BlockItem.updateBlockEntityComponents(level, pos, stack);
 
         // fire block events to trigger additional block placement/updates
         level.runAsServerSide(() -> {
             // double tall/wide blocks place the other block here
-            fBlockState.getBlock().setPlacedBy(level, pos, fBlockState, context.getPlayer(), stack);
+            fBlockState.getBlock().setPlacedBy(level, pos, fBlockState, player, stack);
             // rails update shapes here
             fBlockState.onPlace(level, pos, Blocks.AIR.defaultBlockState(), false);
         });
 
-        validatePlacement(context, canBePlaced, item);
+        validatePlacement(state);
     }
 
-    private List<BlockPos> copyContextBlockStates(LevelReader realLevel, BlockPlaceContext context) {
-        var level = (FakeLevel) context.getLevel();
+    private static List<BlockPos> copyContextBlockStates(LevelReader realLevel, State state) {
+        var level = state.fakeLevel();
         var renderPositions = level.positions().toList();
 
-        BlockPos.breadthFirstTraversal(context.getClickedPos(), 4, 64, (pos, childConsumer) -> {
+        BlockPos.breadthFirstTraversal(state.placeContext.getClickedPos(), 4, 64, (pos, childConsumer) -> {
             for(var direction : Direction.values()) {
                 childConsumer.accept(pos.relative(direction));
             }
@@ -123,8 +145,8 @@ final class BlockItemPlacementRenderer implements BlockPlacementRenderer {
         return level.positions().filter(Predicate.not(renderPositions::contains)).collect(Collectors.toList());
     }
 
-    private void updateContexts(BlockPlaceContext context, List<BlockPos> contextPositions) {
-        var level = context.getLevel();
+    private static void updateContexts(State state, List<BlockPos> contextPositions) {
+        var level = state.fakeLevel();
         var itr = contextPositions.iterator();
 
         while (itr.hasNext()) {
@@ -143,12 +165,11 @@ final class BlockItemPlacementRenderer implements BlockPlacementRenderer {
         }
     }
 
-    private void validatePlacement(BlockPlaceContext context, AtomicBoolean canBePlaced, BlockItem item) {
-        var level = context.getLevel();
-        var origin = context.getClickedPos();
-        var blockState = level.getBlockState(origin);
+    private static void validatePlacement(State state) {
+        var level = state.fakeLevel();
+        var blockState = level.getBlockState(state.placeContext.getClickedPos());
 
-        if(!((BlockItemAccessor) item).ApexCore$canPlace(context, blockState))
-            canBePlaced.set(false);
+        if(!((BlockItemAccessor) state.item).ApexCore$canPlace(state.placeContext, blockState))
+            state.canBePlaced = false;
     }
 }

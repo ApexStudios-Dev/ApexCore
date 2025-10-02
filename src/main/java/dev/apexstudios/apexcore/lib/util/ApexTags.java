@@ -5,7 +5,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.material.Fluid;
 
 public interface ApexTags {
     interface Blocks {
@@ -25,17 +24,8 @@ public interface ApexTags {
         }
     }
 
-    interface Fluids {
-        TagKey<Fluid> RENDER_PLACEMENT_WHITELIST = ApexCore.REGISTREE.tag(Registries.FLUID, "render_placement");
-
-        private static void register() {
-
-        }
-    }
-
     static void register() {
         Blocks.register();
         EntityTypes.register();
-        Fluids.register();
     }
 }

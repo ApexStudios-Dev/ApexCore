@@ -1,7 +1,8 @@
 package dev.apexstudios.apexcore.core;
 
 import dev.apexstudios.apexcore.core.seat.SeatSetup;
-import dev.apexstudios.apexcore.lib.placement.PlacementRenderEvent;
+import dev.apexstudios.apexcore.lib.placement.GetDefaultBlockPlacementStateEvent;
+import dev.apexstudios.apexcore.lib.placement.SetBlockPlacementStateEvent;
 import dev.apexstudios.apexcore.lib.registree.Registree;
 import dev.apexstudios.apexcore.lib.util.ApexPackSources;
 import dev.apexstudios.apexcore.lib.util.ApexTags;
@@ -10,12 +11,17 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.LecternBlock;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.RotationSegment;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 
 @Mod(ApexCore.ID)
@@ -38,11 +44,35 @@ public final class ApexCore {
                 Pack.Position.TOP
         ));
 
-        NeoForge.EVENT_BUS.addListener(PlacementRenderEvent.DefaultBlockState.class, event -> {
-            event.withProperty(HorizontalDirectionalBlock.FACING, () -> event.placeContext().getHorizontalDirection().getOpposite());
+        NeoForge.EVENT_BUS.addListener(GetDefaultBlockPlacementStateEvent.class, event -> {
+            var pos = event.pos();
+            var level = event.level();
+            var placeContext = event.placeContext();
+
+            event.withProperty(BlockStateProperties.WATERLOGGED, () -> level.getFluidState(pos).getType().isSame(Fluids.WATER));
+            event.withProperty(BlockStateProperties.ROTATION_16, () -> RotationSegment.convertToSegment(placeContext.getRotation() + 180F));
+
+            event.withProperty(BlockStateProperties.HORIZONTAL_FACING, () -> {
+                var facing = placeContext.getHorizontalDirection();
+                var blockState = event.defaultBlockState();
+
+                if(blockState.getBlock() instanceof AbstractFurnaceBlock)
+                    return facing.getOpposite();
+                else if(blockState.is(BlockTags.ANVIL))
+                    return facing.getClockWise();
+
+                return facing;
+            });
+
+            event.withProperty(BlockStateProperties.FACING, () -> {
+                if(event.defaultBlockState().is(Tags.Blocks.BARRELS))
+                    return placeContext.getNearestLookingDirection().getOpposite();
+
+                return placeContext.getHorizontalDirection();
+            });
         });
 
-        NeoForge.EVENT_BUS.addListener(PlacementRenderEvent.ModifyBlockState.class, event -> {
+        NeoForge.EVENT_BUS.addListener(SetBlockPlacementStateEvent.class, event -> {
             var blockState = event.originalBlockState();
 
             if (blockState.is(Blocks.LECTERN)) {
