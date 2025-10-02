@@ -21,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+// TODO: See if we can replace this with directly adding more break positions into the level render state
 @Mixin(BlockRenderDispatcher.class)
 public class BlockRenderDispatcherMixin {
     @Shadow @Final private BlockModelShaper blockModelShaper;
