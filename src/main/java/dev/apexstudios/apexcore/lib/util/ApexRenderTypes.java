@@ -22,6 +22,7 @@ public interface ApexRenderTypes {
                     .setLightmapState(RenderStateShard.LIGHTMAP)
                     .setOverlayState(RenderStateShard.OVERLAY)
                     .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
+                    .setOutputState(RenderStateShard.OUTLINE_TARGET) // needed to not render behind translucent objects
                     .createCompositeState(outline)
     ));
 
