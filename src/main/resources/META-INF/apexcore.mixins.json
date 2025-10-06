@@ -4,14 +4,9 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "BedBlockMixin",
-    "BlockItemAccessor",
-    "BucketItemAccessor",
     "ItemCooldownsMixin",
-    "LevelAccessor"
   ],
-  "client": [
-    "BlockRenderDispatcherMixin"
-  ],
+  "client": [],
   "server": [],
   "minVersion": "0.8"
 }
