@@ -30,7 +30,7 @@ public sealed class BlockPlacementRendererEvent extends Event {
         public UpdatePlacementContext(BlockPlacementRenderContext renderContext) {
             super(renderContext);
 
-            placeContext = new BlockPlaceContext(renderContext.level(), renderContext.player(), renderContext.hand(), renderContext.stack(), renderContext.hitResult());
+            placeContext = new BlockPlaceContext(renderContext.level(), renderContext.player(), renderContext.hand(), renderContext.item().toStack(), renderContext.hitResult());
         }
 
         public void setPlaceContext(@Nullable BlockPlaceContext placeContext) {
@@ -52,7 +52,7 @@ public sealed class BlockPlacementRendererEvent extends Event {
         public GetBlock(BlockPlacementRenderContext renderContext) {
             super(renderContext);
 
-            block = Block.byItem(renderContext.stack().getItem());
+            block = Block.byItem(renderContext.item().value());
         }
 
         public void setBlock(Block block) {

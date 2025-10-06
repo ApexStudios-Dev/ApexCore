@@ -50,11 +50,11 @@ public interface BlockPlacementHandler {
 
         NeoForge.EVENT_BUS.addListener(BlockPlacementRendererEvent.UpdatePlacementContext.class, event -> {
             var renderContext = event.getRenderContext();
-            var stack = renderContext.stack();
+            var item = renderContext.item();
             var placeContext = event.getPlaceContext();
 
-            if(stack.getItem() instanceof BlockItem item)
-                event.setPlaceContext(item.updatePlacementContext(placeContext));
+            if(item.value() instanceof BlockItem blockItem)
+                event.setPlaceContext(blockItem.updatePlacementContext(placeContext));
         });
 
         NeoForge.EVENT_BUS.addListener(BlockPlacementRendererEvent.GetDefaultBlockState.class, BlockPlacementHandler::getBlockState);
@@ -139,12 +139,12 @@ public interface BlockPlacementHandler {
     private static RenderState extractBlockPlacementForArm(ClientLevel level, BlockHitResult hitResult, LocalPlayer player, HumanoidArm arm) {
         var renderContext = new BlockPlacementRenderContext(level, hitResult, player, arm);
 
-        if(renderContext.stack().isEmpty())
+        if(renderContext.item().isEmpty())
             return null;
 
         var enabledFeatures = level.enabledFeatures();
         // placement should fail if item is disabled
-        var canPlace = hitResult.getType() != HitResult.Type.MISS && renderContext.stack().isItemEnabled(enabledFeatures);
+        var canPlace = hitResult.getType() != HitResult.Type.MISS && renderContext.item().value().isEnabled(enabledFeatures);
         // 1) determine block for placement
         var block = NeoForge.EVENT_BUS.post(new BlockPlacementRendererEvent.GetBlock(renderContext)).getBlock();
 
@@ -252,11 +252,11 @@ public interface BlockPlacementHandler {
 
     private static void getBlockState(BlockPlacementRendererEvent.GetBlockState event) {
         var renderContext = event.getRenderContext();
-        var stack = renderContext.stack();
+        var item = renderContext.item();
         var placeContext = event.getPlaceContext();
 
-        if(stack.getItem() instanceof BlockItem item) {
-            var blockState = ((BlockItemAccessor) item).ApexCore$getPlacementState(placeContext);
+        if(item.getItem() instanceof BlockItem blockItem) {
+            var blockState = ((BlockItemAccessor) blockItem).ApexCore$getPlacementState(placeContext);
             var forPlacement = event instanceof BlockPlacementRendererEvent.GetPlacementBlockState;
 
             // null here means 'BlockItem.canPlace' returned false

@@ -5,9 +5,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 public record BlockPlacementRenderContext(
         Level level,
@@ -17,15 +17,14 @@ public record BlockPlacementRenderContext(
 
         Player player,
         HumanoidArm arm,
-        ItemStack stack
+        ItemResource item
 ) {
     public BlockPlacementRenderContext {
         pos = pos.immutable();
-        stack = stack.copy();
     }
 
     public BlockPlacementRenderContext(Level level, BlockHitResult hitResult, Player player, HumanoidArm arm) {
-        this(level, hitResult.getBlockPos(), hitResult.getDirection(), hitResult, player, arm, player.getItemHeldByArm(arm));
+        this(level, hitResult.getBlockPos(), hitResult.getDirection(), hitResult, player, arm, ItemResource.of(player.getItemHeldByArm(arm)));
     }
 
     public InteractionHand hand() {
@@ -33,6 +32,6 @@ public record BlockPlacementRenderContext(
     }
 
     public BlockPlacementRenderContext at(Level level, BlockPos pos, Direction face) {
-        return new BlockPlacementRenderContext(level, pos, face, hitResult, player, arm, stack);
+        return new BlockPlacementRenderContext(level, pos, face, hitResult, player, arm, item);
     }
 }
