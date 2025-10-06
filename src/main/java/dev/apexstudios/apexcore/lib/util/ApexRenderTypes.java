@@ -25,26 +25,12 @@ public interface ApexRenderTypes {
                     .createCompositeState(outline)
     ));
 
-    RenderType TRANSLUCENT_NO_DEPTH = RenderType.create(
-            ApexCore.id("translucent_no_depth"),
-            RenderType.SMALL_BUFFER_SIZE, true, true,
-            Pipelines.TRANSLUCENT_NO_DEPTH,
-            RenderType.CompositeState.builder()
-                    .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setTextureState(RenderStateShard.BLOCK_SHEET_MIPPED)
-                    .createCompositeState(true)
-    );
-
     static RenderType entityTranslucentNoDepth(ResourceLocation texture, boolean outline) {
         return ENTITY_TRANSLUCENT_NO_DEPTH.apply(texture, outline);
     }
 
     static RenderType entityTranslucentNoDepth(ResourceLocation texture) {
         return entityTranslucentNoDepth(texture, true);
-    }
-
-    static RenderType translucentNoDepth() {
-        return TRANSLUCENT_NO_DEPTH;
     }
 
     static void register(IEventBus modBus) {
@@ -58,16 +44,8 @@ public interface ApexRenderTypes {
                 .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
                 .build();
 
-        RenderPipeline TRANSLUCENT_NO_DEPTH = RenderPipelines.TRANSLUCENT.toBuilder()
-                .withLocation(ApexCore.identifier("pipeline/translucent_no_depth"))
-                .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
-                .build();
-
         private static void register(IEventBus modBus) {
-            modBus.addListener(RegisterRenderPipelinesEvent.class, event -> {
-                event.registerPipeline(ENTITY_TRANSLUCENT_NO_DEPTH);
-                event.registerPipeline(TRANSLUCENT_NO_DEPTH);
-            });
+            modBus.addListener(RegisterRenderPipelinesEvent.class, event -> event.registerPipeline(ENTITY_TRANSLUCENT_NO_DEPTH));
         }
     }
 }
