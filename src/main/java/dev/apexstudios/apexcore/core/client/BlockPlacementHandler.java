@@ -14,7 +14,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.debug.DebugEntryNoop;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -22,7 +21,6 @@ import net.minecraft.client.renderer.state.LevelRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.HumanoidArm;
@@ -37,16 +35,17 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
 public interface BlockPlacementHandler {
-    ResourceLocation DBG_ALWAYS_RENDER_PLACEMENT = ApexCore.identifier("always_render_placement");
+    // TODO: Uncomment once PR (https://github.com/neoforged/NeoForge/pull/2699) is merged
+    // ResourceLocation DBG_ALWAYS_RENDER_PLACEMENT = ApexCore.identifier("always_render_placement");
     ContextKey<RenderState> PLACEMENT_RENDER_KEY = new ContextKey<>(ApexCore.identifier("block_placement_state"));
 
     static void register(IEventBus modBus) {
-        modBus.addListener(RegisterDebugEntriesEvent.class, event -> event.register(DBG_ALWAYS_RENDER_PLACEMENT, new DebugEntryNoop()));
+        // TODO: Uncomment once PR (https://github.com/neoforged/NeoForge/pull/2699) is merged
+        // modBus.addListener(RegisterDebugEntriesEvent.class, event -> event.register(DBG_ALWAYS_RENDER_PLACEMENT, new DebugEntryNoop()));
 
         NeoForge.EVENT_BUS.addListener(BlockPlacementRendererEvent.UpdatePlacementContext.class, event -> {
             var renderContext = event.getRenderContext();
@@ -121,7 +120,9 @@ public interface BlockPlacementHandler {
         if(player == null || !(client.hitResult instanceof BlockHitResult hitResult))
             return;
 
-        var forceRender = client.debugEntries.isCurrentlyEnabled(DBG_ALWAYS_RENDER_PLACEMENT);
+        // TODO: Uncomment once PR (https://github.com/neoforged/NeoForge/pull/2699) is merged
+        // var forceRender = client.debugEntries.isCurrentlyEnabled(DBG_ALWAYS_RENDER_PLACEMENT);
+        var forceRender = false;
 
         if(hitResult.getType() == HitResult.Type.MISS && !forceRender)
             return;
