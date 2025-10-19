@@ -19,3 +19,9 @@ neoForge {
         publish(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg"))
     }
 }
+
+dependencies {
+    implementation(libs.registree)
+    "dataImplementation"(libs.registree)
+    jarJar(libs.registree)
+}

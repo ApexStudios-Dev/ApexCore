@@ -6,6 +6,12 @@ pluginManagement {
     }
 }
 
+dependencyResolutionManagement {
+    versionCatalogs.create("libs") {
+        library("registree", "dev.apexstudios", "registree").version("21.10.2-beta-pr-1")
+    }
+}
+
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }

@@ -1,9 +1,9 @@
 package dev.apexstudios.apexcore.core;
 
 import dev.apexstudios.apexcore.core.seat.SeatSetup;
-import dev.apexstudios.apexcore.lib.registree.Registree;
 import dev.apexstudios.apexcore.lib.util.ApexPackSources;
 import dev.apexstudios.apexcore.lib.util.ApexTags;
+import dev.apexstudios.registree.api.Registree;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -15,7 +15,7 @@ import net.neoforged.neoforge.event.AddPackFindersEvent;
 @Mod(ApexCore.ID)
 public final class ApexCore {
     public static final String ID = "apexcore";
-    public static final Registree REGISTREE = new Registree(ID);
+    public static final Registree REGISTREE = Registree.create(ID);
 
     public ApexCore(IEventBus modBus) {
         REGISTREE.registerEvents(modBus);

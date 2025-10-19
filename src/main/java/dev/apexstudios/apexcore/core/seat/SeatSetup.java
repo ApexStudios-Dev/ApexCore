@@ -2,7 +2,7 @@ package dev.apexstudios.apexcore.core.seat;
 
 import dev.apexstudios.apexcore.core.ApexCore;
 import dev.apexstudios.apexcore.lib.block.Seat;
-import dev.apexstudios.apexcore.lib.registree.holder.DeferredEntity;
+import dev.apexstudios.registree.api.holder.DeferredEntity;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
