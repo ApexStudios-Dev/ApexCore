@@ -24,4 +24,8 @@ dependencies {
     implementation(libs.registree)
     "dataImplementation"(libs.registree)
     jarJar(libs.registree)
+
+    implementation(libs.placementvisualizer)
+    "dataImplementation"(libs.placementvisualizer)
+    jarJar(libs.placementvisualizer)
 }
