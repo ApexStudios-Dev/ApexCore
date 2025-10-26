@@ -25,6 +25,12 @@ type = "required"
 versionRange = "[21.10-beta,21.11)"
 ordering = "NONE"
 side = "BOTH"
+[[dependencies.apexcore]]
+modId = "placementvisualizer"
+type = "required"
+versionRange = "[21.10,21.11)"
+ordering = "NONE"
+side = "BOTH"
 
 [[accessTransformers]]
 file = "META-INF/accesstransformer.cfg"
