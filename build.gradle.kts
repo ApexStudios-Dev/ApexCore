@@ -1,8 +1,8 @@
 import dev.apexstudios.gradle.single.ApexSingleExtension
 
 plugins {
-    id("apex-conventions.neoforge") version "0.1.74"
-    id("apex-conventions.maven-publishing") version "0.1.74"
+    id("apex-conventions.neoforge") version "0.1.75"
+    id("apex-conventions.maven-publishing") version "0.1.75"
 }
 
 group = "dev.apexstudios"
@@ -18,4 +18,14 @@ neoForge {
         from(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg"))
         publish(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg"))
     }
+}
+
+dependencies {
+    implementation(libs.registree)
+    "dataImplementation"(libs.registree)
+    jarJar(libs.registree)
+
+    implementation(libs.placementvisualizer)
+    "dataImplementation"(libs.placementvisualizer)
+    jarJar(libs.placementvisualizer)
 }
