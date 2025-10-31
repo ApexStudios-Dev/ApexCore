@@ -7,12 +7,12 @@ on:
             - opened
 
 jobs:
-    publish-pr:
-        name: Publish PR
-        uses: ./.github/workflows/publish-pr.yml
-        secrets:
-            PR_PUBLISHING_GH_APP_ID: ${{ secrets.PR_PUBLISHING_GH_APP_ID }}
-            PR_PUBLISHING_GH_APP_KEY: ${{ secrets.PR_PUBLISHING_GH_APP_KEY }}
+#    publish-pr:
+#        name: Publish PR
+#        uses: ./.github/workflows/publish-pr.yml
+#        secrets:
+#            PR_PUBLISHING_GH_APP_ID: ${{ secrets.PR_PUBLISHING_GH_APP_ID }}
+#            PR_PUBLISHING_GH_APP_KEY: ${{ secrets.PR_PUBLISHING_GH_APP_KEY }}
 
     generate-vars:
         name: Generate Vars
@@ -39,14 +39,15 @@ jobs:
 
             -   name: Publish PR
                 if: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target' }}
-                uses: neoforged/action-pr-publishing/upload@v1
+#                uses: neoforged/action-pr-publishing/upload@v1
+                uses: ApexModder/action-pr-publishing/upload@main
                 env:
                     VERSION: ${{ needs.generate-vars.outputs.version }}
 
-    publish-pr-post:
-        name: Publish PR Post
-        uses: ./.github/workflows/publish-pr.yml
-        needs: [ publish-maven ]
-        secrets:
-            PR_PUBLISHING_GH_APP_ID: ${{ secrets.PR_PUBLISHING_GH_APP_ID }}
-            PR_PUBLISHING_GH_APP_KEY: ${{ secrets.PR_PUBLISHING_GH_APP_KEY }}
+#    publish-pr-post:
+#        name: Publish PR Post
+#        uses: ./.github/workflows/publish-pr.yml
+#        needs: [ publish-maven ]
+#        secrets:
+#            PR_PUBLISHING_GH_APP_ID: ${{ secrets.PR_PUBLISHING_GH_APP_ID }}
+#            PR_PUBLISHING_GH_APP_KEY: ${{ secrets.PR_PUBLISHING_GH_APP_KEY }}

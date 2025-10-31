@@ -33,7 +33,8 @@ jobs:
                   repository: ${{ github.repository }}
 
             - name: Publish PR
-              uses: neoforged/action-pr-publishing@v1
+#              uses: neoforged/action-pr-publishing@v1
+              uses: ApexModder/action-pr-publishing@main
               env:
                   GITHUB_TOKEN: ${{ steps.gen_repo_token.outputs.token }}
               with:
