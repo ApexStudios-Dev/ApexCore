@@ -8,7 +8,7 @@ on:
 
 jobs:
     publish-pr:
-        name: Generate Vars
+        name: Publish PR
         uses: ./.github/workflows/publish-pr.yml
         secrets:
             PR_PUBLISHING_GH_APP_ID: ${{ secrets.PR_PUBLISHING_GH_APP_ID }}
@@ -37,11 +37,6 @@ jobs:
             -   name: Setup Gradle
                 uses: ApexStudios-Dev/.github/actions/setup-gradle@master
 
-            -   name: Run with Gradle
-                run: ./gradlew :build
-                env:
-                    VERSION: ${{ needs.generate-vars.outputs.version }}
-
             -   name: Publish PR
                 if: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target' }}
                 uses: neoforged/action-pr-publishing/upload@v1
@@ -49,7 +44,7 @@ jobs:
                     VERSION: ${{ needs.generate-vars.outputs.version }}
 
     publish-pr-post:
-        name: Generate Vars
+        name: Publish PR Post
         uses: ./.github/workflows/publish-pr.yml
         needs: [ publish-maven ]
         secrets:

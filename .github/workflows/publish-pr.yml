@@ -22,10 +22,23 @@ permissions:
 
 jobs:
     publish-pr:
-        uses: neoforged/actions/.github/workflows/publish-prs.yml@main
-        with:
-            artifact_base_path: dev/apexstudios/apexcore/
-            uploader_workflow_name: Build PRs
-        secrets:
-            PR_PUBLISHING_GH_APP_ID: ${{ secrets.PR_PUBLISHING_GH_APP_ID }}
-            PR_PUBLISHING_GH_APP_KEY: ${{ secrets.PR_PUBLISHING_GH_APP_KEY }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Generate an Application repository access token
+              id: gen_repo_token
+              uses: kattecon/gh-app-access-token-gen@v1
+              with:
+                  app_id: ${{ secrets.PR_PUBLISHING_GH_APP_ID }}
+                  private_key: ${{ secrets.PR_PUBLISHING_GH_APP_KEY }}
+                  repository: ${{ github.repository }}
+
+            - name: Publish PR
+              uses: neoforged/action-pr-publishing@v1
+              env:
+                  GITHUB_TOKEN: ${{ steps.gen_repo_token.outputs.token }}
+              with:
+                  publishing-token: ${{ github.token }}
+                  uploader-workflow-name: Build PRs
+                  artifacts-base-path: dev/apexstudios/apexcore/
+                  self-name: apexstudios-app[bot]
+                  base-maven-url: https://maven.apexstudios.dev/private
