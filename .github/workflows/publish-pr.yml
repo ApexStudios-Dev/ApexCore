@@ -1,0 +1,23 @@
+name: Publish PRs to GitHub Packages
+
+on:
+    workflow_run:
+        workflows: [ 'Test PR' ]
+        types: [ completed ]
+    issue_comment:
+        types: [ edited ]
+    pull_request:
+        types: [ opened ]
+    pull_request_target:
+        types: [ opened ]
+
+permissions:
+    packages: write
+
+jobs:
+    publish-pr:
+        uses: neoforged/actions/.github/workflows/publish-prs.yml@main
+        secrets: inherit
+        with:
+            artifact_base_path: dev/apexstudios/apexcore/
+            uploader_workflow_name: Build PRs
