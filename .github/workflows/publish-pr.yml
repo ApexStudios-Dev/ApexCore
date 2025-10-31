@@ -17,7 +17,9 @@ permissions:
 jobs:
     publish-pr:
         uses: neoforged/actions/.github/workflows/publish-prs.yml@main
-        secrets: inherit
         with:
             artifact_base_path: dev/apexstudios/apexcore/
             uploader_workflow_name: Build PRs
+        secrets:
+            PR_PUBLISHING_GH_APP_ID: ${{ secrets.PR_PUBLISHING_GH_APP_ID }}
+            PR_PUBLISHING_GH_APP_KEY: ${{ secrets.PR_PUBLISHING_GH_APP_KEY }}
