@@ -38,3 +38,5 @@ jobs:
             -   name: Publish PR
                 if: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target' }}
                 uses: neoforged/action-pr-publishing/upload@v1
+                env:
+                    VERSION: ${{ needs.generate-vars.outputs.version }}
