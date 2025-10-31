@@ -37,14 +37,31 @@ jobs:
     publish-maven:
         name: Publish Maven
         needs: [ generate-vars, build, check-local-changes ]
+        runs-on: apexstudios
         if: success()
-        uses: ApexStudios-Dev/.github/.github/workflows/_publish-maven.yml@master
-        secrets: inherit
-        with:
-            java-version: 21
-            java-vendor: temurin
-            version: ${{ needs.generate-vars.outputs.version }}
-            publish-task: ':publishReleasePublicationToApexStudios-PrivateRepository'
+        steps:
+            -   name: Checkout Repository
+                uses: ApexStudios-Dev/.github/actions/checkout@master
+
+            -   name: Setup Java
+                uses: ApexStudios-Dev/.github/actions/setup-java@master
+                with:
+                    java-version: 21
+                    java-vendor: temurin
+
+            -   name: Setup Gradle
+                uses: ApexStudios-Dev/.github/actions/setup-gradle@master
+
+            -   name: Run with Gradle
+                run: ./gradlew :publishReleasePublicationToApexStudios-PrivateRepository
+                env:
+                    VERSION: ${{ needs.generate-vars.outputs.version }}
+                    MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+                    MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+
+            -   name: Publish PR
+                if: ${{ github.event_name == 'pull_request' }}
+                uses: neoforged/action-pr-publishing/upload@v1
 
     test:
         name: Test Production
