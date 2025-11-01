@@ -21,3 +21,4 @@ jobs:
       release-type: release
       logo-url: 'https://raw.githubusercontent.com/ApexStudios-Dev/.github/refs/heads/master/assets/minecraft/apexcore/banner.png'
       color: 0x3358FA
+      use-self-runner: false
