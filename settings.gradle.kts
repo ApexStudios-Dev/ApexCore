@@ -8,9 +8,8 @@ pluginManagement {
 
 dependencyResolutionManagement {
     versionCatalogs.create("libs") {
-        library("mixinextras.expressions", "io.github.llamalad7", "mixinextras-neoforge").version {
-            strictly("[0.5.0-beta.4,)")
-        }
+        library("registree", "dev.apexstudios", "registree").version("21.10.8")
+        library("placementvisualizer", "dev.apexstudios", "placementvisualizer").version("21.10.5")
     }
 }
 

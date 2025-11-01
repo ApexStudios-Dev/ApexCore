@@ -1,6 +1,6 @@
 package dev.apexstudios.apexcore.lib.data.provider.model;
 
-import dev.apexstudios.apexcore.lib.registree.Registree;
+import dev.apexstudios.registree.api.Registree;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;

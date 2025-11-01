@@ -5,34 +5,41 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.IndexModifier;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.StacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 
 public class SimpleMenu extends AbstractContainerMenu {
     private final int rowCount;
 
-    public SimpleMenu(MenuType<? extends SimpleMenu> menuType, int containerId, Inventory inventory, IItemHandler itemHandler) {
+    public SimpleMenu(MenuType<? extends SimpleMenu> menuType, int containerId, Inventory inventory, ResourceHandler<ItemResource> itemHandler, IndexModifier<ItemResource> indexModifier) {
         super(menuType, containerId);
 
-        rowCount = itemHandler.getSlots() / SLOTS_PER_ROW;
+        rowCount = itemHandler.size() / SLOTS_PER_ROW;
 
-        addItemHandlerSlots(itemHandler);
+        addItemHandlerSlots(itemHandler, indexModifier);
         addStandardInventorySlots(inventory, 8, 18 + rowCount * SLOT_SIZE + 13);
     }
 
+    public SimpleMenu(MenuType<? extends SimpleMenu> menuType, int containerId, Inventory inventory, StacksResourceHandler<ItemStack, ItemResource> resourceHandler) {
+        this(menuType, containerId, inventory, resourceHandler, resourceHandler::set);
+    }
+
     public SimpleMenu(MenuType<? extends SimpleMenu> menuType, int containerId, Inventory inventory, int rowCount) {
-        this(menuType, containerId, inventory, new ItemStackHandler(rowCount * SLOTS_PER_ROW));
+        this(menuType, containerId, inventory, new ItemStacksResourceHandler(rowCount * SLOTS_PER_ROW));
     }
 
     public int rowCount() {
         return rowCount;
     }
 
-    protected void addItemHandlerSlots(IItemHandler itemHandler) {
+    protected void addItemHandlerSlots(ResourceHandler<ItemResource> itemHandler, IndexModifier<ItemResource> indexModifier) {
         for(var i = 0; i < rowCount; i++) {
             for(var j = 0; j < SLOTS_PER_ROW; j++) {
-                addSlot(new SlotItemHandler(itemHandler, j + i * SLOTS_PER_ROW, 8 + j * SLOT_SIZE, 18 + i * SLOT_SIZE));
+                addSlot(new ResourceHandlerSlot(itemHandler, indexModifier, j + i * SLOTS_PER_ROW, 8 + j * SLOT_SIZE, 18 + i * SLOT_SIZE));
             }
         }
     }

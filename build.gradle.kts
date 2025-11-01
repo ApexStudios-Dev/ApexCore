@@ -1,13 +1,13 @@
 import dev.apexstudios.gradle.single.ApexSingleExtension
 
 plugins {
-    id("apex-conventions.neoforge") version "0.1.74"
-    id("apex-conventions.maven-publishing") version "0.1.74"
+    id("apex-conventions.neoforge") version "0.1.75"
+    id("apex-conventions.maven-publishing") version "0.1.75"
 }
 
 group = "dev.apexstudios"
 
-apex.neoVersion("21.7.11-beta", "1.21.5", "2025.06.15")
+apex.neoVersion("21.10.41-beta", "2025.10.12")
 apex.extendCompilerErrors()
 
 val single = ApexSingleExtension.getOrCreate(project)
@@ -21,12 +21,11 @@ neoForge {
 }
 
 dependencies {
-    implementation(libs.mixinextras.expressions)
-    "dataImplementation"(libs.mixinextras.expressions)
-    annotationProcessor(libs.mixinextras.expressions)
-    jarJar(libs.mixinextras.expressions) {
-        artifact {
-            classifier = "slim"
-        }
-    }
+    implementation(libs.registree)
+    "dataImplementation"(libs.registree)
+    jarJar(libs.registree)
+
+    implementation(libs.placementvisualizer)
+    "dataImplementation"(libs.placementvisualizer)
+    jarJar(libs.placementvisualizer)
 }

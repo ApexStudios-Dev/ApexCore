@@ -76,7 +76,7 @@ public interface Dyeable {
         if(color == null || current == color)
             return InteractionResult.TRY_WITH_EMPTY_HAND;
 
-        if(!level.isClientSide)
+        if(!level.isClientSide())
             setColor(level, pos, blockState, color);
 
         return InteractionResult.SUCCESS;

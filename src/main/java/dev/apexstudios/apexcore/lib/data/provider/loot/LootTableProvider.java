@@ -2,7 +2,7 @@ package dev.apexstudios.apexcore.lib.data.provider.loot;
 
 import dev.apexstudios.apexcore.core.data.provider.loot.LootTableProviderImpl;
 import dev.apexstudios.apexcore.lib.data.ProviderType;
-import dev.apexstudios.apexcore.lib.registree.Registree;
+import dev.apexstudios.registree.api.Registree;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;

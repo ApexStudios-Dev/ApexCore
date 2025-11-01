@@ -71,7 +71,7 @@ public sealed abstract class ProviderTypeImpl<TProvider> implements ProviderType
 
         @Override
         public TProvider create(ProviderListenerContext context) {
-            return FMLEnvironment.dist == dist ? factory.get().apply(context) : null;
+            return FMLEnvironment.getDist() == dist ? factory.get().apply(context) : null;
         }
     }
 
