@@ -9,7 +9,7 @@ pluginManagement {
 dependencyResolutionManagement {
     versionCatalogs.create("libs") {
         library("registree", "dev.apexstudios", "registree").version("21.10.2")
-        library("placementvisualizer", "dev.apexstudios", "placementvisualizer").version("21.10.1")
+        library("placementvisualizer", "dev.apexstudios", "placementvisualizer").version("21.10.5")
     }
 }
 

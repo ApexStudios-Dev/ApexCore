@@ -28,7 +28,7 @@ side = "BOTH"
 [[dependencies.apexcore]]
 modId = "placementvisualizer"
 type = "required"
-versionRange = "[21.10,21.11)"
+versionRange = "[21.10.5,21.11)"
 ordering = "NONE"
 side = "BOTH"
 
