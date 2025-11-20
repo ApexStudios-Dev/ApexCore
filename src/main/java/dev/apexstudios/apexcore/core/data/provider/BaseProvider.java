@@ -14,7 +14,7 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public interface BaseProvider {
     CompletableFuture<?> generate(CachedOutput cache, ProviderOutputContext context);

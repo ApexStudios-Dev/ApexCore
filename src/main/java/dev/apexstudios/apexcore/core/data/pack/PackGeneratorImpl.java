@@ -39,7 +39,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
 import net.neoforged.neoforge.common.conditions.ICondition;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public sealed abstract class PackGeneratorImpl<TSelf extends PackGenerator<TSelf>> implements PackGenerator<TSelf> permits FeaturePackGeneratorImpl, ModPackGeneratorImpl {
     @Nullable protected Component description = null;

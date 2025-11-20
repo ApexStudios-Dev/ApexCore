@@ -19,7 +19,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.fml.ModContainer;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class ResourceGeneration implements ResourceGenerator {
     private final ModPackGeneratorImpl pack = new ModPackGeneratorImpl();
