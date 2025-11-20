@@ -10,8 +10,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
@@ -43,7 +43,7 @@ class DataMapBuilderImpl<TRegistry, TValue, TSelf extends DataMapBuilder<TRegist
         return (TSelf) this;
     }
 
-    protected ResourceKey<TRegistry> registryKey(ResourceLocation registryName) {
+    protected ResourceKey<TRegistry> registryKey(Identifier registryName) {
         return ResourceKey.create(dataMapType.registryKey(), registryName);
     }
 
@@ -53,7 +53,7 @@ class DataMapBuilderImpl<TRegistry, TValue, TSelf extends DataMapBuilder<TRegist
     }
 
     @Override
-    public TSelf add(ResourceLocation registryName, TValue value, boolean replace, ICondition... conditions) {
+    public TSelf add(Identifier registryName, TValue value, boolean replace, ICondition... conditions) {
         return add(registryKey(registryName), value, replace, conditions);
     }
 
@@ -68,7 +68,7 @@ class DataMapBuilderImpl<TRegistry, TValue, TSelf extends DataMapBuilder<TRegist
     }
 
     @Override
-    public TSelf remove(ResourceLocation registryName) {
+    public TSelf remove(Identifier registryName) {
         return remove(registryKey(registryName));
     }
 

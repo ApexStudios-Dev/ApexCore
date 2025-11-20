@@ -5,13 +5,13 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
 public class SimpleMenuScreen extends AbstractContainerScreen<SimpleMenu> {
-    public static final ResourceLocation WINDOW_SPRITE = ApexCore.identifier("window");
-    public static final ResourceLocation SLOT_SPRITE = ResourceLocation.withDefaultNamespace("container/slot");
+    public static final Identifier WINDOW_SPRITE = ApexCore.identifier("window");
+    public static final Identifier SLOT_SPRITE = Identifier.withDefaultNamespace("container/slot");
 
     public SimpleMenuScreen(SimpleMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);

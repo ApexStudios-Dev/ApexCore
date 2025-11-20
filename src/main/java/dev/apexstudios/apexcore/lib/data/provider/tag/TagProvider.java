@@ -5,8 +5,8 @@ import dev.apexstudios.apexcore.lib.data.provider.context.ProviderListenerContex
 import java.util.function.Function;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 
 public interface TagProvider<TRegistry, TBuilder extends TagBuilder<TRegistry, TBuilder>> {
@@ -14,12 +14,12 @@ public interface TagProvider<TRegistry, TBuilder extends TagBuilder<TRegistry, T
 
     TBuilder tag(ResourceKey<TRegistry> registryKey);
 
-    TBuilder tag(ResourceLocation registryName);
+    TBuilder tag(Identifier registryName);
 
     TBuilder tag(String tagPath);
 
     static <TRegistry, TProvider extends TagProvider<TRegistry, TBuilder>, TBuilder extends TagBuilder<TRegistry, TBuilder>> ProviderType<TProvider> register(String namespace, ResourceKey<? extends Registry<TRegistry>> registryType, Function<ProviderListenerContext, TProvider> factory) {
-        return ProviderType.register(ResourceLocation.fromNamespaceAndPath(namespace, "tags/" + registryType.location().getPath()), factory);
+        return ProviderType.register(Identifier.fromNamespaceAndPath(namespace, "tags/" + registryType.identifier().getPath()), factory);
     }
 
     static <TRegistry> ProviderType<SimpleTagProvider<TRegistry>> registerSimple(String namespace, ResourceKey<? extends Registry<TRegistry>> registryType) {

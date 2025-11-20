@@ -8,9 +8,9 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.gamerules.GameRule;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.extensions.ILevelExtension;
 
@@ -55,8 +55,8 @@ public interface LanguageProvider {
         return add(Tags.getTagTranslationKey(tagKey), name);
     }
 
-    default LanguageProvider add(ResourceKey<?> registyrKey, String translationPrefix, String value) {
-        return add(registyrKey.location().toLanguageKey(translationPrefix), value);
+    default LanguageProvider add(ResourceKey<?> registryKey, String translationPrefix, String value) {
+        return add(registryKey.identifier().toLanguageKey(translationPrefix), value);
     }
 
     default LanguageProvider addDimension(ResourceKey<Level> dimension, String value) {
@@ -67,7 +67,11 @@ public interface LanguageProvider {
         return add(creativeModeTab, "itemGroup", value);
     }
 
-    default LanguageProvider add(GameRules.Key<?> gameRule, String value, String descriptionValue) {
+    default LanguageProvider add(GameRule<?> gameRule, String value, String descriptionValue) {
         return add(gameRule.getDescriptionId(), value, descriptionValue);
+    }
+
+    default LanguageProvider addGameRule(Supplier<? extends GameRule<?>> gameRule, String value, String descriptionValue) {
+        return add(gameRule.get(), value, descriptionValue);
     }
 }

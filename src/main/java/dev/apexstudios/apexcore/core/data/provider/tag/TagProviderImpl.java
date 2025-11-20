@@ -12,8 +12,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.core.Registry;
 import net.minecraft.data.CachedOutput;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagFile;
 import net.minecraft.tags.TagKey;
 
@@ -37,17 +37,17 @@ sealed class TagProviderImpl<TRegistry, TBuilder extends TagBuilder<TRegistry, T
 
     @Override
     public TBuilder tag(ResourceKey<TRegistry> registryKey) {
-        return tag(TagKey.create(registryType, registryKey.location()));
+        return tag(TagKey.create(registryType, registryKey.identifier()));
     }
 
     @Override
-    public TBuilder tag(ResourceLocation registryName) {
+    public TBuilder tag(Identifier registryName) {
         return tag(ResourceKey.create(registryType, registryName));
     }
 
     @Override
     public TBuilder tag(String tagPath) {
-        return tag(ResourceLocation.fromNamespaceAndPath(namespace, tagPath));
+        return tag(Identifier.fromNamespaceAndPath(namespace, tagPath));
     }
 
     @Override

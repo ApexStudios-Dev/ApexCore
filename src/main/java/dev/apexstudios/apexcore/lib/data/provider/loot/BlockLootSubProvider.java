@@ -31,7 +31,7 @@ public interface BlockLootSubProvider extends LootTableSubProvider {
     }
 
     default void accept(Block block, Supplier<LootTable.Builder> lootTable) {
-        accept(block.getLootTable().orElseThrow(() -> new IllegalStateException("Block " + block.builtInRegistryHolder().key().location() + " does not have loot table")), lootTable);
+        accept(block.getLootTable().orElseThrow(() -> new IllegalStateException("Block " + block.builtInRegistryHolder().key().identifier() + " does not have loot table")), lootTable);
     }
 
     default void accept(Block block, LootTable.Builder lootTable) {

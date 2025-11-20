@@ -5,7 +5,7 @@ import dev.apexstudios.apexcore.lib.data.provider.tag.TagBuilder;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagFile;
 
@@ -29,27 +29,27 @@ sealed class TagBuilderImpl<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf
     // region: Element
     // region: Required
     @Override
-    public TSelf withElement(ResourceLocation registryName) {
+    public TSelf withElement(Identifier registryName) {
         elements.add(TagEntry.element(registryName));
         return (TSelf) this;
     }
 
     @Override
     public TSelf withElement(String identifier) {
-        return withElement(ResourceLocation.fromNamespaceAndPath(namespace, identifier));
+        return withElement(Identifier.fromNamespaceAndPath(namespace, identifier));
     }
     // endregion
 
     // region: Optional
     @Override
-    public TSelf withOptionalElement(ResourceLocation registryName) {
+    public TSelf withOptionalElement(Identifier registryName) {
         elements.add(TagEntry.optionalElement(registryName));
         return (TSelf) this;
     }
 
     @Override
     public TSelf withOptionalElement(String identifier) {
-        return withOptionalElement(ResourceLocation.fromNamespaceAndPath(namespace, identifier));
+        return withOptionalElement(Identifier.fromNamespaceAndPath(namespace, identifier));
     }
     // endregion
     // endregion
@@ -57,7 +57,7 @@ sealed class TagBuilderImpl<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf
     // region: Tag
     // region: Required
     @Override
-    public TSelf withTag(ResourceLocation tagName) {
+    public TSelf withTag(Identifier tagName) {
         elements.add(TagEntry.tag(tagName));
         return (TSelf) this;
     }
@@ -65,7 +65,7 @@ sealed class TagBuilderImpl<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf
 
     // region: Optional
     @Override
-    public TSelf withOptionalTag(ResourceLocation tagName) {
+    public TSelf withOptionalTag(Identifier tagName) {
         elements.add(TagEntry.optionalTag(tagName));
         return (TSelf) this;
     }
@@ -77,27 +77,27 @@ sealed class TagBuilderImpl<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf
     // region: Element
     // region: Required
     @Override
-    public TSelf removeElement(ResourceLocation registryName) {
+    public TSelf removeElement(Identifier registryName) {
         removals.add(TagEntry.element(registryName));
         return (TSelf) this;
     }
 
     @Override
     public TSelf removeElement(String identifier) {
-        return removeElement(ResourceLocation.fromNamespaceAndPath(namespace, identifier));
+        return removeElement(Identifier.fromNamespaceAndPath(namespace, identifier));
     }
     // endregion
 
     // region: Optional
     @Override
-    public TSelf removeOptionalElement(ResourceLocation registryName) {
+    public TSelf removeOptionalElement(Identifier registryName) {
         removals.add(TagEntry.optionalElement(registryName));
         return (TSelf) this;
     }
 
     @Override
     public TSelf removeOptionalElement(String identifier) {
-        return removeOptionalElement(ResourceLocation.fromNamespaceAndPath(namespace, identifier));
+        return removeOptionalElement(Identifier.fromNamespaceAndPath(namespace, identifier));
     }
     // endregion
     // endregion
@@ -105,7 +105,7 @@ sealed class TagBuilderImpl<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf
     // region: Tag
     // region: Required
     @Override
-    public TSelf removeTag(ResourceLocation tagName) {
+    public TSelf removeTag(Identifier tagName) {
         removals.add(TagEntry.tag(tagName));
         return (TSelf) this;
     }
@@ -113,7 +113,7 @@ sealed class TagBuilderImpl<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf
 
     // region: Optional
     @Override
-    public TSelf removeOptionalTag(ResourceLocation tagName) {
+    public TSelf removeOptionalTag(Identifier tagName) {
         removals.add(TagEntry.optionalTag(tagName));
         return (TSelf) this;
     }

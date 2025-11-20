@@ -37,13 +37,13 @@ public final class ModelProviderImpl implements BaseProvider, ModelProvider {
 
     private Stream<? extends Holder<Item>> filteredItems() {
         return knownItemsSupplier.get()
-                .filter(holder -> holder.unwrapKey().orElseThrow().location().getNamespace().equals(modId))
+                .filter(holder -> holder.unwrapKey().orElseThrow().identifier().getNamespace().equals(modId))
                 .filter(itemFilter);
     }
 
     private Stream<? extends Holder<Block>> filteredBlocks() {
         return knownBlocksSupplier.get()
-                .filter(holder -> holder.unwrapKey().orElseThrow().location().getNamespace().equals(modId))
+                .filter(holder -> holder.unwrapKey().orElseThrow().identifier().getNamespace().equals(modId))
                 .filter(blockFilter);
     }
 

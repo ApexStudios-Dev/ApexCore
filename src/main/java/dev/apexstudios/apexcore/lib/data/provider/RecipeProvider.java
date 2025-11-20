@@ -5,10 +5,10 @@ import dev.apexstudios.apexcore.lib.data.ProviderType;
 import java.util.List;
 import java.util.Objects;
 import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.critereon.EnterBlockTrigger;
-import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.advancements.criterion.EnterBlockTrigger;
+import net.minecraft.advancements.criterion.InventoryChangeTrigger;
+import net.minecraft.advancements.criterion.ItemPredicate;
+import net.minecraft.advancements.criterion.MinMaxBounds;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.BlockFamily;
@@ -17,8 +17,8 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Item;
@@ -247,7 +247,7 @@ public interface RecipeProvider {
         return net.minecraft.data.recipes.RecipeProvider.getBlastingRecipeName(item);
     }
 
-    static ResourceKey<Recipe<?>> recipeKey(ResourceLocation recipeId) {
+    static ResourceKey<Recipe<?>> recipeKey(Identifier recipeId) {
         return ResourceKey.create(Registries.RECIPE, recipeId);
     }
 
