@@ -29,11 +29,7 @@ public final class ApexCoreClientEntryPoint {
             extractMultiBlockBreakingProgress(level, renderState);
         });
 
-        NeoForge.EVENT_BUS.addListener(EventPriority.LOW, true, BlockItemPlacementEvent.GetPlacementBlockState.class, event -> {
-            if(!event.isCanceled()) {
-                return;
-            }
-
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOW, BlockItemPlacementEvent.GetDefaultBlockState.class, event -> {
             if(event.blockState().hasProperty(Dyeable.PROPERTY)) {
                 event.setBlockState(event.blockState().setValue(Dyeable.PROPERTY, Dyeable.getColorForPlacement(event.placeContext())));
             }
@@ -50,7 +46,7 @@ public final class ApexCoreClientEntryPoint {
             }
         });
 
-        NeoForge.EVENT_BUS.addListener(BlockItemPlacementEvent.CollectAdditionalBlockStates.class, event -> {
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOW, BlockItemPlacementEvent.CollectAdditionalBlockStates.class, event -> {
             var blockState = event.blockState();
 
             if(MultiBlock.isMultiBlock(blockState)) {
