@@ -21,6 +21,9 @@ neoForge {
 }
 
 repositories {
+    maven("https://maven.apexstudios.dev/prs/Registree/pr10")
+    maven("https://maven.apexstudios.dev/prs/PlacementVisualizer/pr13")
+
     apex.neoPrMaven(this, 2815)
 }
 
