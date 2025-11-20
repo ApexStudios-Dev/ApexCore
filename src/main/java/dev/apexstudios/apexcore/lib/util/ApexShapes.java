@@ -1,7 +1,6 @@
 package dev.apexstudios.apexcore.lib.util;
 
 import com.mojang.math.OctahedralGroup;
-import com.mojang.math.Quadrant;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
@@ -33,9 +32,9 @@ public interface ApexShapes {
 
     static VoxelShape rotateHorizontal(VoxelShape shape, Vec3 center, Direction facing) {
         return switch (facing) {
-            case EAST -> Shapes.rotate(shape, OctahedralGroup.fromXYAngles(Quadrant.R0, Quadrant.R90), center);
-            case SOUTH -> Shapes.rotate(shape, OctahedralGroup.fromXYAngles(Quadrant.R0, Quadrant.R180), center);
-            case WEST -> Shapes.rotate(shape, OctahedralGroup.fromXYAngles(Quadrant.R0, Quadrant.R270), center);
+            case EAST -> Shapes.rotate(shape, OctahedralGroup.BLOCK_ROT_Y_90, center);
+            case SOUTH -> Shapes.rotate(shape, OctahedralGroup.BLOCK_ROT_Y_180, center);
+            case WEST -> Shapes.rotate(shape, OctahedralGroup.BLOCK_ROT_Y_270, center);
             default -> shape;
         };
     }
