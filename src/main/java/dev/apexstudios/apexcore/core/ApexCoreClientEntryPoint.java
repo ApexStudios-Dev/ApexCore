@@ -30,8 +30,8 @@ public final class ApexCoreClientEntryPoint {
         });
 
         NeoForge.EVENT_BUS.addListener(EventPriority.LOW, BlockItemPlacementEvent.GetDefaultBlockState.class, event -> {
-            if(event.blockState().hasProperty(Dyeable.PROPERTY)) {
-                event.setBlockState(event.blockState().setValue(Dyeable.PROPERTY, Dyeable.getColorForPlacement(event.placeContext())));
+            if(event.blockState().getBlock() instanceof Dyeable dyeable) {
+                event.setBlockState(dyeable.setDyedColor(event.blockState(), dyeable.getDyedColorForPlacement(event.placeContext())));
             }
 
             if(MultiBlock.isMultiBlock(event.blockState()) && event.blockState().hasProperty(SimpleHorizontalDirectionalMultiBlock.FACING)) {

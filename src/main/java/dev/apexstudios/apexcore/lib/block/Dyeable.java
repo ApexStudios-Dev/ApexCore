@@ -1,95 +1,228 @@
 package dev.apexstudios.apexcore.lib.block;
 
+import com.mojang.serialization.Codec;
+import dev.apexstudios.registree.api.Registree;
+import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.util.CommonColors;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.block.state.properties.Property;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.common.MutableDataComponentHolder;
 import org.jetbrains.annotations.Nullable;
 
 public interface Dyeable {
-    Property<DyeColor> PROPERTY = EnumProperty.create("color", DyeColor.class);
-    DyeColor DEFAULT_COLOR = DyeColor.WHITE;
+    DataComponentType<DyeColor> COMPONENT = DataComponents.BASE_COLOR;
 
-    default DyeColor getDyedColor(BlockState blockState) {
-        return blockState.getValueOrElse(PROPERTY, DEFAULT_COLOR);
+    boolean isBlankDyedColor(DyedColor color);
+
+    DyedColor getCorrectedColor(DyedColor color);
+
+    BlockState setDyedColor(BlockState blockState, DyedColor color);
+
+    DyedColor getDyedColor(BlockState blockState);
+
+    default void setDyedColor(MutableDataComponentHolder components, DyedColor color) {
+        if(isBlankDyedColor(color)) {
+            components.remove(COMPONENT);
+        } else if(color != getDyedColor(components)) {
+            components.set(COMPONENT, color.color);
+        }
     }
 
-    default void setDyedColor(Level level, BlockPos pos, BlockState blockState, DyeColor color) {
-        level.setBlockAndUpdate(pos, blockState.trySetValue(PROPERTY, color));
+    default DyedColor getDyedColor(DataComponentGetter components) {
+        return getCorrectedColor(DyedColor.from(components.get(COMPONENT)));
     }
 
-    static DyeColor getColor(BlockState blockState) {
-        if(blockState.getBlock() instanceof Dyeable dyeable)
-            return dyeable.getDyedColor(blockState);
-
-        return blockState.getValueOrElse(PROPERTY, DEFAULT_COLOR);
+    default void setDyedColor(Level level, BlockPos pos, BlockState blockState, DyedColor color) {
+        if(!level.isClientSide()) {
+            level.setBlockAndUpdate(pos, setDyedColor(blockState, getCorrectedColor(color)));
+        }
     }
 
-    static DyeColor getColor(ItemStack stack) {
-        return stack.getOrDefault(DataComponents.BASE_COLOR, DEFAULT_COLOR);
-    }
-
-    static void setColor(Level level, BlockPos pos, BlockState blockState, DyeColor color) {
-        if(blockState.getBlock() instanceof Dyeable dyeable)
-            dyeable.setDyedColor(level, pos, blockState, color);
-        else
-            level.setBlockAndUpdate(pos, blockState.trySetValue(PROPERTY, color));
-    }
-
-    static void setColor(ItemStack stack, DyeColor color) {
-        if(color == DEFAULT_COLOR)
-            stack.remove(DataComponents.BASE_COLOR);
-        else if(color != getColor(stack))
-            stack.set(DataComponents.BASE_COLOR, color);
-    }
-
-    static DyeColor getColorForPlacement(BlockPlaceContext context) {
+    default DyedColor getDyedColorForPlacement(BlockPlaceContext context) {
         var player = context.getPlayer();
 
-        if(player == null)
-            return DEFAULT_COLOR;
+        if(player == null) {
+            return getCorrectedColor(DyedColor.NONE);
+        }
 
         var hand = context.getHand();
         var otherHand = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
         var stack = player.getItemInHand(otherHand);
-        var color = DyeColor.getColor(stack);
+        var color = getCorrectedColor(DyedColor.fromDye(stack));
 
-        if(color == null)
-            color = getColor(context.getItemInHand());
+        if(isBlankDyedColor(color)) {
+            color = getDyedColor(context.getItemInHand());
+        }
 
         return color;
     }
 
-    static InteractionResult useItemOn(Level level, BlockPos pos, BlockState blockState, ItemStack stack) {
-        var color = DyeColor.getColor(stack);
-        var current = getColor(blockState);
+    default InteractionResult tryDyeBlock(ItemStack stack, BlockState blockState, Level level, BlockPos pos, Player player) {
+        var dye = getCorrectedColor(DyedColor.fromDye(stack));
+        var currentColor = getDyedColor(blockState);
 
-        if(color == null || current == color)
-            return InteractionResult.TRY_WITH_EMPTY_HAND;
-
-        if(!level.isClientSide())
-            setColor(level, pos, blockState, color);
-
-        return InteractionResult.SUCCESS;
-    }
-
-    static ItemStack getCloneStack(ItemLike item, BlockState blockState, @Nullable Player player, boolean includeData) {
-        var stack = new ItemStack(item);
-
-        if(includeData || (player != null && player.isCreative())) {
-            var color = getColor(blockState);
-            setColor(stack, color);
+        if(player.isSecondaryUseActive()) {
+            if(!isBlankDyedColor(currentColor)) {
+                setDyedColor(level, pos, blockState, DyedColor.NONE);
+                return InteractionResult.SUCCESS;
+            }
+        } else {
+            if(!isBlankDyedColor(dye) && dye != currentColor) {
+                setDyedColor(level, pos, blockState, dye);
+                return InteractionResult.SUCCESS;
+            }
         }
 
-        return stack;
+        return InteractionResult.PASS;
+    }
+
+    default void appendDyedColor(MutableDataComponentHolder components, BlockState blockState, @Nullable Player player, boolean includeData) {
+        if(includeData || (player != null && player.isCreative())) {
+            setDyedColor(components, getDyedColor(blockState));
+        }
+    }
+
+    static Stream<Block> dyeableBlocks(Registree registree) {
+        return registree.stream(Registries.BLOCK).filter(Dyeable.class::isInstance);
+    }
+
+    static Stream<Item> dyeableItems(Registree registree) {
+        return dyeableBlocks(registree).map(ItemLike::asItem);
+    }
+
+    static void registerBlockColor(Registree registree, RegisterColorHandlersEvent.Block event) {
+        event.register((blockState, level, pos, tintIndex) -> {
+            if(tintIndex == 0 && blockState.getBlock() instanceof Dyeable dyeable) {
+                var color = dyeable.getDyedColor(blockState).color;
+                return color == null ? CommonColors.WHITE : color.getTextureDiffuseColor();
+            }
+
+            return CommonColors.WHITE;
+        }, dyeableBlocks(registree).toArray(Block[]::new));
+    }
+
+    interface Colored extends Dyeable {
+        EnumProperty<DyedColor> DYED_COLOR = EnumProperty.create("color", DyedColor.class, color -> color.color != null);
+
+        default boolean isBlankDyedColor(DyedColor color) {
+            return color == DyedColor.NONE || color == DyedColor.WHITE;
+        }
+
+        default DyedColor getCorrectedColor(DyedColor color) {
+            return color == DyedColor.NONE ? DyedColor.WHITE : color;
+        }
+
+        default BlockState setDyedColor(BlockState blockState, DyedColor color) {
+            return blockState.setValue(DYED_COLOR, getCorrectedColor(color));
+        }
+
+        default DyedColor getDyedColor(BlockState blockState) {
+            return blockState.getValue(DYED_COLOR);
+        }
+    }
+
+    interface WithNone extends Dyeable {
+        EnumProperty<DyedColor> DYED_COLOR = EnumProperty.create("color", DyedColor.class);
+
+        @Override
+        default boolean isBlankDyedColor(DyedColor color) {
+            return color == DyedColor.NONE;
+        }
+
+        @Override
+        default DyedColor getCorrectedColor(DyedColor color) {
+            return color;
+        }
+
+        @Override
+        default BlockState setDyedColor(BlockState blockState, DyedColor color) {
+            return blockState.setValue(DYED_COLOR, color);
+        }
+
+        @Override
+        default DyedColor getDyedColor(BlockState blockState) {
+            return blockState.getValue(DYED_COLOR);
+        }
+    }
+
+    enum DyedColor implements StringRepresentable {
+        NONE(null),
+        WHITE(DyeColor.WHITE),
+        ORANGE(DyeColor.ORANGE),
+        MAGENTA(DyeColor.MAGENTA),
+        LIGHT_BLUE(DyeColor.LIGHT_BLUE),
+        YELLOW(DyeColor.YELLOW),
+        LIME(DyeColor.LIME),
+        PINK(DyeColor.PINK),
+        GRAY(DyeColor.GRAY),
+        LIGHT_GRAY(DyeColor.LIGHT_GRAY),
+        CYAN(DyeColor.CYAN),
+        PURPLE(DyeColor.PURPLE),
+        BLUE(DyeColor.BLUE),
+        BROWN(DyeColor.BROWN),
+        GREEN(DyeColor.GREEN),
+        RED(DyeColor.RED),
+        BLACK(DyeColor.BLACK);
+
+        public static final Codec<DyedColor> CODEC = StringRepresentable.fromEnum(DyedColor::values);
+
+        @Nullable private final DyeColor color;
+
+        DyedColor(@Nullable DyeColor color) {
+            this.color = color;
+        }
+
+        @Nullable
+        public DyeColor getColor() {
+            return color;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return color == null ? "none" : color.getSerializedName();
+        }
+
+        public static DyedColor fromDye(ItemStack stack) {
+            return from(DyeColor.getColor(stack));
+        }
+
+        public static DyedColor from(@Nullable DyeColor color) {
+            return switch(color) {
+                case WHITE -> WHITE;
+                case ORANGE -> ORANGE;
+                case MAGENTA -> MAGENTA;
+                case LIGHT_BLUE -> LIGHT_BLUE;
+                case YELLOW -> YELLOW;
+                case LIME -> LIME;
+                case PINK -> PINK;
+                case GRAY -> GRAY;
+                case LIGHT_GRAY -> LIGHT_GRAY;
+                case CYAN -> CYAN;
+                case PURPLE -> PURPLE;
+                case BLUE -> BLUE;
+                case BROWN -> BROWN;
+                case GREEN -> GREEN;
+                case RED -> RED;
+                case BLACK -> BLACK;
+                case null -> NONE;
+            };
+        }
     }
 }
