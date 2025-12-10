@@ -1,5 +1,6 @@
 package dev.apexstudios.apexcore.lib.util;
 
+import com.google.common.base.Suppliers;
 import java.util.function.Supplier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -106,8 +107,8 @@ public final class BlockSetTypeBuilder {
                 .buttonClickOn(blockSetType::buttonClickOn);
     }
 
-    public BlockSetType build(String name) {
-        return new BlockSetType(
+    public Supplier<BlockSetType> build(String name) {
+        return Suppliers.memoize(() -> BlockSetType.register(new BlockSetType(
                 name,
                 canOpenByHand,
                 canOpenByWindCharge,
@@ -122,7 +123,7 @@ public final class BlockSetTypeBuilder {
                 pressurePlateClickOn.get(),
                 buttonClickOff.get(),
                 buttonClickOn.get()
-        );
+        )));
     }
 
     public static BlockSetTypeBuilder builder() {
