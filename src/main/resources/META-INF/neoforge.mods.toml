@@ -16,19 +16,19 @@ displayURL = "https://modrinth.com/mod/apexcore"
 [[dependencies.apexcore]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.10,1.21.11)"
+versionRange = "[1.21.11,1.21.12)"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.apexcore]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.10-beta,21.11)"
+versionRange = "[21.11-beta,21.12)"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.apexcore]]
 modId = "placementvisualizer"
 type = "required"
-versionRange = "[21.10.5,21.11)"
+versionRange = "[21.11,21.12)"
 ordering = "NONE"
 side = "BOTH"
 

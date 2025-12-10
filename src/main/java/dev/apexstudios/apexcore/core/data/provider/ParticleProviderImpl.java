@@ -12,18 +12,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.Util;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 
 public final class ParticleProviderImpl implements BaseProvider, ParticleProvider {
     public static final ProviderType<ParticleProvider> PROVIDER_TYPE = ProviderType.register(ApexCore.identifier("particle"), ParticleProviderImpl::new);
 
-    private final Map<ResourceLocation, List<String>> descriptions = Maps.newHashMap();
+    private final Map<Identifier, List<String>> descriptions = Maps.newHashMap();
 
     @Override
     public CompletableFuture<?> generate(CachedOutput cache, ProviderOutputContext context) {
@@ -38,7 +38,7 @@ public final class ParticleProviderImpl implements BaseProvider, ParticleProvide
     }
 
     @Override
-    public void spriteSet(ParticleType<?> particleType, Iterable<ResourceLocation> textures) {
+    public void spriteSet(ParticleType<?> particleType, Iterable<Identifier> textures) {
         var registryName = Objects.requireNonNull(BuiltInRegistries.PARTICLE_TYPE.getKey(particleType));
         var desc = Lists.<String>newArrayList();
 

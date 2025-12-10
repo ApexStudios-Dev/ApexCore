@@ -6,7 +6,7 @@ import java.util.Objects;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -63,12 +63,12 @@ public class ItemStackRecipeBuilder implements RecipeBuilder {
         criteria.forEach(advancement::addCriterion);
 
         var recipe = factory.create(Objects.requireNonNullElse(group, ""), ingredient, result);
-        output.accept(registryKey, recipe, advancement.build(registryKey.location().withPrefix("recipes/" + category.getFolderName() + '/')));
+        output.accept(registryKey, recipe, advancement.build(registryKey.identifier().withPrefix("recipes/" + category.getFolderName() + '/')));
     }
 
     private void ensureValid(ResourceKey<Recipe<?>> registryKey) {
         if(criteria.isEmpty())
-            throw new IllegalStateException("No way of obtaining recipe: " + registryKey.location());
+            throw new IllegalStateException("No way of obtaining recipe: " + registryKey.identifier());
     }
 
     public static ItemStackRecipeBuilder stonecutting(Ingredient ingredient, RecipeCategory category, ItemStack result) {

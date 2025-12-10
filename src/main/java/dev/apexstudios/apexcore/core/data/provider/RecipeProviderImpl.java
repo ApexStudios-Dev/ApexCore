@@ -14,8 +14,8 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.advancements.criterion.InventoryChangeTrigger;
+import net.minecraft.advancements.criterion.MinMaxBounds;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.BlockFamily;
@@ -466,7 +466,7 @@ public final class RecipeProviderImpl implements BaseProvider, RecipeProvider {
         @Override
         public void accept(ResourceKey<Recipe<?>> registryKey, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
             if(!recipes.add(registryKey))
-                throw new IllegalStateException("Duplicate recipe: " + registryKey.location());
+                throw new IllegalStateException("Duplicate recipe: " + registryKey.identifier());
 
             recipeData.add(new RecipeData(
                     new RecipeHolder<>(registryKey, recipe),
