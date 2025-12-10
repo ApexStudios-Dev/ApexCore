@@ -4,8 +4,8 @@ import java.nio.file.Path;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -29,15 +29,15 @@ public interface ProviderOutputContext extends ProviderListenerContext {
         return output().createRegistryElementsPathProvider(registryKey);
     }
 
-    default Path outputPath(PackOutput.Target packType, ResourceLocation resourcePath) {
+    default Path outputPath(PackOutput.Target packType, Identifier resourcePath) {
         return output().getOutputFolder(packType).resolve(resourcePath.getNamespace()).resolve(resourcePath.getPath());
     }
 
     default Path outputPath(PackOutput.Target packType, String... path) {
-        return outputPath(packType, ResourceLocation.fromNamespaceAndPath(modId(), String.join("/", path)));
+        return outputPath(packType, Identifier.fromNamespaceAndPath(modId(), String.join("/", path)));
     }
 
-    default Path outputPath(PackType packType, ResourceLocation resourcePath) {
+    default Path outputPath(PackType packType, Identifier resourcePath) {
         return outputPath(packType(packType), resourcePath);
     }
 

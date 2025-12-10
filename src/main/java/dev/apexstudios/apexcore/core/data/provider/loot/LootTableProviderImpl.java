@@ -24,7 +24,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.MappedRegistry;
@@ -32,11 +31,12 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.ProblemReporter;
+import net.minecraft.util.Util;
 import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.RandomSequence;
 import net.minecraft.world.flag.FeatureElement;
@@ -100,7 +100,7 @@ public class LootTableProviderImpl implements BaseProvider, LootTableProvider {
         }
 
         var pathProvider = context.elementPathProvider(Registries.LOOT_TABLE);
-        var result = factoryContext.registry.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().location(), Map.Entry::getValue));
+        var result = factoryContext.registry.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().identifier(), Map.Entry::getValue));
         return BaseProvider.saveAll(cache, LootTable.DIRECT_CODEC, pathProvider, result);
     }
 
@@ -131,7 +131,7 @@ public class LootTableProviderImpl implements BaseProvider, LootTableProvider {
     private final class FactoryContextImpl implements LootTableSubProviderFactory.Context {
         private final ProviderListenerContext context;
         private final Registry<LootTable> registry = new MappedRegistry<>(Registries.LOOT_TABLE, Lifecycle.experimental());
-        private final Map<RandomSupport.Seed128bit, ResourceLocation> sequnceMap = new Object2ObjectOpenHashMap<>();
+        private final Map<RandomSupport.Seed128bit, Identifier> sequnceMap = new Object2ObjectOpenHashMap<>();
 
         private FactoryContextImpl(ProviderListenerContext context) {
             this.context = context;
@@ -139,11 +139,11 @@ public class LootTableProviderImpl implements BaseProvider, LootTableProvider {
 
         @Override
         public void accept(ResourceKey<LootTable> lootTableKey, Supplier<LootTable.Builder> lootTableBuilder) {
-            var sequenceId = lootTableKey.location();
+            var sequenceId = lootTableKey.identifier();
             var existingSequenceId = sequnceMap.put(RandomSequence.seedForKey(sequenceId), sequenceId);
 
             if (existingSequenceId != null)
-                Util.logAndPauseIfInIde("LootTable random sequence seed collision on " + existingSequenceId + " and " + lootTableKey.location());
+                Util.logAndPauseIfInIde("LootTable random sequence seed collision on " + existingSequenceId + " and " + lootTableKey.identifier());
 
             var lootTable = lootTableBuilder.get().setRandomSequence(sequenceId).build();
             Registry.register(registry, lootTableKey, lootTable);

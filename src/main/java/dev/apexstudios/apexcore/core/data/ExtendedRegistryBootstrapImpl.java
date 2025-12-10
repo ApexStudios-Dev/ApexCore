@@ -10,8 +10,8 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.common.conditions.ICondition;
 
@@ -40,13 +40,13 @@ public final class ExtendedRegistryBootstrapImpl<TRegistry> implements ExtendedR
     }
 
     @Override
-    public Holder.Reference<TRegistry> register(ResourceLocation registryName, Lifecycle lifecycle, TRegistry value, ICondition... conditions) {
+    public Holder.Reference<TRegistry> register(Identifier registryName, Lifecycle lifecycle, TRegistry value, ICondition... conditions) {
         return register(ResourceKey.create(registryType, registryName), lifecycle, value, conditions);
     }
 
     @Override
     public Holder.Reference<TRegistry> register(String identifier, Lifecycle lifecycle, TRegistry value, ICondition... conditions) {
-        return register(ResourceLocation.fromNamespaceAndPath(modId, identifier), lifecycle, value, conditions);
+        return register(Identifier.fromNamespaceAndPath(modId, identifier), lifecycle, value, conditions);
     }
 
     @Override

@@ -6,21 +6,21 @@ import dev.apexstudios.apexcore.lib.data.provider.context.ProviderListenerContex
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
 
 public sealed abstract class ProviderTypeImpl<TProvider> implements ProviderType<TProvider> {
-    private static final Map<ResourceLocation, ProviderType<?>> REGISTRY = Maps.newHashMap();
+    private static final Map<Identifier, ProviderType<?>> REGISTRY = Maps.newHashMap();
 
-    private final ResourceLocation registryName;
+    private final Identifier registryName;
 
-    protected ProviderTypeImpl(ResourceLocation registryName) {
+    protected ProviderTypeImpl(Identifier registryName) {
         this.registryName = registryName;
     }
 
     @Override
-    public ResourceLocation registryName() {
+    public Identifier registryName() {
         return registryName;
     }
 
@@ -43,11 +43,11 @@ public sealed abstract class ProviderTypeImpl<TProvider> implements ProviderType
         return "ProviderType{" + registryName + '}';
     }
 
-    public static <TProvider> ProviderType<TProvider> register(ResourceLocation registryName, Function<ProviderListenerContext, TProvider> factory) {
+    public static <TProvider> ProviderType<TProvider> register(Identifier registryName, Function<ProviderListenerContext, TProvider> factory) {
         return register(new Main<>(registryName, factory));
     }
 
-    public static <TProvider> ProviderType<TProvider> registerForDist(ResourceLocation registryName, Dist dist, Supplier<Function<ProviderListenerContext, TProvider>> factory) {
+    public static <TProvider> ProviderType<TProvider> registerForDist(Identifier registryName, Dist dist, Supplier<Function<ProviderListenerContext, TProvider>> factory) {
         return register(new ForDist<>(registryName, dist, factory));
     }
 
@@ -62,7 +62,7 @@ public sealed abstract class ProviderTypeImpl<TProvider> implements ProviderType
         private final Dist dist;
         private final Supplier<Function<ProviderListenerContext, TProvider>> factory;
 
-        private ForDist(ResourceLocation registryName, Dist dist, Supplier<Function<ProviderListenerContext, TProvider>> factory) {
+        private ForDist(Identifier registryName, Dist dist, Supplier<Function<ProviderListenerContext, TProvider>> factory) {
             super(registryName);
 
             this.dist = dist;
@@ -78,7 +78,7 @@ public sealed abstract class ProviderTypeImpl<TProvider> implements ProviderType
     private static final class Main<TProvider> extends ProviderTypeImpl<TProvider> {
         private final Function<ProviderListenerContext, TProvider> factory;
 
-        private Main(ResourceLocation registryName, Function<ProviderListenerContext, TProvider> factory) {
+        private Main(Identifier registryName, Function<ProviderListenerContext, TProvider> factory) {
             super(registryName);
 
             this.factory = factory;

@@ -36,7 +36,7 @@ public final class DataMapProviderImpl implements BaseProvider, DataMapProvider 
         return DataProvider.saveAll(
                 cache,
                 builder -> builder.save(ops),
-                dataMapType -> paths.json(dataMapType.id().withPrefix(DataMapLoader.getFolderLocation(dataMapType.registryKey().location()) + '/')),
+                dataMapType -> paths.json(dataMapType.id().withPrefix(DataMapLoader.getFolderLocation(dataMapType.registryKey().identifier()) + '/')),
                 builders
         );
     }

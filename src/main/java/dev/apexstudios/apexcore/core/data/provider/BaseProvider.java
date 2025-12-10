@@ -13,21 +13,21 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public interface BaseProvider {
     CompletableFuture<?> generate(CachedOutput cache, ProviderOutputContext context);
 
-    static <E> CompletableFuture<?> saveAll(CachedOutput cache, Encoder<E> encoder, PackOutput.PathProvider pathProvider, Map<ResourceLocation, E> entries) {
+    static <E> CompletableFuture<?> saveAll(CachedOutput cache, Encoder<E> encoder, PackOutput.PathProvider pathProvider, Map<Identifier, E> entries) {
         return saveAll(cache, encoder, pathProvider::json, entries);
     }
 
-    static <E> CompletableFuture<?> saveAll(CachedOutput cache, HolderLookup.Provider registries, Encoder<E> encoder, PackOutput.PathProvider pathProvider, Map<ResourceLocation, E> entries) {
+    static <E> CompletableFuture<?> saveAll(CachedOutput cache, HolderLookup.Provider registries, Encoder<E> encoder, PackOutput.PathProvider pathProvider, Map<Identifier, E> entries) {
         return saveAll(cache, registries, encoder, pathProvider::json, entries);
     }
 
-    static <E> CompletableFuture<?> saveAll(CachedOutput cache, DynamicOps<JsonElement> ops, Encoder<E> encoder, PackOutput.PathProvider pathProvider, Map<ResourceLocation, E> entries) {
+    static <E> CompletableFuture<?> saveAll(CachedOutput cache, DynamicOps<JsonElement> ops, Encoder<E> encoder, PackOutput.PathProvider pathProvider, Map<Identifier, E> entries) {
         return saveAll(cache, ops, encoder, pathProvider::json, entries);
     }
 

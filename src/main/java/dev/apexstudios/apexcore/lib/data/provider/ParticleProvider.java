@@ -5,16 +5,16 @@ import dev.apexstudios.apexcore.lib.data.ProviderType;
 import java.util.Iterator;
 import java.util.stream.Stream;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface ParticleProvider {
     ProviderType<ParticleProvider> PROVIDER_TYPE = ParticleProviderImpl.PROVIDER_TYPE;
 
-    default void sprite(ParticleType<?> particleType, ResourceLocation texture) {
+    default void sprite(ParticleType<?> particleType, Identifier texture) {
         spriteSet(particleType, texture);
     }
 
-    default void spriteSet(ParticleType<?> particleType, ResourceLocation baseTexturePath, int numTextures, boolean reverse) {
+    default void spriteSet(ParticleType<?> particleType, Identifier baseTexturePath, int numTextures, boolean reverse) {
         spriteSet(particleType, () -> new Iterator<>() {
             private int counter = 0;
 
@@ -24,7 +24,7 @@ public interface ParticleProvider {
             }
 
             @Override
-            public ResourceLocation next() {
+            public Identifier next() {
                 var texture = baseTexturePath.withSuffix("_" + (reverse ? numTextures - counter - 1 : counter));
                 counter++;
                 return texture;
@@ -32,9 +32,9 @@ public interface ParticleProvider {
         });
     }
 
-    default void spriteSet(ParticleType<?> particleType, ResourceLocation texture, ResourceLocation... textures) {
+    default void spriteSet(ParticleType<?> particleType, Identifier texture, Identifier... textures) {
         spriteSet(particleType, Stream.concat(Stream.of(texture), Stream.of(textures))::iterator);
     }
 
-    void spriteSet(ParticleType<?> particleType, Iterable<ResourceLocation> textures);
+    void spriteSet(ParticleType<?> particleType, Iterable<Identifier> textures);
 }

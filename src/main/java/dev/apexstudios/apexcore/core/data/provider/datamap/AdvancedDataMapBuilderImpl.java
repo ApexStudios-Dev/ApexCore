@@ -2,8 +2,8 @@ package dev.apexstudios.apexcore.core.data.provider.datamap;
 
 import com.mojang.datafixers.util.Either;
 import dev.apexstudios.apexcore.lib.data.provider.datamap.AdvancedDataMapBuilder;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover;
@@ -19,7 +19,7 @@ final class AdvancedDataMapBuilderImpl<TRegistry, TValue, TRemover extends DataM
     }
 
     @Override
-    public AdvancedDataMapBuilder<TRegistry, TValue, TRemover> remove(ResourceLocation registryName, TRemover remover) {
+    public AdvancedDataMapBuilder<TRegistry, TValue, TRemover> remove(Identifier registryName, TRemover remover) {
         return remove(registryKey(registryName), remover);
     }
 

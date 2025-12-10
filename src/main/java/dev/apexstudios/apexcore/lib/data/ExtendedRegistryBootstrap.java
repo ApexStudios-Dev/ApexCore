@@ -6,8 +6,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.conditions.ICondition;
 
 public interface ExtendedRegistryBootstrap<TRegistry> extends HolderGetter<TRegistry> {
@@ -27,17 +27,17 @@ public interface ExtendedRegistryBootstrap<TRegistry> extends HolderGetter<TRegi
         return register(registryKey, Lifecycle.stable(), value, NO_CONDITIONS);
     }
 
-    Holder.Reference<TRegistry> register(ResourceLocation registryName, Lifecycle lifecycle, TRegistry value, ICondition... conditions);
+    Holder.Reference<TRegistry> register(Identifier registryName, Lifecycle lifecycle, TRegistry value, ICondition... conditions);
 
-    default Holder.Reference<TRegistry> register(ResourceLocation registryName, Lifecycle lifecycle, TRegistry value) {
+    default Holder.Reference<TRegistry> register(Identifier registryName, Lifecycle lifecycle, TRegistry value) {
         return register(registryName, lifecycle, value, NO_CONDITIONS);
     }
 
-    default Holder.Reference<TRegistry> register(ResourceLocation registryName, TRegistry value, ICondition... conditions) {
+    default Holder.Reference<TRegistry> register(Identifier registryName, TRegistry value, ICondition... conditions) {
         return register(registryName, Lifecycle.stable(), value, conditions);
     }
 
-    default Holder.Reference<TRegistry> register(ResourceLocation registryName, TRegistry value) {
+    default Holder.Reference<TRegistry> register(Identifier registryName, TRegistry value) {
         return register(registryName, Lifecycle.stable(), value, NO_CONDITIONS);
     }
 

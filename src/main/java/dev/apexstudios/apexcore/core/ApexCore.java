@@ -3,7 +3,7 @@ package dev.apexstudios.apexcore.core;
 import dev.apexstudios.apexcore.core.seat.SeatSetup;
 import dev.apexstudios.apexcore.lib.util.ApexTags;
 import dev.apexstudios.registree.api.Registree;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 
@@ -19,11 +19,11 @@ public final class ApexCore {
         SeatSetup.register(modBus);
     }
 
-    public static ResourceLocation identifier(String identifier) {
-        return ResourceLocation.fromNamespaceAndPath(ID, identifier);
+    public static Identifier identifier(String identifier) {
+        return Identifier.fromNamespaceAndPath(ID, identifier);
     }
 
     public static String id(String identifier) {
-        return ID + ResourceLocation.NAMESPACE_SEPARATOR + identifier;
+        return ID + Identifier.NAMESPACE_SEPARATOR + identifier;
     }
 }

@@ -1,8 +1,8 @@
 package dev.apexstudios.apexcore.lib.data.provider.tag;
 
 import net.minecraft.core.Holder;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
@@ -13,28 +13,28 @@ public interface TagBuilder<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf
     // region: Element
     // region: Required
     default TSelf withElement(ResourceKey<TRegistry> registryKey) {
-        return withElement(registryKey.location());
+        return withElement(registryKey.identifier());
     }
 
     default TSelf withElement(Holder<TRegistry> holder) {
         return withElement(holder.unwrapKey().orElseThrow());
     }
 
-    TSelf withElement(ResourceLocation registryName);
+    TSelf withElement(Identifier registryName);
 
     TSelf withElement(String identifier);
     // endregion
 
     // region: Optional
     default TSelf withOptionalElement(ResourceKey<TRegistry> registryKey) {
-        return withOptionalElement(registryKey.location());
+        return withOptionalElement(registryKey.identifier());
     }
 
     default TSelf withOptionalElement(Holder<TRegistry> holder) {
         return withOptionalElement(holder.unwrapKey().orElseThrow());
     }
 
-    TSelf withOptionalElement(ResourceLocation registryName);
+    TSelf withOptionalElement(Identifier registryName);
 
     TSelf withOptionalElement(String identifier);
     // endregion
@@ -46,7 +46,7 @@ public interface TagBuilder<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf
         return withTag(tag.location());
     }
 
-    TSelf withTag(ResourceLocation tagName);
+    TSelf withTag(Identifier tagName);
     // endregion
 
     // region: Optional
@@ -54,7 +54,7 @@ public interface TagBuilder<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf
         return withOptionalTag(tag.location());
     }
 
-    TSelf withOptionalTag(ResourceLocation tagName);
+    TSelf withOptionalTag(Identifier tagName);
     // endregion
     // endregion
     // endregion
@@ -63,7 +63,7 @@ public interface TagBuilder<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf
     // region: Element
     // region: Required
     default TSelf removeElement(ResourceKey<TRegistry> registryKey) {
-        return removeElement(registryKey.location());
+        return removeElement(registryKey.identifier());
     }
 
     default TSelf removeElement(Holder.Reference<TRegistry> holder) {
@@ -74,14 +74,14 @@ public interface TagBuilder<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf
         return removeElement(holder.getId());
     }
 
-    TSelf removeElement(ResourceLocation registryName);
+    TSelf removeElement(Identifier registryName);
 
     TSelf removeElement(String identifier);
     // endregion
 
     // region: Optional
     default TSelf removeOptionalElement(ResourceKey<TRegistry> registryKey) {
-        return removeOptionalElement(registryKey.location());
+        return removeOptionalElement(registryKey.identifier());
     }
 
     default TSelf removeOptionalElement(Holder.Reference<TRegistry> holder) {
@@ -92,7 +92,7 @@ public interface TagBuilder<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf
         return removeOptionalElement(holder.getId());
     }
 
-    TSelf removeOptionalElement(ResourceLocation registryName);
+    TSelf removeOptionalElement(Identifier registryName);
 
     TSelf removeOptionalElement(String identifier);
     // endregion
@@ -104,7 +104,7 @@ public interface TagBuilder<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf
         return removeTag(tag.location());
     }
 
-    TSelf removeTag(ResourceLocation tagName);
+    TSelf removeTag(Identifier tagName);
     // endregion
 
     // region: Optional
@@ -112,7 +112,7 @@ public interface TagBuilder<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf
         return removeOptionalTag(tag.location());
     }
 
-    TSelf removeOptionalTag(ResourceLocation tagName);
+    TSelf removeOptionalTag(Identifier tagName);
     // endregion
     // endregion
     // endregion
