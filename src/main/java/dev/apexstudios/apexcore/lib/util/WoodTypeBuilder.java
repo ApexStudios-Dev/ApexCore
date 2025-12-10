@@ -1,5 +1,6 @@
 package dev.apexstudios.apexcore.lib.util;
 
+import com.google.common.base.Suppliers;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.minecraft.sounds.SoundEvent;
@@ -50,18 +51,18 @@ public final class WoodTypeBuilder {
                 .blockSetType(builder -> builder.copy(woodType.setType()));
     }
 
-    public WoodType build(String woodTypeName, String blockSetTypeName) {
-        return new WoodType(
+    public Supplier<WoodType> build(String woodTypeName, String blockSetTypeName) {
+        return Suppliers.memoize(() -> WoodType.register(new WoodType(
                 woodTypeName,
-                blockSetType.build(blockSetTypeName),
+                blockSetType.build(blockSetTypeName).get(),
                 soundType.get(),
                 hangingSignSoundType.get(),
                 fenceGateClose.get(),
                 fenceGateOpen.get()
-        );
+        )));
     }
 
-    public WoodType build(String name) {
+    public Supplier<WoodType> build(String name) {
         return build(name, name);
     }
 
