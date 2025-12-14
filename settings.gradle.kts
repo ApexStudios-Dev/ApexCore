@@ -1,14 +1,13 @@
 pluginManagement {
     repositories {
+        maven("https://maven.apexstudios.dev/proxy")
         gradlePluginPortal()
-        maven("https://maven.apexstudios.dev/releases")
-        maven("https://maven.apexstudios.dev/private")
     }
 }
 
 dependencyResolutionManagement {
     versionCatalogs.create("libs") {
-        library("registree", "dev.apexstudios", "registree").version("21.10.8")
+        library("registree", "dev.apexstudios", "registree").version("21.10.10")
         library("placementvisualizer", "dev.apexstudios", "placementvisualizer").version("21.10.9")
     }
 }
