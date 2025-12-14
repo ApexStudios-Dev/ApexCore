@@ -20,6 +20,10 @@ neoForge {
     }
 }
 
+repositories {
+    maven("https://maven.apexstudios.dev/prs/Registree/pr14")
+}
+
 dependencies {
     implementation(libs.registree)
     "dataImplementation"(libs.registree)
