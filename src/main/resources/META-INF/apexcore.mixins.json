@@ -1,12 +1,16 @@
 {
   "required": true,
   "package": "dev.apexstudios.apexcore.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "mixins": [
     "BedBlockMixin",
-    "ItemCooldownsMixin"
+    "BlockItemAccessor",
+    "PlayerMixin",
+    "ServerPlayerGameModeMixin"
   ],
-  "client": [],
+  "client": [
+    "client.MultiPlayerGameModeMixin"
+  ],
   "server": [],
   "minVersion": "0.8"
 }

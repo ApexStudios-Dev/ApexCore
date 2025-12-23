@@ -1,14 +1,23 @@
 pluginManagement {
     repositories {
-        maven("https://maven.apexstudios.dev/proxy")
+        maven("https://maven.apexmodder.com/proxy")
         gradlePluginPortal()
+    }
+
+    resolutionStrategy {
+        eachPlugin {
+            if(requested.id.namespace == "apex-conventions") {
+                useVersion("0.1.94")
+            }
+        }
     }
 }
 
 dependencyResolutionManagement {
     versionCatalogs.create("libs") {
-        library("registree", "dev.apexstudios", "registree").version("21.11.1")
-        library("placementvisualizer", "dev.apexstudios", "placementvisualizer").version("21.11.0")
+        version("neoforge", "26.1.0.1-beta")
+
+        library("registree", "dev.apexstudios", "registree").version("26.1.0")
     }
 }
 

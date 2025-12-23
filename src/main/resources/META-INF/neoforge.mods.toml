@@ -1,5 +1,3 @@
-modLoader = "javafml"
-loaderVersion = "[4,)"
 license = "AllRightsReserved"
 issueTrackerURL = "https://github.com/ApexStudios-Dev/Issues/issues"
 
@@ -14,21 +12,9 @@ logoFile = "logo.png"
 displayURL = "https://modrinth.com/mod/apexcore"
 
 [[dependencies.apexcore]]
-modId = "minecraft"
-type = "required"
-versionRange = "[1.21.11,1.21.12)"
-ordering = "NONE"
-side = "BOTH"
-[[dependencies.apexcore]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.11-beta,21.12)"
-ordering = "NONE"
-side = "BOTH"
-[[dependencies.apexcore]]
-modId = "placementvisualizer"
-type = "required"
-versionRange = "[21.11-beta,21.12)"
+versionRange = "[26.1-alpha,26.2)"
 ordering = "NONE"
 side = "BOTH"
 

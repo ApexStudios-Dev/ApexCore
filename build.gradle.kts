@@ -1,17 +1,12 @@
-import dev.apexstudios.gradle.single.ApexSingleExtension
-
 plugins {
-    id("apex-conventions.neoforge") version "0.1.85"
-    id("apex-conventions.maven-publishing") version "0.1.85"
+    id("apex-conventions.neoforge")
+    id("apex-conventions.neoforge-datagen")
+    id("apex-conventions.maven-publishing")
+    id("apex-conventions.jspecify")
 }
 
 group = "dev.apexstudios"
-
-apex.neoVersion("21.11.0-beta", "1.21.10", "2025.10.12")
-apex.extendCompilerErrors()
-
-val single = ApexSingleExtension.getOrCreate(project)
-single.withDataGen()
+neoForge.version = libs.versions.neoforge.get()
 
 neoForge {
     accessTransformers {
@@ -20,12 +15,16 @@ neoForge {
     }
 }
 
+repositories {
+    maven("https://maven.apexmodder.com/prs/Registree/pr17") {
+        content {
+            includeModule("dev.apexstudios", "registree")
+        }
+    }
+}
+
 dependencies {
     implementation(libs.registree)
     "dataImplementation"(libs.registree)
     jarJar(libs.registree)
-
-    implementation(libs.placementvisualizer)
-    "dataImplementation"(libs.placementvisualizer)
-    jarJar(libs.placementvisualizer)
 }
