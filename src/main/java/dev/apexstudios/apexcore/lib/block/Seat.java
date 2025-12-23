@@ -65,7 +65,7 @@ public interface Seat {
     }
 
     static boolean maySit(EntityType<?> entityType) {
-        return !entityType.is(ApexTags.EntityTypes.SEAT_BLACKLIST);
+        return !entityType.builtInRegistryHolder().is(ApexTags.EntityTypes.SEAT_BLACKLIST);
     }
 
     static boolean maySit(Entity entity) {

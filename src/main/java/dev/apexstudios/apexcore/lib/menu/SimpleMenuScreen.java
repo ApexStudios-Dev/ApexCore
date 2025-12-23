@@ -14,14 +14,7 @@ public class SimpleMenuScreen extends AbstractContainerScreen<SimpleMenu> {
     public static final Identifier SLOT_SPRITE = Identifier.withDefaultNamespace("container/slot");
 
     public SimpleMenuScreen(SimpleMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title);
-    }
-
-    @Override
-    protected void init() {
-        imageHeight = 114 + menu.rowCount() * 18;
-        inventoryLabelY = imageHeight - 94;
-        super.init();
+        super(menu, inventory, title, DEFAULT_IMAGE_WIDTH, 114 + menu.rowCount() * 18);
     }
 
     @Override

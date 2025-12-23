@@ -43,7 +43,7 @@ import net.minecraft.world.flag.FeatureElement;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.level.levelgen.RandomSupport;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.ValidationContext;
+import net.minecraft.world.level.storage.loot.ValidationContextSource;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 public class LootTableProviderImpl implements BaseProvider, LootTableProvider {
@@ -81,7 +81,7 @@ public class LootTableProviderImpl implements BaseProvider, LootTableProvider {
         factoryContext.registry.freeze();
         var problemCollector = new ProblemReporter.Collector();
         var registryAccess = new RegistryAccess.ImmutableRegistryAccess(List.of(factoryContext.registry)).freeze();
-        var validationContext = new ValidationContext(problemCollector, LootContextParamSets.ALL_PARAMS, registryAccess);
+        var validationContext = new ValidationContextSource(problemCollector, registryAccess);
 
         for(var lootTable : Sets.difference(requiredLootTables, factoryContext.registry.registryKeySet())) {
             problemCollector.report(new net.minecraft.data.loot.LootTableProvider.MissingTableProblem(lootTable));
@@ -90,7 +90,7 @@ public class LootTableProviderImpl implements BaseProvider, LootTableProvider {
         factoryContext.registry.listElements().forEach(holder -> {
             var lootTable = holder.value();
             var lootTableKey = holder.key();
-            lootTable.validate(validationContext.setContextKeySet(lootTable.getParamSet()).enterElement(new ProblemReporter.RootElementPathElement(lootTableKey), lootTableKey));
+            lootTable.validate(validationContext.context(lootTable.getParamSet()).enterElement(new ProblemReporter.RootElementPathElement(lootTableKey), lootTableKey));
         });
 
         if(!problemCollector.isEmpty()) {
