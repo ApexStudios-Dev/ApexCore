@@ -2,6 +2,7 @@ package dev.apexstudios.apexcore.core;
 
 import com.google.common.collect.Lists;
 import dev.apexstudios.apexcore.core.client.DyeColorItemTintSource;
+import dev.apexstudios.apexcore.core.outline.OutlineRenderer;
 import dev.apexstudios.apexcore.lib.block.Dyeable;
 import dev.apexstudios.apexcore.lib.multiblock.MultiBlock;
 import dev.apexstudios.apexcore.lib.multiblock.SimpleHorizontalDirectionalMultiBlock;
@@ -21,6 +22,8 @@ import net.neoforged.neoforge.common.NeoForge;
 public final class ApexCoreClientEntryPoint {
     public ApexCoreClientEntryPoint(IEventBus modBus) {
         modBus.addListener(RegisterColorHandlersEvent.ItemTintSources.class, event -> event.register(ApexCore.identifier("dye_color"), DyeColorItemTintSource.MAP_CODEC));
+
+        OutlineRenderer.register(modBus);
 
         NeoForge.EVENT_BUS.addListener(ExtractLevelRenderStateEvent.class, event -> {
             var renderState = event.getRenderState();
