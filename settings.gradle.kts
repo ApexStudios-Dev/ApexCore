@@ -7,7 +7,7 @@ pluginManagement {
 
 dependencyResolutionManagement {
     versionCatalogs.create("libs") {
-        library("registree", "dev.apexstudios", "registree").version("26.1.1-beta-pr-17")
+        library("registree", "dev.apexstudios", "registree").version("26.1.4-beta-pr-17")
     }
 }
 
