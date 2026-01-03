@@ -2,7 +2,7 @@ package dev.apexstudios.apexcore.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import dev.apexstudios.apexcore.lib.multiblock.MultiBlock;
+import dev.apexstudios.apexcore.api.multiblock.MultiBlock;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;

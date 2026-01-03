@@ -2,7 +2,7 @@ package dev.apexstudios.apexcore.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import dev.apexstudios.apexcore.lib.util.CustomCooldownGroup;
+import dev.apexstudios.apexcore.api.util.CustomCooldownGroup;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;

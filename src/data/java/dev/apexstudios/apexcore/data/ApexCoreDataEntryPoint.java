@@ -1,9 +1,9 @@
 package dev.apexstudios.apexcore.data;
 
-import dev.apexstudios.apexcore.core.ApexCore;
-import dev.apexstudios.apexcore.core.seat.SeatSetup;
-import dev.apexstudios.apexcore.lib.data.ProviderTypes;
-import dev.apexstudios.apexcore.lib.data.ResourceGenerator;
+import dev.apexstudios.apexcore.api.data.ProviderTypes;
+import dev.apexstudios.apexcore.api.data.ResourceGenerator;
+import dev.apexstudios.apexcore.common.ApexCore;
+import dev.apexstudios.apexcore.common.seat.SeatSetup;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
