@@ -4,8 +4,9 @@ import com.google.common.collect.Lists;
 import dev.apexstudios.apexcore.api.block.Dyeable;
 import dev.apexstudios.apexcore.api.multiblock.MultiBlock;
 import dev.apexstudios.apexcore.api.multiblock.SimpleHorizontalDirectionalMultiBlock;
+import dev.apexstudios.apexcore.api.placement.BlockItemPlacementEvent;
+import dev.apexstudios.apexcore.client.placement.PlacementVisualizerClient;
 import dev.apexstudios.apexcore.common.ApexCore;
-import dev.apexstudios.placementvisualizer.api.BlockItemPlacementEvent;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.state.BlockBreakingRenderState;
 import net.minecraft.client.renderer.state.LevelRenderState;
@@ -20,6 +21,8 @@ import net.neoforged.neoforge.common.NeoForge;
 @Mod(value = ApexCore.ID, dist = Dist.CLIENT)
 public final class ApexCoreClientEntryPoint {
     public ApexCoreClientEntryPoint(IEventBus modBus) {
+        PlacementVisualizerClient.register(modBus);
+
         modBus.addListener(RegisterColorHandlersEvent.ItemTintSources.class, event -> event.register(ApexCore.identifier("dye_color"), DyeColorItemTintSource.MAP_CODEC));
 
         NeoForge.EVENT_BUS.addListener(ExtractLevelRenderStateEvent.class, event -> {

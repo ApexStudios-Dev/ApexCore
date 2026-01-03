@@ -27,20 +27,10 @@ repositories {
             includeModule("dev.apexstudios", "registree")
         }
     }
-
-    maven("https://maven.apexstudios.dev/prs/Placement-Visualizer/pr19") {
-        content {
-            includeModule("dev.apexstudios", "placementvisualizer")
-        }
-    }
 }
 
 dependencies {
     implementation(libs.registree)
     "dataImplementation"(libs.registree)
     jarJar(libs.registree)
-
-    implementation(libs.placementvisualizer)
-    "dataImplementation"(libs.placementvisualizer)
-    jarJar(libs.placementvisualizer)
 }

@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_25",
   "mixins": [
     "BedBlockMixin",
-    "ItemCooldownsMixin"
+    "ItemCooldownsMixin",
+    "BlockItemAccessor"
   ],
   "client": [],
   "server": [],
