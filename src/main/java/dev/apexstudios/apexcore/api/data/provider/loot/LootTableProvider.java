@@ -1,7 +1,7 @@
 package dev.apexstudios.apexcore.api.data.provider.loot;
 
-import dev.apexstudios.apexcore.common.data.provider.loot.LootTableProviderImpl;
 import dev.apexstudios.apexcore.api.data.ProviderType;
+import dev.apexstudios.apexcore.common.data.provider.loot.LootTableProviderImpl;
 import dev.apexstudios.registree.api.Registree;
 import java.util.Objects;
 import java.util.function.Consumer;

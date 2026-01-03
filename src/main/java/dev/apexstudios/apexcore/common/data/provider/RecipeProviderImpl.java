@@ -43,7 +43,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SuspiciousEffectHolder;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.WithConditions;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class RecipeProviderImpl implements BaseProvider, RecipeProvider {
     public static final ProviderType<RecipeProvider> PROVIDER_TYPE = ProviderType.register(ApexCore.identifier("recipes"), RecipeProviderImpl::new);

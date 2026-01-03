@@ -1,7 +1,7 @@
 package dev.apexstudios.apexcore.api.data;
 
-import dev.apexstudios.apexcore.common.data.ProviderTypeImpl;
 import dev.apexstudios.apexcore.api.data.provider.context.ProviderListenerContext;
+import dev.apexstudios.apexcore.common.data.ProviderTypeImpl;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.resources.Identifier;

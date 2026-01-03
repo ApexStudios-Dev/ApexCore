@@ -1,7 +1,7 @@
 package dev.apexstudios.apexcore.api.data.provider.tag;
 
-import dev.apexstudios.apexcore.common.data.provider.tag.IntrusiveTagProviderImpl;
 import dev.apexstudios.apexcore.api.data.ProviderType;
+import dev.apexstudios.apexcore.common.data.provider.tag.IntrusiveTagProviderImpl;
 import java.util.function.Function;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;

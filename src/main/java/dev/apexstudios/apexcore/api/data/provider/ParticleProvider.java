@@ -1,7 +1,7 @@
 package dev.apexstudios.apexcore.api.data.provider;
 
-import dev.apexstudios.apexcore.common.data.provider.ParticleProviderImpl;
 import dev.apexstudios.apexcore.api.data.ProviderType;
+import dev.apexstudios.apexcore.common.data.provider.ParticleProviderImpl;
 import java.util.Iterator;
 import java.util.stream.Stream;
 import net.minecraft.core.particles.ParticleType;

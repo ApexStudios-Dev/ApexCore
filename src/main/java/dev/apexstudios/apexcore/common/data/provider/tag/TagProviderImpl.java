@@ -1,11 +1,11 @@
 package dev.apexstudios.apexcore.common.data.provider.tag;
 
 import com.google.common.collect.Maps;
-import dev.apexstudios.apexcore.common.data.provider.BaseProvider;
 import dev.apexstudios.apexcore.api.data.provider.context.ProviderListenerContext;
 import dev.apexstudios.apexcore.api.data.provider.context.ProviderOutputContext;
 import dev.apexstudios.apexcore.api.data.provider.tag.TagBuilder;
 import dev.apexstudios.apexcore.api.data.provider.tag.TagProvider;
+import dev.apexstudios.apexcore.common.data.provider.BaseProvider;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;

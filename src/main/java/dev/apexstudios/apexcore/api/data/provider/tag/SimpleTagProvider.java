@@ -1,7 +1,7 @@
 package dev.apexstudios.apexcore.api.data.provider.tag;
 
-import dev.apexstudios.apexcore.common.data.provider.tag.SimpleTagProviderImpl;
 import dev.apexstudios.apexcore.api.data.ProviderType;
+import dev.apexstudios.apexcore.common.data.provider.tag.SimpleTagProviderImpl;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 

@@ -1,7 +1,7 @@
 package dev.apexstudios.apexcore.api.data.provider.datamap;
 
-import dev.apexstudios.apexcore.common.data.provider.datamap.DataMapProviderImpl;
 import dev.apexstudios.apexcore.api.data.ProviderType;
+import dev.apexstudios.apexcore.common.data.provider.datamap.DataMapProviderImpl;
 import net.neoforged.neoforge.registries.datamaps.AdvancedDataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover;

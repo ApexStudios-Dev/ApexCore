@@ -1,8 +1,8 @@
 package dev.apexstudios.apexcore.api.data;
 
-import dev.apexstudios.apexcore.common.data.ResourceGeneration;
 import dev.apexstudios.apexcore.api.data.pack.FeaturePackGenerator;
 import dev.apexstudios.apexcore.api.data.pack.ModPackGenerator;
+import dev.apexstudios.apexcore.common.data.ResourceGeneration;
 import java.util.function.Consumer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.data.event.GatherDataEvent;

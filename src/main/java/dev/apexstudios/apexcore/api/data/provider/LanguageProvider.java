@@ -1,7 +1,7 @@
 package dev.apexstudios.apexcore.api.data.provider;
 
-import dev.apexstudios.apexcore.common.data.provider.LanguageProviderImpl;
 import dev.apexstudios.apexcore.api.data.ProviderType;
+import dev.apexstudios.apexcore.common.data.provider.LanguageProviderImpl;
 import java.util.function.Supplier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;

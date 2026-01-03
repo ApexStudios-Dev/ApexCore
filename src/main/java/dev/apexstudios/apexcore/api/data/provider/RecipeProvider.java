@@ -1,7 +1,7 @@
 package dev.apexstudios.apexcore.api.data.provider;
 
-import dev.apexstudios.apexcore.common.data.provider.RecipeProviderImpl;
 import dev.apexstudios.apexcore.api.data.ProviderType;
+import dev.apexstudios.apexcore.common.data.provider.RecipeProviderImpl;
 import java.util.List;
 import java.util.Objects;
 import net.minecraft.advancements.Criterion;
@@ -31,7 +31,7 @@ import net.minecraft.world.item.equipment.trim.TrimPattern;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SuspiciousEffectHolder;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public interface RecipeProvider {
     ProviderType<RecipeProvider> PROVIDER_TYPE = RecipeProviderImpl.PROVIDER_TYPE;

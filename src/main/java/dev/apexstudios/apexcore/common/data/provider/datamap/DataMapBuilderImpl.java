@@ -20,7 +20,7 @@ import net.neoforged.neoforge.registries.datamaps.DataMapEntry;
 import net.neoforged.neoforge.registries.datamaps.DataMapFile;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.DataMapValueRemover;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 class DataMapBuilderImpl<TRegistry, TValue, TSelf extends DataMapBuilder<TRegistry, TValue, TSelf>> implements DataMapBuilder<TRegistry, TValue, TSelf> {
     private final Map<Either<TagKey<TRegistry>, ResourceKey<TRegistry>>, Optional<WithConditions<DataMapEntry<TValue>>>> values = Maps.newLinkedHashMap();

@@ -6,7 +6,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class FeaturePackGeneratorImpl extends PackGeneratorImpl<FeaturePackGenerator> implements FeaturePackGenerator {
     private FeatureFlagSet enabledFeatures = FeatureFlagSet.of();

@@ -4,14 +4,14 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import dev.apexstudios.apexcore.common.data.ExtendedRegistryBootstrapImpl;
-import dev.apexstudios.apexcore.common.data.provider.BaseProvider;
 import dev.apexstudios.apexcore.api.data.ExtendedRegistryBootstrap;
 import dev.apexstudios.apexcore.api.data.ProviderType;
 import dev.apexstudios.apexcore.api.data.pack.PackGenerator;
 import dev.apexstudios.apexcore.api.data.provider.context.ProviderContext;
 import dev.apexstudios.apexcore.api.data.provider.context.ProviderListenerContext;
 import dev.apexstudios.apexcore.api.data.provider.context.ProviderOutputContext;
+import dev.apexstudios.apexcore.common.data.ExtendedRegistryBootstrapImpl;
+import dev.apexstudios.apexcore.common.data.provider.BaseProvider;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +39,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
 import net.neoforged.neoforge.common.conditions.ICondition;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public sealed abstract class PackGeneratorImpl<TSelf extends PackGenerator<TSelf>> implements PackGenerator<TSelf> permits FeaturePackGeneratorImpl, ModPackGeneratorImpl {
     @Nullable protected Component description = null;

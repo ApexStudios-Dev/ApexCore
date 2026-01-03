@@ -18,7 +18,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.EntityCapability;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import org.apache.commons.lang3.function.TriConsumer;
-import org.jetbrains.annotations.NotNull;
 
 public interface Seat {
     EntityCapability<Runnable, @NotNull CapabilityContext> SEATED_CAPABILITY = EntityCapability.create(ApexCore.identifier("seated"), Runnable.class, CapabilityContext.class);

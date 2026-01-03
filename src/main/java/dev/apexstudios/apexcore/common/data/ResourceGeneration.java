@@ -1,12 +1,12 @@
 package dev.apexstudios.apexcore.common.data;
 
 import com.google.common.collect.Maps;
-import dev.apexstudios.apexcore.common.data.pack.FeaturePackGeneratorImpl;
-import dev.apexstudios.apexcore.common.data.pack.ModPackGeneratorImpl;
 import dev.apexstudios.apexcore.api.data.ResourceGenerator;
 import dev.apexstudios.apexcore.api.data.pack.FeaturePackGenerator;
 import dev.apexstudios.apexcore.api.data.pack.ModPackGenerator;
 import dev.apexstudios.apexcore.api.util.StringHelper;
+import dev.apexstudios.apexcore.common.data.pack.FeaturePackGeneratorImpl;
+import dev.apexstudios.apexcore.common.data.pack.ModPackGeneratorImpl;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -19,7 +19,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.fml.ModContainer;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class ResourceGeneration implements ResourceGenerator {
     private final ModPackGeneratorImpl pack = new ModPackGeneratorImpl();

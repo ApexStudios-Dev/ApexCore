@@ -9,7 +9,7 @@ import net.minecraft.util.CommonColors;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class DyeColorItemTintSource implements ItemTintSource {
     public static final MapCodec<DyeColorItemTintSource> MAP_CODEC = MapCodec.unit(DyeColorItemTintSource::new);
