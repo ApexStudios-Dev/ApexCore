@@ -94,7 +94,6 @@ public sealed abstract class PackGeneratorImpl<TSelf extends PackGenerator<TSelf
             return vanillaRegistries;
 
         var registrySetBuilder = new RegistrySetBuilder();
-        var patchedRegistries = RegistryPatchGenerator.createLookup(vanillaRegistries, registrySetBuilder);
         var conditionsMap = Maps.<ResourceKey<?>, List<ICondition>>newHashMap();
 
         bootstrapListeners.keySet().forEach(registryType -> register(
@@ -107,6 +106,7 @@ public sealed abstract class PackGeneratorImpl<TSelf extends PackGenerator<TSelf
                 }
         ));
 
+        var patchedRegistries = RegistryPatchGenerator.createLookup(vanillaRegistries, registrySetBuilder);
         var moddedRegistries = patchedRegistries.thenApply(RegistrySetBuilder.PatchedRegistries::patches);
         providerConsumer.accept(new RegistriesDatapackGenerator(output, moddedRegistries, Collections.singleton(context.modId()), conditionsMap));
         return moddedRegistries;
