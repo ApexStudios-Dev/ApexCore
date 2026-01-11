@@ -18,12 +18,6 @@ public class SimpleMenuScreen extends AbstractContainerScreen<SimpleMenu> {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(graphics, mouseX, mouseY, partialTick);
-        renderTooltip(graphics, mouseX, mouseY);
-    }
-
-    @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         graphics.pose().pushMatrix();
         graphics.pose().translate(leftPos, topPos);
