@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-    val registree = "26.1.8-beta-pr-17"
+    val registree = "26.1.9-beta-pr-17"
     implementation("dev.apexstudios:registree:$registree")
     "dataImplementation"("dev.apexstudios:registree:$registree")
     jarJar("dev.apexstudios:registree:$registree")
