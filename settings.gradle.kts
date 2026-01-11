@@ -3,11 +3,13 @@ pluginManagement {
         maven("https://maven.apexstudios.dev/proxy")
         gradlePluginPortal()
     }
-}
 
-dependencyResolutionManagement {
-    versionCatalogs.create("libs") {
-        library("registree", "dev.apexstudios", "registree").version("26.1.4-beta-pr-17")
+    resolutionStrategy {
+        eachPlugin {
+            if(requested.id.namespace == "apex-conventions") {
+                useVersion("0.1.90")
+            }
+        }
     }
 }
 
