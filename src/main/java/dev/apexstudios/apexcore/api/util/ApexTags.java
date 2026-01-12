@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.Block;
 public interface ApexTags {
     interface Blocks {
         TagKey<Block> SEAT_PER_BLOCK = ApexCore.REGISTREE.tag(Registries.BLOCK, "seat_per_block");
+        TagKey<Block> SHEARS_EFFICIENT = ApexCore.REGISTREE.tag(Registries.BLOCK, "shears_efficient");
 
         private static void register() {
 

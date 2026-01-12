@@ -5,7 +5,8 @@
   "mixins": [
     "BedBlockMixin",
     "ItemCooldownsMixin",
-    "BlockItemAccessor"
+    "BlockItemAccessor",
+    "PlayerMixin"
   ],
   "client": [],
   "server": [],
