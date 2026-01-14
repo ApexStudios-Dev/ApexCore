@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "dev.apexstudios"
-neoForge.version = "26.1.0.0-alpha.5+snapshot-2"
+neoForge.version = libs.versions.neoforge.get()
 
 neoForge {
     accessTransformers {
@@ -24,8 +24,7 @@ repositories {
 }
 
 dependencies {
-    val registree = "26.1.9-beta-pr-17"
-    implementation("dev.apexstudios:registree:$registree")
-    "dataImplementation"("dev.apexstudios:registree:$registree")
-    jarJar("dev.apexstudios:registree:$registree")
+    implementation(libs.registree)
+    "dataImplementation"(libs.registree)
+    jarJar(libs.registree)
 }
