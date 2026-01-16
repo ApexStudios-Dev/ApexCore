@@ -1,5 +1,6 @@
 package dev.apexstudios.apexcore.api.block.behavior;
 
+import dev.apexstudios.apexcore.api.util.ApexUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Mirror;
@@ -30,8 +31,7 @@ public final class HorizontalFacingBlockBehavior extends BlockBehavior {
     public BlockState getStateForPlacement(BlockState blockState, BlockPlaceContext context) {
         var facing = context.getHorizontalDirection().getOpposite();
 
-        if(context.isSecondaryUseActive()) {
-            // TODO: Look into reversing with CTRL not SHIFT
+        if(ApexUtil.hasModifierKeyPressed(context.getPlayer())) {
             facing = facing.getOpposite();
         }
 
