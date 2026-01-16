@@ -22,11 +22,11 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import org.jspecify.annotations.Nullable;
 
-public final class WaterLoggedBehavior extends BlockBehavior {
-    public static final BlockBehaviorType<WaterLoggedBehavior, Void> TYPE = BlockBehaviorType.create(WaterLoggedBehavior::new);
+public final class WaterLoggedBlockBehavior extends BlockBehavior {
+    public static final BlockBehaviorType<WaterLoggedBlockBehavior, Void> TYPE = BlockBehaviorType.create(WaterLoggedBlockBehavior::new);
     public static final BooleanProperty PROPERTY = BlockStateProperties.WATERLOGGED;
 
-    private WaterLoggedBehavior(BlockBehaviorRegistration registration) {
+    private WaterLoggedBlockBehavior(BlockBehaviorRegistration registration) {
         super(registration);
 
         registration.booleanProperty(PROPERTY);
