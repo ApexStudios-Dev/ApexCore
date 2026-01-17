@@ -32,9 +32,9 @@ public interface ApexShapes {
 
     static VoxelShape rotateHorizontal(VoxelShape shape, Vec3 center, Direction facing) {
         return switch (facing) {
-            case EAST -> Shapes.rotate(shape, OctahedralGroup.BLOCK_ROT_Z_90, center);
-            case SOUTH -> Shapes.rotate(shape, OctahedralGroup.BLOCK_ROT_Z_180, center);
-            case WEST -> Shapes.rotate(shape, OctahedralGroup.BLOCK_ROT_Z_270, center);
+            case EAST -> Shapes.rotate(shape, OctahedralGroup.BLOCK_ROT_Y_90, center);
+            case SOUTH -> Shapes.rotate(shape, OctahedralGroup.BLOCK_ROT_Y_180, center);
+            case WEST -> Shapes.rotate(shape, OctahedralGroup.BLOCK_ROT_Y_270, center);
             default -> shape;
         };
     }
