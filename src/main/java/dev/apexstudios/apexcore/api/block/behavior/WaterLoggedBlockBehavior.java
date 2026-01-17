@@ -3,11 +3,16 @@ package dev.apexstudios.apexcore.api.block.behavior;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,6 +21,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jspecify.annotations.Nullable;
 
 public final class WaterLoggedBlockBehavior extends SimplePropertyBlockBehavior<Boolean, BooleanProperty> {
@@ -79,5 +85,23 @@ public final class WaterLoggedBlockBehavior extends SimplePropertyBlockBehavior<
     @Override
     protected BlockState copyProperties(BlockState blockState, BlockState neighborBlockState) {
         return blockState;
+    }
+
+    @Override
+    protected InteractionResult useItemOn(ItemStack stack, BlockState blockState, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if(!player.isSecondaryUseActive() && stack.getItem() instanceof BucketItem bucket) {
+            var waterlogged = get(blockState);
+            var fluid = bucket.getContent();
+
+            if((waterlogged && fluid.isSame(Fluids.EMPTY)) || (!waterlogged && fluid.isSame(Fluids.WATER))) {
+                var result = stack.use(level, player, hand);
+
+                if(result.consumesAction()) {
+                    return result;
+                }
+            }
+        }
+
+        return super.useItemOn(stack, blockState, level, pos, player, hand, hitResult);
     }
 }
