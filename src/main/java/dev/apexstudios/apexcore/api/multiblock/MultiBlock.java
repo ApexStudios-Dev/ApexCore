@@ -10,7 +10,6 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -18,7 +17,6 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
-import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -191,18 +189,6 @@ public interface MultiBlock {
         forEachPos(worldPos, blockState, (otherPos, otherBlockState) -> {
             if(getIndex(otherBlockState) != index && level.getBlockState(otherPos).is(otherBlockState.getBlock()))
                 level.setBlock(otherPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
-        });
-    }
-
-    static void spawnDestroyParticles(LevelAccessor level, BlockPos worldPos, BlockState blockState, @Nullable Entity destroyer) {
-        if(!isMultiBlock(blockState))
-            return;
-
-        int index = getIndex(blockState);
-
-        forEachPos(worldPos, blockState, (otherPos, otherBlockState) -> {
-            if(getIndex(otherBlockState) != index && level.getBlockState(otherPos).is(otherBlockState.getBlock()))
-                level.levelEvent(destroyer, LevelEvent.PARTICLES_DESTROY_BLOCK, otherPos, Block.getId(otherBlockState));
         });
     }
 

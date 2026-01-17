@@ -5,7 +5,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -68,12 +67,6 @@ public abstract class BedMultiBlock extends SimpleBedBlock implements MultiBlock
     public void destroy(LevelAccessor level, BlockPos pos, BlockState blockState) {
         super.destroy(level, pos, blockState);
         MultiBlock.destroyBlocks(level, pos, blockState);
-    }
-
-    @Override
-    protected void spawnDestroyParticles(Level level, Player player, BlockPos pos, BlockState blockState) {
-        super.spawnDestroyParticles(level, player, pos, blockState);
-        MultiBlock.spawnDestroyParticles(level, pos, blockState, player);
     }
 
     @Override
