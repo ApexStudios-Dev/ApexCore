@@ -43,7 +43,7 @@ public interface BlockBehaviorHelper {
             }
         }
 
-        block.executeIfPresent(WaterLoggedBlockBehavior.TYPE, behavior -> {
+        block.executeIfPresent(BlockBehaviorTypes.WATERLOGGED, behavior -> {
             if(behavior.get(blockState)) {
                 ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
             }
@@ -91,32 +91,32 @@ public interface BlockBehaviorHelper {
     }
 
     static @Nullable FluidState getFluidState(IBehaviorBlock block, BlockState blockState) {
-        var behavior = block.getBehavior(WaterLoggedBlockBehavior.TYPE);
+        var behavior = block.getBehavior(BlockBehaviorTypes.WATERLOGGED);
         return behavior == null ? null : behavior.getFluidState(blockState);
     }
 
     static boolean canPlaceLiquid(IBehaviorBlock block, @Nullable LivingEntity user, BlockGetter level, BlockPos pos, BlockState blockState, Fluid fluid) {
-        var behavior = block.getBehavior(WaterLoggedBlockBehavior.TYPE);
+        var behavior = block.getBehavior(BlockBehaviorTypes.WATERLOGGED);
         return behavior != null && behavior.canPlaceLiquid(user, level, pos, blockState, fluid);
     }
 
     static boolean placeLiquid(IBehaviorBlock block, LevelAccessor level, BlockPos pos, BlockState blockState, FluidState fluidState) {
-        var behavior = block.getBehavior(WaterLoggedBlockBehavior.TYPE);
+        var behavior = block.getBehavior(BlockBehaviorTypes.WATERLOGGED);
         return behavior != null && behavior.placeLiquid(level, pos, blockState, fluidState);
     }
 
     static ItemStack pickupBlock(IBehaviorBlock block, @Nullable LivingEntity user, LevelAccessor level, BlockPos pos, BlockState blockState) {
-        var behavior = block.getBehavior(WaterLoggedBlockBehavior.TYPE);
+        var behavior = block.getBehavior(BlockBehaviorTypes.WATERLOGGED);
         return behavior == null ? ItemStack.EMPTY : behavior.pickupBlock(user, level, pos, blockState);
     }
 
     static Optional<SoundEvent> getPickupSound(IBehaviorBlock block) {
-        var behavior = block.getBehavior(WaterLoggedBlockBehavior.TYPE);
+        var behavior = block.getBehavior(BlockBehaviorTypes.WATERLOGGED);
         return behavior == null ? Optional.empty() : behavior.getPickupSound();
     }
 
     static Optional<SoundEvent> getPickupSound(IBehaviorBlock block, BlockState blockState) {
-        var behavior = block.getBehavior(WaterLoggedBlockBehavior.TYPE);
+        var behavior = block.getBehavior(BlockBehaviorTypes.WATERLOGGED);
         return behavior == null ? Optional.empty() : behavior.getPickupSound(blockState);
     }
 
