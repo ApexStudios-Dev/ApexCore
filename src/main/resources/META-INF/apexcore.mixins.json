@@ -4,11 +4,14 @@
   "compatibilityLevel": "JAVA_25",
   "mixins": [
     "BedBlockMixin",
-    "ItemCooldownsMixin",
     "BlockItemAccessor",
-    "PlayerMixin"
+    "ItemCooldownsMixin",
+    "PlayerMixin",
+    "ServerPlayerGameModeMixin"
   ],
-  "client": [],
+  "client": [
+    "client.MultiPlayerGameModeMixin"
+  ],
   "server": [],
   "minVersion": "0.8"
 }

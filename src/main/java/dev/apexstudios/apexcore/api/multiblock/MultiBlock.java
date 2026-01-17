@@ -229,4 +229,22 @@ public interface MultiBlock {
         var offset = worldPos.subtract(origin);
         return shape.move(offset.multiply(-1));
     }
+
+    static boolean isSameMultiBlock(BlockGetter level, BlockPos pos, BlockPos other) {
+        var blockState = level.getBlockState(pos);
+        var otherBlockState = level.getBlockState(other);
+
+        if(!blockState.is(otherBlockState.getBlock())) {
+            return false;
+        }
+
+        if(!isMultiBlock(blockState) || !isMultiBlock(otherBlockState)) {
+            return false;
+        }
+
+        var origin = getOrigin(pos, blockState);
+        var otherOrigin = getOrigin(other, otherBlockState);
+
+        return origin.equals(otherOrigin);
+    }
 }
