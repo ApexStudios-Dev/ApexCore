@@ -29,7 +29,8 @@ public interface BlockBehaviorHelper {
     static BlockState updateShape(IBehaviorBlock block, BlockState blockState, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourBlockState, RandomSource random) {
         var result = blockState;
 
-        if(neighbourBlockState.is(blockState.getBlock())) {
+        // TODO: Only for multiblocks and neighbors within the same multiblock
+        /*if(neighbourBlockState.is(blockState.getBlock())) {
             for(var behavior : block.getBehaviors()) {
                 result = behavior.copyProperties(result, neighbourBlockState);
 
@@ -41,7 +42,7 @@ public interface BlockBehaviorHelper {
             if(result.isEmpty()) {
                 return result;
             }
-        }
+        }*/
 
         block.executeIfPresent(BlockBehaviorTypes.WATERLOGGED, behavior -> {
             if(behavior.get(blockState)) {
