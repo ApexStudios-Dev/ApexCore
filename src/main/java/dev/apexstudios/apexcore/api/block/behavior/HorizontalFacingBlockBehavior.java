@@ -47,4 +47,9 @@ public final class HorizontalFacingBlockBehavior extends BlockBehavior {
     protected BlockState mirror(BlockState blockState, Mirror mirror) {
         return blockState.rotate(mirror.getRotation(get(blockState)));
     }
+
+    @Override
+    protected BlockState copyProperties(BlockState blockState, BlockState neighborBlockState) {
+        return set(blockState, get(blockState));
+    }
 }

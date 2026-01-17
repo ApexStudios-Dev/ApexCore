@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jspecify.annotations.Nullable;
 
@@ -28,13 +29,25 @@ public interface BlockBehaviorHelper {
     static BlockState updateShape(IBehaviorBlock block, BlockState blockState, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourBlockState, RandomSource random) {
         var result = blockState;
 
-        for(var behavior : block.getBehaviors()) {
-            result = behavior.updateShape(result, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourBlockState, random);
+        if(neighbourBlockState.is(blockState.getBlock())) {
+            for(var behavior : block.getBehaviors()) {
+                result = behavior.copyProperties(result, neighbourBlockState);
+
+                if(result.isEmpty()) {
+                    break;
+                }
+            }
 
             if(result.isEmpty()) {
-                break;
+                return result;
             }
         }
+
+        block.executeIfPresent(WaterLoggedBlockBehavior.TYPE, behavior -> {
+            if(behavior.get(blockState)) {
+                ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+            }
+        });
 
         return result;
     }

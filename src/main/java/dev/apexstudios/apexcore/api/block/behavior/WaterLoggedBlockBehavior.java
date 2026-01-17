@@ -2,17 +2,13 @@ package dev.apexstudios.apexcore.api.block.behavior;
 
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -89,14 +85,5 @@ public final class WaterLoggedBlockBehavior extends BlockBehavior {
     @Override
     public BlockState getStateForPlacement(BlockState blockState, BlockPlaceContext context) {
         return set(blockState, context.getLevel().getFluidState(context.getClickedPos()).is(Fluids.WATER));
-    }
-
-    @Override
-    protected BlockState updateShape(BlockState blockState, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourBlockState, RandomSource random) {
-        if(get(blockState)) {
-            ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
-        }
-
-        return super.updateShape(blockState, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourBlockState, random);
     }
 }
