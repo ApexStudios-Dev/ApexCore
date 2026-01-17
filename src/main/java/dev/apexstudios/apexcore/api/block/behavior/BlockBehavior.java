@@ -57,12 +57,12 @@ public class BlockBehavior implements BlockBehaviorAccess {
 
     // region BlockBehaviorAccess
     @Override
-    public final <TBehavior extends BlockBehavior> @Nullable TBehavior getBehavior(BlockBehaviorType<TBehavior, ?> type) {
+    public final <TBehavior extends BlockBehavior> @Nullable TBehavior getBehavior(BlockBehaviorType<TBehavior> type) {
         return owner.getBehavior(type);
     }
 
     @Override
-    public final boolean hasBehavior(BlockBehaviorType<?, ?> type) {
+    public final boolean hasBehavior(BlockBehaviorType<?> type) {
         return owner.hasBehavior(type);
     }
 
@@ -77,7 +77,7 @@ public class BlockBehavior implements BlockBehaviorAccess {
     }
 
     @Override
-    public final <TBehavior extends BlockBehavior> void executeIfPresent(BlockBehaviorType<TBehavior, ?> type, Consumer<TBehavior> action) {
+    public final <TBehavior extends BlockBehavior> void executeIfPresent(BlockBehaviorType<TBehavior> type, Consumer<TBehavior> action) {
         owner.executeIfPresent(type, action);
     }
     // endregion

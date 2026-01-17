@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
 public final class DyeableBlockBehavior extends BlockBehavior {
-    public static final BlockBehaviorType<DyeableBlockBehavior, Void> TYPE = BlockBehaviorType.create(DyeableBlockBehavior::new);
+    public static final BlockBehaviorType<DyeableBlockBehavior> TYPE = new BlockBehaviorType<>(DyeableBlockBehavior::new);
     public static final EnumProperty<DyeColor> PROPERTY = EnumProperty.create("color", DyeColor.class);
 
     private DyeableBlockBehavior(BlockBehaviorRegistration registration) {

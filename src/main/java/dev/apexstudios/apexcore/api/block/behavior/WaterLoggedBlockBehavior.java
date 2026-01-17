@@ -19,7 +19,7 @@ import net.minecraft.world.level.material.Fluids;
 import org.jspecify.annotations.Nullable;
 
 public final class WaterLoggedBlockBehavior extends BlockBehavior {
-    public static final BlockBehaviorType<WaterLoggedBlockBehavior, Void> TYPE = BlockBehaviorType.create(WaterLoggedBlockBehavior::new);
+    public static final BlockBehaviorType<WaterLoggedBlockBehavior> TYPE = new BlockBehaviorType<>(WaterLoggedBlockBehavior::new);
     public static final BooleanProperty PROPERTY = BlockStateProperties.WATERLOGGED;
 
     private WaterLoggedBlockBehavior(BlockBehaviorRegistration registration) {

@@ -148,12 +148,12 @@ public class BehaviorBlock extends Block implements IBehaviorBlock, SimpleWaterl
 
     // region BlockBehaviorAccess
     @Override
-    public final <TBehavior extends BlockBehavior> @Nullable TBehavior getBehavior(BlockBehaviorType<TBehavior, ?> type) {
+    public final <TBehavior extends BlockBehavior> @Nullable TBehavior getBehavior(BlockBehaviorType<TBehavior> type) {
         return behaviorManager.getBehavior(type);
     }
 
     @Override
-    public final boolean hasBehavior(BlockBehaviorType<?, ?> type) {
+    public final boolean hasBehavior(BlockBehaviorType<?> type) {
         return behaviorManager.hasBehavior(type);
     }
 
@@ -168,7 +168,7 @@ public class BehaviorBlock extends Block implements IBehaviorBlock, SimpleWaterl
     }
 
     @Override
-    public final <TBehavior extends BlockBehavior> void executeIfPresent(BlockBehaviorType<TBehavior, ?> type, Consumer<TBehavior> action) {
+    public final <TBehavior extends BlockBehavior> void executeIfPresent(BlockBehaviorType<TBehavior> type, Consumer<TBehavior> action) {
         behaviorManager.executeIfPresent(type, action);
     }
     // endregion

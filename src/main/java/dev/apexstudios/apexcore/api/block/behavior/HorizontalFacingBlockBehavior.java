@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 public final class HorizontalFacingBlockBehavior extends BlockBehavior {
-    public static final BlockBehaviorType<HorizontalFacingBlockBehavior, Void> TYPE = BlockBehaviorType.create(HorizontalFacingBlockBehavior::new);
+    public static final BlockBehaviorType<HorizontalFacingBlockBehavior> TYPE = new BlockBehaviorType<>(HorizontalFacingBlockBehavior::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     private HorizontalFacingBlockBehavior(BlockBehaviorRegistration registration) {

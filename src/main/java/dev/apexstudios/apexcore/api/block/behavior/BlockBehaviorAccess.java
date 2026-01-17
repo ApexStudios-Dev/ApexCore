@@ -5,9 +5,9 @@ import java.util.function.Consumer;
 import org.jspecify.annotations.Nullable;
 
 public interface BlockBehaviorAccess {
-    <TBehavior extends BlockBehavior> @Nullable TBehavior getBehavior(BlockBehaviorType<TBehavior, ?> type);
+    <TBehavior extends BlockBehavior> @Nullable TBehavior getBehavior(BlockBehaviorType<TBehavior> type);
 
-    default boolean hasBehavior(BlockBehaviorType<?, ?> type) {
+    default boolean hasBehavior(BlockBehaviorType<?> type) {
         return getBehavior(type) != null;
     }
 
@@ -17,7 +17,7 @@ public interface BlockBehaviorAccess {
         getBehaviors().forEach(action);
     }
 
-    default <TBehavior extends BlockBehavior> void executeIfPresent(BlockBehaviorType<TBehavior, ?> type, Consumer<TBehavior> action) {
+    default <TBehavior extends BlockBehavior> void executeIfPresent(BlockBehaviorType<TBehavior> type, Consumer<TBehavior> action) {
         var behavior = getBehavior(type);
 
         if(behavior != null) {

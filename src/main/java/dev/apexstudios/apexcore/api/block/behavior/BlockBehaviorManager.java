@@ -1,11 +1,8 @@
 package dev.apexstudios.apexcore.api.block.behavior;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Multimap;
 import dev.apexstudios.apexcore.mixin.BlockAccessor;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
 import net.minecraft.world.level.block.Block;
@@ -15,7 +12,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import org.jspecify.annotations.Nullable;
 
 public final class BlockBehaviorManager implements BlockBehaviorAccess {
-    private final Map<BlockBehaviorType<?, ?>, BlockBehavior> behaviors;
+    private final Map<BlockBehaviorType<?>, BlockBehavior> behaviors;
 
     public <TBlock extends Block & IBehaviorBlock> BlockBehaviorManager(TBlock block, Consumer<BlockBehaviorRegistrar> registrarCallback) {
         var registration = new BlockBehaviorRegistration(block);
@@ -25,12 +22,12 @@ public final class BlockBehaviorManager implements BlockBehaviorAccess {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <TBehavior extends BlockBehavior> @Nullable TBehavior getBehavior(BlockBehaviorType<TBehavior, ?> type) {
+    public <TBehavior extends BlockBehavior> @Nullable TBehavior getBehavior(BlockBehaviorType<TBehavior> type) {
         return (TBehavior) behaviors.get(type);
     }
 
     @Override
-    public boolean hasBehavior(BlockBehaviorType<?, ?> type) {
+    public boolean hasBehavior(BlockBehaviorType<?> type) {
         return behaviors.containsKey(type);
     }
 
@@ -39,35 +36,16 @@ public final class BlockBehaviorManager implements BlockBehaviorAccess {
         return behaviors.values();
     }
 
-    private static Map<BlockBehaviorType<?, ?>, BlockBehavior> register(BlockBehaviorRegistration registration, Consumer<BlockBehaviorRegistrar> registrarCallback) {
-        var registrar = new BlockBehaviorRegistrar() {
-            private final Multimap<BlockBehaviorType<?, ?>, Consumer<?>> callbacks = HashMultimap.create();
+    private static Map<BlockBehaviorType<?>, BlockBehavior> register(BlockBehaviorRegistration registration, Consumer<BlockBehaviorRegistrar> registrarCallback) {
+        var map = ImmutableMap.<BlockBehaviorType<?>, BlockBehavior>builder();
 
-            @Override
-            public <TBehavior extends BlockBehavior, TProperties> BlockBehaviorRegistrar register(BlockBehaviorType<TBehavior, TProperties> type, Consumer<TProperties> propertiesCallback) {
-                callbacks.put(type, propertiesCallback);
-                return this;
+        registrarCallback.accept(types -> {
+            for(var type : types) {
+                map.put(type, type.factory.apply(registration));
             }
-        };
-
-        registrarCallback.accept(registrar);
-
-        if(registrar.callbacks.isEmpty()) {
-            return Collections.emptyMap();
-        }
-
-        var map = ImmutableMap.<BlockBehaviorType<?, ?>, BlockBehavior>builderWithExpectedSize(registrar.callbacks.size());
-
-        for(var type : registrar.callbacks.keySet()) {
-            map.put(type, createBehavior(registration, type, registrar.callbacks.get(type)));
-        }
+        });
 
         return map.buildOrThrow();
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <TBehavior extends BlockBehavior, TProperties> TBehavior createBehavior(BlockBehaviorRegistration registration, BlockBehaviorType<TBehavior, TProperties> type, Collection<Consumer<?>> callbacks) {
-        return type.create(registration, properties -> callbacks.forEach(callback -> ((Consumer<TProperties>) callback).accept(properties)));
     }
 
     private static void injectBlockProperties(BlockBehaviorRegistration registration, Block block) {
