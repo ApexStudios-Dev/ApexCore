@@ -18,22 +18,11 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import org.jspecify.annotations.Nullable;
 
-public final class WaterLoggedBlockBehavior extends BlockBehavior {
+public final class WaterLoggedBlockBehavior extends SimplePropertyBlockBehavior<Boolean, BooleanProperty> {
     public static final BlockBehaviorType<WaterLoggedBlockBehavior> TYPE = new BlockBehaviorType<>(WaterLoggedBlockBehavior::new);
-    public static final BooleanProperty PROPERTY = BlockStateProperties.WATERLOGGED;
 
     private WaterLoggedBlockBehavior(BlockBehaviorRegistration registration) {
-        super(registration);
-
-        registration.booleanProperty(PROPERTY);
-    }
-
-    public boolean get(BlockState blockState) {
-        return blockState.getValueOrElse(PROPERTY, false);
-    }
-
-    public BlockState set(BlockState blockState, boolean waterlogged) {
-        return blockState.trySetValue(PROPERTY, waterlogged);
+        super(registration, BlockStateProperties.WATERLOGGED, false);
     }
 
     public @Nullable FluidState getFluidState(BlockState blockState) {
@@ -85,5 +74,10 @@ public final class WaterLoggedBlockBehavior extends BlockBehavior {
     @Override
     public BlockState getStateForPlacement(BlockState blockState, BlockPlaceContext context) {
         return set(blockState, context.getLevel().getFluidState(context.getClickedPos()).is(Fluids.WATER));
+    }
+
+    @Override
+    protected BlockState copyProperties(BlockState blockState, BlockState neighborBlockState) {
+        return blockState;
     }
 }

@@ -14,29 +14,18 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
-public final class DyeableBlockBehavior extends BlockBehavior {
+public final class DyeableBlockBehavior extends SimplePropertyBlockBehavior<DyeColor, EnumProperty<DyeColor>> {
     public static final BlockBehaviorType<DyeableBlockBehavior> TYPE = new BlockBehaviorType<>(DyeableBlockBehavior::new);
-    public static final EnumProperty<DyeColor> PROPERTY = EnumProperty.create("color", DyeColor.class);
 
     private DyeableBlockBehavior(BlockBehaviorRegistration registration) {
-        super(registration);
-
-        registration.property(PROPERTY, DyeColor.WHITE);
-    }
-
-    public DyeColor get(BlockState blockState) {
-        return blockState.getValueOrElse(PROPERTY, DyeColor.WHITE);
-    }
-
-    public BlockState set(BlockState blockState, DyeColor color) {
-        return blockState.trySetValue(PROPERTY, color);
+        super(registration, EnumProperty.create("color", DyeColor.class), DyeColor.WHITE);
     }
 
     public DyeColor getForPlacement(BlockPlaceContext context) {
         var player = context.getPlayer();
 
         if(player == null) {
-            return DyeColor.WHITE;
+            return defaultValue();
         }
 
         var otherHand = ApexUtil.getOtherHand(context.getHand());
@@ -47,7 +36,7 @@ public final class DyeableBlockBehavior extends BlockBehavior {
             color = DyeColor.getColor(context.getItemInHand());
         }
 
-        return Objects.requireNonNullElse(color, DyeColor.WHITE);
+        return Objects.requireNonNullElse(color, defaultValue());
     }
 
     @Override
@@ -81,16 +70,11 @@ public final class DyeableBlockBehavior extends BlockBehavior {
 
         var current = get(blockState);
 
-        if(current != DyeColor.WHITE) {
-            level.setBlockAndUpdate(pos, set(blockState, DyeColor.WHITE));
+        if(current != defaultValue()) {
+            level.setBlockAndUpdate(pos, set(blockState, defaultValue()));
             return InteractionResult.SUCCESS;
         }
 
         return super.useWithoutItem(blockState, level, pos, player, hitResult);
-    }
-
-    @Override
-    protected BlockState copyProperties(BlockState blockState, BlockState neighborBlockState) {
-        return set(blockState, get(blockState));
     }
 }

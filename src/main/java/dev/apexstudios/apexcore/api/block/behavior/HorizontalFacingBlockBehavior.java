@@ -9,22 +9,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 
-public final class HorizontalFacingBlockBehavior extends BlockBehavior {
+public final class HorizontalFacingBlockBehavior extends SimplePropertyBlockBehavior<Direction, EnumProperty<Direction>> {
     public static final BlockBehaviorType<HorizontalFacingBlockBehavior> TYPE = new BlockBehaviorType<>(HorizontalFacingBlockBehavior::new);
-    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     private HorizontalFacingBlockBehavior(BlockBehaviorRegistration registration) {
-        super(registration);
-
-        registration.property(FACING, Direction.NORTH);
-    }
-
-    public Direction get(BlockState blockState) {
-        return blockState.getValueOrElse(FACING, Direction.NORTH);
-    }
-
-    public BlockState set(BlockState blockState, Direction facing) {
-        return facing.getAxis().isHorizontal() ? blockState.trySetValue(FACING, facing) : blockState;
+        super(registration, BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH);
     }
 
     @Override
@@ -46,10 +35,5 @@ public final class HorizontalFacingBlockBehavior extends BlockBehavior {
     @Override
     protected BlockState mirror(BlockState blockState, Mirror mirror) {
         return blockState.rotate(mirror.getRotation(get(blockState)));
-    }
-
-    @Override
-    protected BlockState copyProperties(BlockState blockState, BlockState neighborBlockState) {
-        return set(blockState, get(blockState));
     }
 }
