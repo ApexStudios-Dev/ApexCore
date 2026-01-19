@@ -22,11 +22,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
@@ -44,11 +44,11 @@ public interface RecipeProvider {
 
     void oneToOneConversionRecipe(ItemLike result, ItemLike ingredient, @Nullable String group, int resultCount);
 
-    void oreSmelting(List<ItemLike> ingredients, RecipeCategory category, ItemLike result, float experience, int cookingTime, String group);
+    void oreSmelting(List<ItemLike> ingredients, RecipeCategory category, CookingBookCategory cookingBookCategory, ItemLike result, float experience, int cookingTime, String group);
 
-    void oreBlasting(List<ItemLike> ingredients, RecipeCategory category, ItemLike result, float experience, int cookingTime, String group);
+    void oreBlasting(List<ItemLike> ingredients, RecipeCategory category, CookingBookCategory cookingBookCategory, ItemLike result, float experience, int cookingTime, String group);
 
-    <T extends AbstractCookingRecipe> void oreCooking(RecipeSerializer<T> serializer, AbstractCookingRecipe.Factory<T> recipeFactory, List<ItemLike> ingredients, RecipeCategory category, ItemLike result, float experience, int cookingTime, String group, String suffix);
+    <T extends AbstractCookingRecipe> void oreCooking(AbstractCookingRecipe.Factory<T> recipeFactory, List<ItemLike> ingredients, RecipeCategory category, CookingBookCategory cookingBookCategory, ItemLike result, float experience, int cookingTime, String group, String suffix);
 
     void netheriteSmithing(Item ingredientItem, RecipeCategory category, Item resultItem);
 
@@ -156,9 +156,9 @@ public interface RecipeProvider {
 
     void copySmithingTemplate(ItemLike template, Ingredient baseItem);
 
-    <T extends AbstractCookingRecipe> void cookRecipes(String cookingMethod, RecipeSerializer<T> cookingSerializer, AbstractCookingRecipe.Factory<T> recipeFactory, int cookingTime);
+    <T extends AbstractCookingRecipe> void cookRecipes(String cookingMethod, AbstractCookingRecipe.Factory<T> recipeFactory, int cookingTime);
 
-    <T extends AbstractCookingRecipe> void simpleCookingRecipe(String cookingMethod, RecipeSerializer<T> cookingSerializer, AbstractCookingRecipe.Factory<T> recipeFactory, int cookingTime, ItemLike material, ItemLike result, float experience);
+    <T extends AbstractCookingRecipe> void simpleCookingRecipe(String cookingMethod, AbstractCookingRecipe.Factory<T> recipeFactory, int cookingTime, ItemLike material, ItemLike result, float experience);
 
     void grate(Block grateBlock, Block material);
 
@@ -182,7 +182,7 @@ public interface RecipeProvider {
 
     ShapedRecipeBuilder shaped(RecipeCategory category, ItemLike result, int count);
 
-    ShapelessRecipeBuilder shapeless(RecipeCategory category, ItemStack result);
+    ShapelessRecipeBuilder shapeless(RecipeCategory category, ItemStackTemplate result);
 
     ShapelessRecipeBuilder shapeless(RecipeCategory category, ItemLike result);
 
@@ -252,11 +252,15 @@ public interface RecipeProvider {
     }
 
     static ResourceKey<Recipe<?>> recipeKeyWithPrefix(ItemLike item, String prefix) {
-        return recipeKey(RecipeBuilder.getDefaultRecipeId(item).withPrefix(prefix));
+        return recipeKey(getDefaultRecipeId(item).withPrefix(prefix));
     }
 
     static ResourceKey<Recipe<?>> recipeKeyWithSuffix(ItemLike item, String suffix) {
-        return recipeKey(RecipeBuilder.getDefaultRecipeId(item).withSuffix(suffix));
+        return recipeKey(getDefaultRecipeId(item).withSuffix(suffix));
+    }
+
+    static Identifier getDefaultRecipeId(ItemLike item) {
+        return item.asItem().builtInRegistryHolder().unwrapKey().orElseThrow().identifier();
     }
 
     @Nullable

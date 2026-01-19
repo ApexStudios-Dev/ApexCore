@@ -11,8 +11,7 @@ import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.SingleItemRecipe;
@@ -21,13 +20,13 @@ import org.jspecify.annotations.Nullable;
 
 public class ItemStackRecipeBuilder implements RecipeBuilder {
     private final RecipeCategory category;
-    private final ItemStack result;
+    private final ItemStackTemplate result;
     private final Ingredient ingredient;
     private final Map<String, Criterion<?>> criteria = Maps.newLinkedHashMap();
     @Nullable private String group = null;
     private final SingleItemRecipe.Factory<?> factory;
 
-    public ItemStackRecipeBuilder(RecipeCategory category, SingleItemRecipe.Factory<?> factory, Ingredient ingredient, ItemStack result) {
+    public ItemStackRecipeBuilder(RecipeCategory category, SingleItemRecipe.Factory<?> factory, Ingredient ingredient, ItemStackTemplate result) {
         this.category = category;
         this.factory = factory;
         this.ingredient = ingredient;
@@ -47,8 +46,8 @@ public class ItemStackRecipeBuilder implements RecipeBuilder {
     }
 
     @Override
-    public Item getResult() {
-        return result.getItem();
+    public ResourceKey<Recipe<?>> defaultId() {
+        return RecipeBuilder.getDefaultRecipeId(result);
     }
 
     @Override
@@ -71,7 +70,7 @@ public class ItemStackRecipeBuilder implements RecipeBuilder {
             throw new IllegalStateException("No way of obtaining recipe: " + registryKey.identifier());
     }
 
-    public static ItemStackRecipeBuilder stonecutting(Ingredient ingredient, RecipeCategory category, ItemStack result) {
+    public static ItemStackRecipeBuilder stonecutting(Ingredient ingredient, RecipeCategory category, ItemStackTemplate result) {
         return new ItemStackRecipeBuilder(category, StonecutterRecipe::new, ingredient, result);
     }
 }

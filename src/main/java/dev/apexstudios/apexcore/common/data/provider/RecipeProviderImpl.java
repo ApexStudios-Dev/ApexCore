@@ -31,12 +31,12 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
@@ -99,18 +99,18 @@ public final class RecipeProviderImpl implements BaseProvider, RecipeProvider {
     }
 
     @Override
-    public void oreSmelting(List<ItemLike> ingredients, RecipeCategory category, ItemLike result, float experience, int cookingTime, String group) {
-        delegate.oreSmelting(ingredients, category, result, experience, cookingTime, group);
+    public void oreSmelting(List<ItemLike> ingredients, RecipeCategory category, CookingBookCategory cookingBookCategory, ItemLike result, float experience, int cookingTime, String group) {
+        delegate.oreSmelting(ingredients, category, cookingBookCategory, result, experience, cookingTime, group);
     }
 
     @Override
-    public void oreBlasting(List<ItemLike> ingredients, RecipeCategory category, ItemLike result, float experience, int cookingTime, String group) {
-        delegate.oreBlasting(ingredients, category, result, experience, cookingTime, group);
+    public void oreBlasting(List<ItemLike> ingredients, RecipeCategory category, CookingBookCategory cookingBookCategory, ItemLike result, float experience, int cookingTime, String group) {
+        delegate.oreBlasting(ingredients, category, cookingBookCategory, result, experience, cookingTime, group);
     }
 
     @Override
-    public <T extends AbstractCookingRecipe> void oreCooking(RecipeSerializer<T> serializer, AbstractCookingRecipe.Factory<T> recipeFactory, List<ItemLike> ingredients, RecipeCategory category, ItemLike result, float experience, int cookingTime, String group, String suffix) {
-        delegate.oreCooking(serializer, recipeFactory, ingredients, category, result, experience, cookingTime, group, suffix);
+    public <T extends AbstractCookingRecipe> void oreCooking(AbstractCookingRecipe.Factory<T> recipeFactory, List<ItemLike> ingredients, RecipeCategory category, CookingBookCategory cookingBookCategory, ItemLike result, float experience, int cookingTime, String group, String suffix) {
+        delegate.oreCooking(recipeFactory, ingredients, category, cookingBookCategory, result, experience, cookingTime, group, suffix);
     }
 
     @Override
@@ -379,13 +379,13 @@ public final class RecipeProviderImpl implements BaseProvider, RecipeProvider {
     }
 
     @Override
-    public <T extends AbstractCookingRecipe> void cookRecipes(String cookingMethod, RecipeSerializer<T> cookingSerializer, AbstractCookingRecipe.Factory<T> recipeFactory, int cookingTime) {
-        delegate.cookRecipes(cookingMethod, cookingSerializer, recipeFactory, cookingTime);
+    public <T extends AbstractCookingRecipe> void cookRecipes(String cookingMethod, AbstractCookingRecipe.Factory<T> recipeFactory, int cookingTime) {
+        delegate.cookRecipes(cookingMethod, recipeFactory, cookingTime);
     }
 
     @Override
-    public <T extends AbstractCookingRecipe> void simpleCookingRecipe(String cookingMethod, RecipeSerializer<T> cookingSerializer, AbstractCookingRecipe.Factory<T> recipeFactory, int cookingTime, ItemLike material, ItemLike result, float experience) {
-        delegate.simpleCookingRecipe(cookingMethod, cookingSerializer, recipeFactory, cookingTime, material, result, experience);
+    public <T extends AbstractCookingRecipe> void simpleCookingRecipe(String cookingMethod, AbstractCookingRecipe.Factory<T> recipeFactory, int cookingTime, ItemLike material, ItemLike result, float experience) {
+        delegate.simpleCookingRecipe(cookingMethod, recipeFactory, cookingTime, material, result, experience);
     }
 
     @Override
@@ -444,7 +444,7 @@ public final class RecipeProviderImpl implements BaseProvider, RecipeProvider {
     }
 
     @Override
-    public ShapelessRecipeBuilder shapeless(RecipeCategory category, ItemStack result) {
+    public ShapelessRecipeBuilder shapeless(RecipeCategory category, ItemStackTemplate result) {
         return delegate.shapeless(category, result);
     }
 

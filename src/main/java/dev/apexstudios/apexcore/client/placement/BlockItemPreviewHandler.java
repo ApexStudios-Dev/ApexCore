@@ -139,15 +139,17 @@ final class BlockItemPreviewHandler implements PlacementPreviewHandler<BlockItem
         collector.validPlacement(state.canPlace);
 
         var levelState = event.getLevelRenderState();
-
         var pose = event.getPoseStack();
+
         pose.pushPose();
         pose.translate(levelState.cameraRenderState.pos.scale(-1D));
 
-        if(event instanceof RenderLevelStageEvent.AfterTranslucentBlocks) {
+        // TODO: Figure out why we had to switch away from 'AfterTranslucentBlocks' and 'AfterEntities'
+        if(event instanceof RenderLevelStageEvent.AfterOpaqueBlocks) {
             GhostRenderUtils.submitGhost(collector, pose, PlacementRenderTypes.translucentNoDepth(), state::render);
-        } else if(event instanceof RenderLevelStageEvent.AfterEntities) {
             BlockEntityPreviewHandler.submitAll(pose, collector, levelState, state.blockEntityRenderStates);
+        } else if(event instanceof RenderLevelStageEvent.AfterEntities) {
+            //BlockEntityPreviewHandler.submitAll(pose, collector, levelState, state.blockEntityRenderStates);
         }
 
         pose.popPose();
