@@ -2,6 +2,9 @@
   "pack": {
     "description": "ApexCore",
     "max_format": 97,
-    "min_format": 97
+    "min_format": [
+      97,
+      1
+    ]
   }
 }
