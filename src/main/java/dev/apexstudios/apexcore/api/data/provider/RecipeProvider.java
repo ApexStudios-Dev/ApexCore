@@ -168,7 +168,7 @@ public interface RecipeProvider {
 
     void generateRecipes(BlockFamily blockFamily, FeatureFlagSet requiredFeatures);
 
-    Block getBaseBlock(BlockFamily family, BlockFamily.Variant variant);
+    Block getBaseBlockForCrafting(BlockFamily family, BlockFamily.Variant variant);
 
     Criterion<InventoryChangeTrigger.TriggerInstance> has(MinMaxBounds.Ints count, ItemLike item);
 
@@ -191,7 +191,7 @@ public interface RecipeProvider {
     default void variant(BlockFamily family, BlockFamily.Variant variant) {
         var block = Objects.requireNonNull(family.get(variant));
         var provider = variantProvider(variant);
-        var baseBlock = getBaseBlock(family, variant);
+        var baseBlock = getBaseBlockForCrafting(family, variant);
 
         if(provider != null) {
             var builder = provider.create(this, block, baseBlock);

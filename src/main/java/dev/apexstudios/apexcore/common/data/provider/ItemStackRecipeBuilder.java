@@ -1,8 +1,8 @@
 package dev.apexstudios.apexcore.common.data.provider;
 
 import com.google.common.collect.Maps;
+import com.google.errorprone.annotations.DoNotCall;
 import java.util.Map;
-import java.util.Objects;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
@@ -23,7 +23,6 @@ public class ItemStackRecipeBuilder implements RecipeBuilder {
     private final ItemStackTemplate result;
     private final Ingredient ingredient;
     private final Map<String, Criterion<?>> criteria = Maps.newLinkedHashMap();
-    @Nullable private String group = null;
     private final SingleItemRecipe.Factory<?> factory;
 
     public ItemStackRecipeBuilder(RecipeCategory category, SingleItemRecipe.Factory<?> factory, Ingredient ingredient, ItemStackTemplate result) {
@@ -39,9 +38,10 @@ public class ItemStackRecipeBuilder implements RecipeBuilder {
         return this;
     }
 
+    @DoNotCall
+    @Deprecated
     @Override
     public ItemStackRecipeBuilder group(@Nullable String group) {
-        this.group = group;
         return this;
     }
 
@@ -61,7 +61,7 @@ public class ItemStackRecipeBuilder implements RecipeBuilder {
 
         criteria.forEach(advancement::addCriterion);
 
-        var recipe = factory.create(Objects.requireNonNullElse(group, ""), ingredient, result);
+        var recipe = factory.create(new Recipe.CommonInfo(true), ingredient, result);
         output.accept(registryKey, recipe, advancement.build(registryKey.identifier().withPrefix("recipes/" + category.getFolderName() + '/')));
     }
 

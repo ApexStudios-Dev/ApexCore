@@ -409,8 +409,8 @@ public final class RecipeProviderImpl implements BaseProvider, RecipeProvider {
     }
 
     @Override
-    public Block getBaseBlock(BlockFamily family, BlockFamily.Variant variant) {
-        return delegate.getBaseBlock(family, variant);
+    public Block getBaseBlockForCrafting(BlockFamily family, BlockFamily.Variant variant) {
+        return delegate.getBaseBlockForCrafting(family, variant);
     }
 
     @Override

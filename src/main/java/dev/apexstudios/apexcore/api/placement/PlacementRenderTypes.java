@@ -50,7 +50,7 @@ public interface PlacementRenderTypes {
                 .withVertexShader("core/entity")
                 .withFragmentShader("core/entity")
                 .withSampler("Sampler1")
-                .withVertexFormat(DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS)
+                .withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
                 .withShaderDefine("EMISSIVE")
                 .build();
     }
