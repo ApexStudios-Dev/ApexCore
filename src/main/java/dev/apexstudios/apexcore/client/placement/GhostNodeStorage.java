@@ -4,27 +4,19 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.apexstudios.apexcore.api.placement.GhostRenderUtils;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.jspecify.annotations.Nullable;
 
-public final class GhostNodeStorage extends DelegateNodeCollector {
-    public static final GhostNodeStorage INSTANCE = new GhostNodeStorage();
+public class GhostNodeStorage extends DelegateNodeCollector {
+    private final boolean validPlacement;
 
-    private boolean validPlacement = true;
+    public GhostNodeStorage(SubmitNodeCollector delegate, boolean validPlacement) {
+        super(delegate);
 
-    private GhostNodeStorage() {
-    }
-
-    public void validPlacement(boolean validPlacement) {
         this.validPlacement = validPlacement;
-    }
-
-    @Override
-    public void reset() {
-        super.reset();
-        validPlacement(true);
     }
 
     @Override

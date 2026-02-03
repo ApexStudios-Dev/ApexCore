@@ -1,6 +1,5 @@
 package dev.apexstudios.apexcore.client.placement;
 
-import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.List;
 import net.minecraft.client.gui.Font;
@@ -26,111 +25,84 @@ import org.joml.Quaternionf;
 import org.jspecify.annotations.Nullable;
 
 public class DelegateNodeCollector implements SubmitNodeCollector {
-    @Nullable
-    private SubmitNodeCollector delegate;
+    private final SubmitNodeCollector delegate;
 
-    public final void setDelegate(@Nullable SubmitNodeCollector delegate) {
-        this.delegate = delegate;
-    }
-
-    @OverridingMethodsMustInvokeSuper
-    public void reset() {
-        delegate = null;
+    public DelegateNodeCollector(SubmitNodeCollector delegate) {
+        this.delegate = get(delegate);
     }
 
     @Override
     public OrderedSubmitNodeCollector order(int index) {
-        return delegate == null ? this : delegate;
+        delegate.order(index);
+        return this;
     }
 
     @Override
     public void submitShadow(PoseStack poseStack, float radius, List<EntityRenderState.ShadowPiece> pieces) {
-        if(delegate != null) {
-            delegate.submitShadow(poseStack, radius, pieces);
-        }
+        delegate.submitShadow(poseStack, radius, pieces);
     }
 
     @Override
     public void submitNameTag(PoseStack poseStack, @Nullable Vec3 pos, int yOffset, Component text, boolean seethrough, int packedLight, double distanceToCameraSq, CameraRenderState cameraRenderState) {
-        if(delegate != null) {
-            delegate.submitNameTag(poseStack, pos, yOffset, text, seethrough, packedLight, distanceToCameraSq, cameraRenderState);
-        }
+        delegate.submitNameTag(poseStack, pos, yOffset, text, seethrough, packedLight, distanceToCameraSq, cameraRenderState);
     }
 
     @Override
     public void submitText(PoseStack poseStack, float x, float y, FormattedCharSequence string, boolean dropShadow, Font.DisplayMode displayMode, int packedLight, int color, int backgroundColor, int outlineColor) {
-        if(delegate != null) {
-            delegate.submitText(poseStack, x, y, string, dropShadow, displayMode, packedLight, color, backgroundColor, outlineColor);
-        }
+        delegate.submitText(poseStack, x, y, string, dropShadow, displayMode, packedLight, color, backgroundColor, outlineColor);
     }
 
     @Override
     public void submitFlame(PoseStack poseStack, EntityRenderState renderState, Quaternionf rotation) {
-        if(delegate != null) {
-            delegate.submitFlame(poseStack, renderState, rotation);
-        }
+        delegate.submitFlame(poseStack, renderState, rotation);
     }
 
     @Override
     public void submitLeash(PoseStack poseStack, EntityRenderState.LeashState leashState) {
-        if(delegate != null) {
-            delegate.submitLeash(poseStack, leashState);
-        }
+        delegate.submitLeash(poseStack, leashState);
     }
 
     @Override
     public void submitBlock(PoseStack poseStack, BlockState blockState, int packedLight, int packedOverlay, int outlineColor) {
-        if(delegate != null) {
-            delegate.submitBlock(poseStack, blockState, packedLight, packedOverlay, outlineColor);
-        }
+        delegate.submitBlock(poseStack, blockState, packedLight, packedOverlay, outlineColor);
     }
 
     @Override
     public void submitMovingBlock(PoseStack poseStack, MovingBlockRenderState renderState) {
-        if(delegate != null) {
-            delegate.submitMovingBlock(poseStack, renderState);
-        }
+        delegate.submitMovingBlock(poseStack, renderState);
     }
 
     @Override
     public void submitBlockModel(PoseStack poseStack, RenderType renderType, BlockStateModel model, float r, float g, float b, int packedLight, int packedOverlay, int outlineColor) {
-        if(delegate != null) {
-            delegate.submitBlockModel(poseStack, renderType, model, r, g, b, packedLight, packedOverlay, outlineColor);
-        }
+        delegate.submitBlockModel(poseStack, renderType, model, r, g, b, packedLight, packedOverlay, outlineColor);
     }
 
     @Override
     public void submitItem(PoseStack poseStack, ItemDisplayContext displayContext, int packedLight, int packedOverlay, int outlineColor, int[] tintLayers, List<BakedQuad> quads, RenderType renderType, ItemStackRenderState.FoilType foilType) {
-        if(delegate != null) {
-            delegate.submitItem(poseStack, displayContext, packedLight, packedOverlay, outlineColor, tintLayers, quads, renderType, foilType);
-        }
+        delegate.submitItem(poseStack, displayContext, packedLight, packedOverlay, outlineColor, tintLayers, quads, renderType, foilType);
     }
 
     @Override
     public void submitCustomGeometry(PoseStack poseStack, RenderType renderType, SubmitNodeCollector.CustomGeometryRenderer renderer) {
-        if(delegate != null) {
-            delegate.submitCustomGeometry(poseStack, renderType, renderer);
-        }
+        delegate.submitCustomGeometry(poseStack, renderType, renderer);
     }
 
     @Override
     public void submitParticleGroup(SubmitNodeCollector.ParticleGroupRenderer renderer) {
-        if(delegate != null) {
-            delegate.submitParticleGroup(renderer);
-        }
+        delegate.submitParticleGroup(renderer);
     }
 
     @Override
     public <S> void submitModel(Model<? super S> model, S renderState, PoseStack poseStack, RenderType renderType, int packedLight, int packedOverlay, int tintColor, @Nullable TextureAtlasSprite sprite, int outlineColor, ModelFeatureRenderer.@Nullable CrumblingOverlay crumblingOverlay) {
-        if(delegate != null) {
-            delegate.submitModel(model, renderState, poseStack, renderType, packedLight, packedOverlay, tintColor, sprite, outlineColor, crumblingOverlay);
-        }
+        delegate.submitModel(model, renderState, poseStack, renderType, packedLight, packedOverlay, tintColor, sprite, outlineColor, crumblingOverlay);
     }
 
     @Override
     public void submitModelPart(ModelPart modelPart, PoseStack poseStack, RenderType renderType, int packedLight, int packedOverlay, @Nullable TextureAtlasSprite sprite, boolean sheeted, boolean hasFoil, int tintColor, ModelFeatureRenderer.@Nullable CrumblingOverlay crumblingOverlay, int outlineColor) {
-        if(delegate != null) {
-            delegate.submitModelPart(modelPart, poseStack, renderType, packedLight, packedOverlay, sprite);
-        }
+        delegate.submitModelPart(modelPart, poseStack, renderType, packedLight, packedOverlay, sprite);
+    }
+
+    public static SubmitNodeCollector get(SubmitNodeCollector collector) {
+        return collector instanceof DelegateNodeCollector delegated ? delegated.delegate : collector;
     }
 }

@@ -17,9 +17,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.Nullable;
 
-public interface BlockEntityPreviewHandler {
+interface BlockEntityPreviewHandler {
     @Nullable
-    static BlockEntityRenderState extract(LevelRenderState levelState, Level level, float partialTick, ItemStack stack, BlockState blockState, BlockPos pos) {
+    private static BlockEntityRenderState extract(LevelRenderState levelState, Level level, float partialTick, ItemStack stack, BlockState blockState, BlockPos pos) {
         var blockEntity = createAndLoadBlockEntity(level, stack, blockState, pos);
 
         if(blockEntity == null) {
@@ -44,7 +44,7 @@ public interface BlockEntityPreviewHandler {
         return Collections.unmodifiableList(renderStates);
     }
 
-    static void submit(PoseStack pose, SubmitNodeCollector collector, LevelRenderState levelState, @Nullable BlockEntityRenderState renderState) {
+    private static void submit(PoseStack pose, SubmitNodeCollector collector, LevelRenderState levelState, @Nullable BlockEntityRenderState renderState) {
         if(renderState == null) {
             return;
         }

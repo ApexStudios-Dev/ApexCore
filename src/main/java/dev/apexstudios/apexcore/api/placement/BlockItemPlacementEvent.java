@@ -8,6 +8,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
@@ -17,7 +18,6 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
-import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
@@ -45,17 +45,17 @@ public final class BlockItemPlacementEvent {
     }
 
     public static final class GetBlock extends Event {
-        private final ItemResource item;
+        private final ItemInstance item;
         private Block block;
 
         @ApiStatus.Internal
-        public GetBlock(ItemResource item) {
+        public GetBlock(ItemInstance item) {
             this.item = item;
 
-            block = Block.byItem(item.value());
+            block = Block.byItem(item.typeHolder().value());
         }
 
-        public ItemResource item() {
+        public ItemInstance item() {
             return item;
         }
 
