@@ -1,13 +1,12 @@
 package dev.apexstudios.apexcore.api.block;
 
 import com.mojang.serialization.Codec;
-import dev.apexstudios.registree.api.Registree;
+import dev.apexstudios.registree.Registree;
 import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
@@ -100,7 +99,7 @@ public interface Dyeable {
     }
 
     static Stream<Block> dyeableBlocks(Registree registree) {
-        return registree.stream(Registries.BLOCK).filter(Dyeable.class::isInstance);
+        return registree.blocks().stream().filter(Dyeable.class::isInstance);
     }
 
     static Stream<Item> dyeableItems(Registree registree) {

@@ -2,7 +2,6 @@ package dev.apexstudios.apexcore.api.data.provider.loot;
 
 import dev.apexstudios.apexcore.api.data.ProviderType;
 import dev.apexstudios.apexcore.common.data.provider.loot.LootTableProviderImpl;
-import dev.apexstudios.registree.api.Registree;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -35,15 +34,6 @@ public interface LootTableProvider {
     <TRegistry> LootTableProvider knownElements(ResourceKey<? extends Registry<TRegistry>> registryType, Supplier<Stream<? extends Holder<TRegistry>>> knownElementsSupplier);
 
     <TRegistry> LootTableProvider elementFilter(ResourceKey<? extends Registry<TRegistry>> registryType, Predicate<Holder<TRegistry>> filter);
-
-    default <TRegistry> LootTableProvider fromRegistree(Registree registree, ResourceKey<? extends Registry<TRegistry>> registryType) {
-        return knownElements(registryType, () -> registree.listElements(registryType));
-    }
-
-    default LootTableProvider fromRegistree(Registree registree) {
-        registree.listRegistries().forEach(registryType -> fromRegistree(registree, (ResourceKey) registryType));
-        return this;
-    }
 
     default <TRegistry> LootTableProvider knownElements(DeferredHolder<TRegistry, ?>... elements) {
         Objects.checkIndex(0, elements.length);

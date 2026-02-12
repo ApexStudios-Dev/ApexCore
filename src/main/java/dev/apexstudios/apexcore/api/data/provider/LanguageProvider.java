@@ -2,6 +2,7 @@ package dev.apexstudios.apexcore.api.data.provider;
 
 import dev.apexstudios.apexcore.api.data.ProviderType;
 import dev.apexstudios.apexcore.common.data.provider.LanguageProviderImpl;
+import dev.apexstudios.registree.registrar.CreativeModeTabRegistrar;
 import java.util.function.Supplier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
@@ -64,7 +65,7 @@ public interface LanguageProvider {
     }
 
     default LanguageProvider addCreativeModeTab(ResourceKey<CreativeModeTab> creativeModeTab, String value) {
-        return add(creativeModeTab, "itemGroup", value);
+        return add(CreativeModeTabRegistrar.descriptionId(creativeModeTab), value);
     }
 
     default LanguageProvider add(GameRule<?> gameRule, String value, String descriptionValue) {
