@@ -23,7 +23,7 @@ repositories {
         }
     }
 
-    maven("https://maven.apexstudios.dev/prs/Registree/pr17") {
+    maven("https://maven.apexstudios.dev/prs/Registree/pr19") {
         content {
             includeModule("dev.apexstudios", "registree")
         }
