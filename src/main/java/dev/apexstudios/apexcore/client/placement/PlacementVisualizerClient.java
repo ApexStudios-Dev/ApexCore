@@ -1,9 +1,7 @@
 package dev.apexstudios.apexcore.client.placement;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.apexstudios.apexcore.api.placement.BlockItemPlacementEvent;
-import dev.apexstudios.apexcore.api.placement.GhostRenderUtils;
 import dev.apexstudios.apexcore.api.placement.PlacementRenderTypes;
 import dev.apexstudios.apexcore.common.ApexCore;
 import dev.apexstudios.apexcore.mixin.BlockItemAccessor;
@@ -13,6 +11,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugEntryNoop;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.state.LevelRenderState;
@@ -20,7 +19,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.RandomSource;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -40,7 +38,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
 import net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 public interface PlacementVisualizerClient {
@@ -57,7 +55,7 @@ public interface PlacementVisualizerClient {
         modBus.addListener(RegisterDebugEntriesEvent.class, event -> event.register(DEBUG_KEY, new DebugEntryNoop()));
 
         NeoForge.EVENT_BUS.addListener(ExtractLevelRenderStateEvent.class, PlacementVisualizerClient::extract);
-        NeoForge.EVENT_BUS.addListener(RenderLevelStageEvent.AfterOpaqueBlocks.class, PlacementVisualizerClient::submit);
+        NeoForge.EVENT_BUS.addListener(SubmitCustomGeometryEvent.class, event -> submit(event.getLevelRenderState(), event.getPoseStack(), event.getSubmitNodeCollector()));
     }
 
     private static void addBlockItemListeners() {
@@ -250,16 +248,6 @@ public interface PlacementVisualizerClient {
         return true;
     }
 
-    private static void submit(RenderLevelStageEvent event) {
-        if(!(event instanceof RenderLevelStageEvent.AfterOpaqueBlocks)) {
-            return;
-        }
-
-        // TODO: Neo should maybe pass this via event
-        var nodes = Minecraft.getInstance().gameRenderer.getSubmitNodeStorage();
-        submit(event.getLevelRenderState(), event.getPoseStack(), nodes);
-    }
-
     private static void submit(LevelRenderState levelRenderState, PoseStack poseStack, SubmitNodeCollector nodes) {
         var state = levelRenderState.getRenderData(KEY);
 
@@ -272,45 +260,40 @@ public interface PlacementVisualizerClient {
         poseStack.pushPose();
         poseStack.translate(levelRenderState.cameraRenderState.pos.scale(-1D));
 
-        GhostRenderUtils.submitGhost(collector, poseStack, PlacementRenderTypes.translucentNoDepth(), state::render);
-        BlockEntityPreviewHandler.submitAll(poseStack, collector, levelRenderState, state.blockEntityRenderStates);
+        state.submit(levelRenderState, poseStack, collector);
 
         poseStack.popPose();
     }
 
     record State(LevelAccessor level, boolean canPlace, Long2ObjectMap<BlockState> blockStates, List<BlockEntityRenderState> blockEntityRenderStates) {
-        public void render(PoseStack pose, VertexConsumer consumer) {
-            var blockRenderDispatcher = Minecraft.getInstance().getBlockRenderer();
+        public void submit(LevelRenderState levelRenderState, PoseStack poseStack, SubmitNodeCollector collector) {
+            var client = Minecraft.getInstance();
+            var blockColors = client.getBlockColors();
+            var blockRenderDispatcher = client.getBlockRenderer();
             var overlay = canPlace ? OverlayTexture.NO_OVERLAY : OverlayTexture.pack(OverlayTexture.RED_OVERLAY_V, OverlayTexture.NO_WHITE_U);
 
             for(var entry : blockStates.long2ObjectEntrySet()) {
                 var pos = BlockPos.of(entry.getLongKey());
                 var blockState = entry.getValue();
+                var color = blockColors.getColor(blockState, level, pos, -1);
 
-                pose.pushPose();
-                pose.translate(pos.getX(), pos.getY(), pos.getZ());
+                poseStack.pushPose();
+                poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
 
-                // Copy of MovingBlockRenderState render logic in BlockFeatureRenderer
-                var modelParts = blockRenderDispatcher.getBlockModel(blockState).collectParts(
-                        level,
-                        pos,
-                        blockState,
-                        RandomSource.create(blockState.getSeed(pos))
+                collector.submitBlockModel(
+                        poseStack,
+                        PlacementRenderTypes.translucentNoDepth(),
+                        blockRenderDispatcher.getBlockModel(blockState),
+                        color,
+                        LevelRenderer.getLightCoords(LevelRenderer.BrightnessGetter.DEFAULT, level, blockState, pos),
+                        overlay,
+                        0
                 );
 
-                blockRenderDispatcher.getModelRenderer().tesselateBlock(
-                        level,
-                        modelParts,
-                        blockState,
-                        pos,
-                        pose,
-                        consumer,
-                        false,
-                        overlay
-                );
-
-                pose.popPose();
+                poseStack.popPose();
             }
+
+            BlockEntityPreviewHandler.submitAll(poseStack, collector, levelRenderState, blockEntityRenderStates);
         }
     }
 }

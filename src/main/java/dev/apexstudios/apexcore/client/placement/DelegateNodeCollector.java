@@ -73,13 +73,13 @@ public class DelegateNodeCollector implements SubmitNodeCollector {
     }
 
     @Override
-    public void submitBlockModel(PoseStack poseStack, RenderType renderType, BlockStateModel model, float r, float g, float b, int packedLight, int packedOverlay, int outlineColor) {
-        delegate.submitBlockModel(poseStack, renderType, model, r, g, b, packedLight, packedOverlay, outlineColor);
+    public void submitBlockModel(PoseStack poseStack, RenderType renderType, BlockStateModel blockStateModel, int i, int i1, int i2, int i3) {
+        delegate.submitBlockModel(poseStack, renderType, blockStateModel, i, i1, i2, i3);
     }
 
     @Override
-    public void submitItem(PoseStack poseStack, ItemDisplayContext displayContext, int packedLight, int packedOverlay, int outlineColor, int[] tintLayers, List<BakedQuad> quads, RenderType renderType, ItemStackRenderState.FoilType foilType) {
-        delegate.submitItem(poseStack, displayContext, packedLight, packedOverlay, outlineColor, tintLayers, quads, renderType, foilType);
+    public void submitItem(PoseStack poseStack, ItemDisplayContext itemDisplayContext, int i, int i1, int i2, int[] ints, List<BakedQuad> list, ItemStackRenderState.FoilType foilType) {
+        delegate.submitItem(poseStack, itemDisplayContext, i, i1, i2, ints, list, foilType);
     }
 
     @Override

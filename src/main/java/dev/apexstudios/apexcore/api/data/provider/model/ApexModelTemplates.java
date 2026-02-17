@@ -20,13 +20,15 @@ public interface ApexModelTemplates {
         TexturedModel.Provider CARPET_TINTED = TexturedModel.createDefault(Textured::woolTinted, ApexModelTemplates.CARPET_TINTED);
 
         static TextureMapping cubeTinted(Block block) {
-            var blockTexture = TextureMapping.getBlockTexture(block);
-            return new TextureMapping().put(TextureSlot.ALL, blockTexture).put(SLOT_ALL_TINTED, blockTexture.withSuffix("_tint"));
+            return new TextureMapping()
+                    .put(TextureSlot.ALL, TextureMapping.getBlockTexture(block))
+                    .put(SLOT_ALL_TINTED, TextureMapping.getBlockTexture(block, "_tint"));
         }
 
         static TextureMapping woolTinted(Block block) {
-            var blockTexture = TextureMapping.getBlockTexture(block);
-            return new TextureMapping().put(TextureSlot.WOOL, blockTexture).put(SLOT_WOOL_TINTED, blockTexture.withSuffix("_tint"));
+            return new TextureMapping()
+                    .put(TextureSlot.WOOL, TextureMapping.getBlockTexture(block))
+                    .put(SLOT_WOOL_TINTED, TextureMapping.getBlockTexture(block, "_tint"));
         }
     }
 }
