@@ -14,7 +14,7 @@ displayURL = "https://modrinth.com/mod/apexcore"
 [[dependencies.apexcore]]
 modId = "neoforge"
 type = "required"
-versionRange = "[26.1-alpha,26.2)"
+versionRange = "[26.1-beta,26.2)"
 ordering = "NONE"
 side = "BOTH"
 
