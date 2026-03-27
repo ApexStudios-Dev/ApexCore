@@ -65,6 +65,10 @@ java {
     withSourcesJar()
 }
 
+repositories {
+    maven("https://maven.apexmodder.com/releases")
+}
+
 dependencies {
     implementation(libs.registree)
     "dataImplementation"(libs.registree)
