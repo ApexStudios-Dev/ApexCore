@@ -59,6 +59,7 @@ loom {
 
 repositories {
     maven("https://maven.covers1624.net")
+    maven("https://maven.terraformersmc.com")
 }
 
 dependencies {
@@ -72,6 +73,8 @@ dependencies {
     compileOnly(libs.registree.xplat) { isTransitive = false }
     implementation(libs.registree.fabric) { isTransitive = false }
     include(libs.registree.fabric) { isTransitive = false }
+
+    runtimeOnly(libs.modmenu) { isTransitive = false }
 }
 
 java {

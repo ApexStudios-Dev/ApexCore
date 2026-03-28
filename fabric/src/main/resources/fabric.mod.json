@@ -1,0 +1,43 @@
+{
+    "schemaVersion": 1,
+    "id": "apexcore",
+    "version": "${version}",
+    "name": "ApexCore",
+    "description": "ApexCore is a library mod required by all of ApexStudios' mods, such as Fantasy's Furniture, Fantasy's Dice and Infused Foods.",
+    "authors": [
+        "ApexStudios",
+        "Apex - Programming"
+    ],
+    "contact": {
+        "issues": "https://github.com/ApexStudios-Dev/Issues/issues",
+        "homepage": "https://modrinth.com/mod/apexcore"
+    },
+    "icon": "logo.png",
+    "license": "AllRightsReserved",
+    "environment": "*",
+    "mixins": [],
+    "depends": {
+        "fabricloader": ">=0.18.4",
+        "minecraft": ">=26.1",
+        "fabric-api": ">=0.100.6"
+    },
+    "entrypoints": {
+        "main": [
+            "dev.apexstudios.apexcore.fabric.common.ApexCoreFabric"
+        ],
+        "client": [
+            "dev.apexstudios.apexcore.fabric.client.ApexCoreClientFabric"
+        ]
+    },
+    "custom": {
+        "modmenu": {
+            "links": {
+                "discord": "https://discord.apexmodder.com"
+            },
+            "badges": [
+                "library"
+            ],
+            "update_checker": true
+        }
+    }
+}

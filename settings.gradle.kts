@@ -35,6 +35,8 @@ dependencyResolutionManagement {
         library("registree-xplat", "dev.apexstudios.registree", "xplat").versionRef("registree")
         library("registree-neoforge", "dev.apexstudios.registree", "neoforge").versionRef("registree")
         library("registree-fabric", "dev.apexstudios.registree", "fabric").versionRef("registree")
+
+        library("modmenu", "com.terraformersmc", "modmenu").version("18.0.0-alpha.8")
     }
 }
 

@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "dev.apexstudios.apexcore.mixin",
+  "package": "dev.apexstudios.apexcore.neoforge.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
     "BedBlockMixin",

@@ -107,6 +107,7 @@ java {
 dependencies {
     compileOnly(dependencyFactory.create(xplat)) { isTransitive = false }
     accessTransformers(dependencyFactory.create(xplat)) { isTransitive = false }
+    "dataCompileOnly"(dependencyFactory.create(xplat)) { isTransitive = false }
 
     compileOnly(libs.registree.xplat) { isTransitive = false }
     implementation(libs.registree.neoforge) { isTransitive = false }
