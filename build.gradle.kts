@@ -1,103 +1,20 @@
 plugins {
-    `java-library`
-    `maven-publish`
-
-    id("net.neoforged.moddev") version "2.0.141"
-    id("apex-conventions.jspecify")
+    id("net.neoforged.moddev") version "2.0.141" apply false
+    id("net.fabricmc.fabric-loom-companion") version "1.14.4" apply false
+    id("net.fabricmc.fabric-loom") version "1.14-SNAPSHOT" apply false
 }
 
-group = "dev.apexstudios"
-base.archivesName = "apexcore"
-version = providers.environmentVariable("VERSION").getOrElse("0.0NONE")
-
-sourceSets {
-    main {
-        resources {
-            exclude(".cache")
-            srcDir("src/data/generated")
-        }
-    }
-
-    create("data") {
-        resources.setSrcDirs(files())
-
-        compileClasspath += sourceSets[SourceSet.MAIN_SOURCE_SET_NAME].output
-        runtimeClasspath += sourceSets[SourceSet.MAIN_SOURCE_SET_NAME].output
-    }
+tasks.register("applyAllFormatting") {
+    group = "verification"
+    dependsOn(subprojects.map { it.tasks.findByName("applyAllFormatting") })
 }
 
-neoForge {
-    version = libs.versions.neoforge.get()
-    addModdingDependenciesTo(sourceSets["data"])
-
-    accessTransformers {
-        from(
-            file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer.cfg"),
-            file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg")
-        )
-
-        publish(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer.cfg"))
-        publish(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg"))
-    }
-
-    mods.create("data") {
-        sourceSet(sourceSets[SourceSet.MAIN_SOURCE_SET_NAME])
-        sourceSet(sourceSets["data"])
-    }
-
-    runs.create("data") {
-        clientData()
-
-        sourceSet.set(sourceSets["data"])
-        loadedMods.set(listOf(mods["data"]))
-
-        programArguments.addAll(
-            "--mod", "apexcore",
-            "--all",
-            "--output", file("src/data/generated").absolutePath,
-            "--existing", file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources").absolutePath
-        )
-    }
+tasks.register("checkFormatting") {
+    group = "verification"
+    dependsOn(subprojects.map { it.tasks.findByName("checkFormatting") })
 }
 
-java {
-    toolchain.vendor.set(JvmVendorSpec.JETBRAINS)
-    withSourcesJar()
-}
-
-repositories {
-    maven("https://maven.apexmodder.com/releases")
-}
-
-dependencies {
-    implementation(libs.registree)
-    "dataImplementation"(libs.registree)
-    jarJar(libs.registree)
-}
-
-publishing {
-    publications.create("release", MavenPublication::class.java) {
-        afterEvaluate {
-            groupId = "dev.apexstudios"
-            artifactId = "apexcore"
-            version = project.version as String
-        }
-
-        from(components["java"])
-    }
-
-    repositories {
-        if(System.getenv("MAVEN_USERNAME") != null && System.getenv("MAVEN_PASSWORD") != null) {
-            maven("https://maven.apexmodder.com/releases") {
-                name = "ApexStudios-Releases"
-
-                credentials {
-                    username = System.getenv("MAVEN_USERNAME")
-                    password = System.getenv("MAVEN_PASSWORD")
-                }
-
-                authentication.create<BasicAuthentication>("basic")
-            }
-        }
-    }
+tasks.register("generatePackageInfos") {
+    group = "verification"
+    dependsOn(subprojects.map { it.tasks.findByName("generatePackageInfos") })
 }

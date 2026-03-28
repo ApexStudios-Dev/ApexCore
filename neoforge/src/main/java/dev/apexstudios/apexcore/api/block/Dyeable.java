@@ -1,7 +1,7 @@
 package dev.apexstudios.apexcore.api.block;
 
 import com.mojang.serialization.Codec;
-import dev.apexstudios.registree.api.Registree;
+import dev.apexstudios.registree.xplat.Registree;
 import java.util.List;
 import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;

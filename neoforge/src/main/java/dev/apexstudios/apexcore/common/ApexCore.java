@@ -2,7 +2,8 @@ package dev.apexstudios.apexcore.common;
 
 import dev.apexstudios.apexcore.api.util.ApexTags;
 import dev.apexstudios.apexcore.common.seat.SeatSetup;
-import dev.apexstudios.registree.api.Registree;
+import dev.apexstudios.registree.neoforge.NeoForgeRegistree;
+import dev.apexstudios.registree.xplat.Registree;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
@@ -18,8 +19,6 @@ public final class ApexCore {
     public static final Registree REGISTREE = Registree.create(ID);
 
     public ApexCore(IEventBus modBus) {
-        REGISTREE.registerEvents(modBus);
-
         ApexTags.register();
         SeatSetup.register(modBus);
 
@@ -31,6 +30,8 @@ public final class ApexCore {
                 false,
                 Pack.Position.TOP
         ));
+
+        NeoForgeRegistree.register(REGISTREE, modBus);
     }
 
     public static Identifier identifier(String identifier) {

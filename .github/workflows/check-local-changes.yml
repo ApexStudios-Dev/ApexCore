@@ -15,4 +15,5 @@ jobs:
       java-version: 25
       java-vendor: temurin
       use-self-runner: false
+      data-task: ':neoforge:runData'
       unmark-gradlew-exec: false
