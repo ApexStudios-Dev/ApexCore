@@ -17,7 +17,6 @@ version = providers.environmentVariable("VERSION").getOrElse("0.0NONE")
 
 sourceSets {
     create("data") {
-        java.setSrcDirs(xplat.files("src/data/java"))
         resources.setSrcDirs(files())
 
         compileClasspath += sourceSets[SourceSet.MAIN_SOURCE_SET_NAME].output
@@ -93,7 +92,7 @@ neoForge {
             programArguments.addAll(
                 "--mod", "apexcore",
                 "--all",
-                "--output", file("src/data/generated").absolutePath,
+                "--output", xplat.file("src/data/generated").absolutePath,
                 "--existing", file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources").absolutePath
             )
         }
