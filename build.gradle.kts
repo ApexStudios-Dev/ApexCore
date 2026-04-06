@@ -6,20 +6,13 @@ plugins {
 }
 
 group = "dev.apexstudios"
-neoForge.version = libs.versions.neoforge.get()
 
 neoForge {
+    version = libs.versions.neoforge.get()
+
     accessTransformers {
         from(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg"))
         publish(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg"))
-    }
-}
-
-repositories {
-    maven("https://maven.apexmodder.com/prs/Registree/pr17") {
-        content {
-            includeModule("dev.apexstudios", "registree")
-        }
     }
 }
 

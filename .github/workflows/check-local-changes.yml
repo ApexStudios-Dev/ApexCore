@@ -6,6 +6,9 @@ on:
       - synchronize
       - opened
 
+permissions:
+  contents: read
+
 jobs:
   check-local-changes:
     name: Check Local Changes

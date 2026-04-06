@@ -1,4 +1,4 @@
-name: Build PR
+name: Publish Dummy
 
 on:
   pull_request:
@@ -10,12 +10,14 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    name: Build
-    uses: ApexStudios-Dev/.github/.github/workflows/_build.yml@master
+  publish-dummy:
+    name: Publish Dummy
+    uses: ApexStudios-Dev/.github/.github/workflows/_publish-dummy.yml@master
     secrets: inherit
     with:
       java-version: 25
       java-vendor: temurin
+      artifact-id: apexcore
+      display-name: ApexCore
       use-self-runner: false
       build-task: ':build'
