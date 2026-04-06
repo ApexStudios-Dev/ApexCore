@@ -55,16 +55,12 @@ jobs:
         with:
           path: ./
 
-      - name: Log
-        shell: bash
-        run: ls -R
-
-#      - name: Publish to CurseForge
-#        uses: ApexStudios-Dev/.github/actions/publish-curseforge@master
-#        with:
-#          curseforge-id: '835372'
-#          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-#          display-name: 'ApexCore'
-#          artifact-id: 'apexcore'
-#          version: ${{ needs.publish-maven.outputs.version }}
-#          release-type: 'alpha'
+      - name: Publish to CurseForge
+        uses: ApexStudios-Dev/.github/actions/publish-curseforge@master
+        with:
+          curseforge-id: '835372'
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          display-name: 'ApexCore'
+          artifact-id: 'apexcore'
+          version: ${{ needs.publish-maven.outputs.version }}
+          release-type: 'alpha'
