@@ -1,3 +1,6 @@
+import java.text.SimpleDateFormat
+import java.util.*
+
 plugins {
     `java-library`
     `maven-publish`
@@ -45,18 +48,24 @@ neoForge {
         sourceSet(sourceSets["data"])
     }
 
-    runs.create("data") {
-        clientData()
+    runs {
+        create("client") {
+            client()
+        }
 
-        sourceSet.set(sourceSets["data"])
-        loadedMods.set(listOf(mods["data"]))
+        create("data") {
+            clientData()
 
-        programArguments.addAll(
-            "--mod", "apexcore",
-            "--all",
-            "--output", file("src/data/generated").absolutePath,
-            "--existing", file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources").absolutePath
-        )
+            sourceSet.set(sourceSets["data"])
+            loadedMods.set(listOf(mods["data"]))
+
+            programArguments.addAll(
+                "--mod", "apexcore",
+                "--all",
+                "--output", file("src/data/generated").absolutePath,
+                "--existing", file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources").absolutePath
+            )
+        }
     }
 }
 
@@ -73,6 +82,22 @@ dependencies {
     implementation(libs.registree)
     "dataImplementation"(libs.registree)
     jarJar(libs.registree)
+}
+
+tasks.withType(Jar::class.java) {
+    manifest {
+        attributes["Specification-Title"] = project.name
+        attributes["Specification-Vendor"] = "ApexStudios"
+        attributes["Specification-Version"] = "1"
+
+        attributes["Implementation-Title"] = project.name
+        attributes["Implementation-Vendor"] = "ApexStudios"
+        attributes["Implementation-Version"] = project.version
+        attributes["Implementation-Timestamp"] = SimpleDateFormat("dd-MM-yyyy'T'HH:mm:ssZ").format(Date())
+
+        attributes["Minecraft-Version"] = neoForge.minecraftVersion
+        attributes["NeoForge-Version"] = neoForge.version
+    }
 }
 
 publishing {
