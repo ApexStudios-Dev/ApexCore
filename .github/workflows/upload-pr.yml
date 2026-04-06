@@ -15,3 +15,22 @@ jobs:
       java-version: 25
       java-vendor: temurin
       use-self-runner: false
+
+  publish-curseforge:
+    name: Publish to CurseForge
+    runs-on: ubuntu-latest
+    needs: upload-pr
+    if: success()
+    steps:
+      - name: Download artifact
+        run: wget "https://maven.apexmodder.com/releases/dev/apexstudios/apexcore/${{ needs.upload-pr.outputs.version }}/apexcore-${{ needs.upload-pr.outputs.version }}.jar"
+
+      - name: Publish to CurseForge
+        uses: ApexStudios-Dev/.github/actions/publish-curseforge@master
+        with:
+          curseforge-id: '835372' # dummy project
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          display-name: 'ApexCore'
+          artifact-id: 'apexcore'
+          version: ${{ needs.upload-pr.outputs.version }}
+          release-type: 'alpha'
