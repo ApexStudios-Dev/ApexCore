@@ -3,6 +3,7 @@ package dev.apexstudios.apexcore.api.multiblock;
 import dev.apexstudios.apexcore.api.block.SimpleBedBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.DyeColor;
@@ -67,6 +68,12 @@ public abstract class BedMultiBlock extends SimpleBedBlock implements MultiBlock
     public void destroy(LevelAccessor level, BlockPos pos, BlockState blockState) {
         super.destroy(level, pos, blockState);
         MultiBlock.destroyBlocks(level, pos, blockState);
+    }
+
+    @Override
+    protected void affectNeighborsAfterRemoval(BlockState blockState, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        super.affectNeighborsAfterRemoval(blockState, level, pos, movedByPiston);
+        MultiBlock.affectNeighborsAfterRemoval(level, pos, blockState, false);
     }
 
     @Override
