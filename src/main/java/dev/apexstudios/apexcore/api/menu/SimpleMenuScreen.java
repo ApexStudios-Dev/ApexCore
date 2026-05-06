@@ -19,6 +19,8 @@ public class SimpleMenuScreen extends AbstractContainerScreen<SimpleMenu> {
 
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+
         graphics.pose().pushMatrix();
         graphics.pose().translate(leftPos, topPos);
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, WINDOW_SPRITE, 0, -2, imageWidth, imageHeight + 1);

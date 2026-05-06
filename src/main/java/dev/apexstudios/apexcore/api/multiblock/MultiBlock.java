@@ -192,6 +192,25 @@ public interface MultiBlock {
         });
     }
 
+    static void affectNeighborsAfterRemoval(Level level, BlockPos worldPos, BlockState blockState, boolean inventory) {
+        if(!isMultiBlock(blockState))
+            return;
+
+        int index = getIndex(blockState);
+
+        forEachPos(worldPos, blockState, (otherPos, otherBlockState) -> {
+            if(getIndex(otherBlockState) != index) {
+                if(inventory) {
+                    level.updateNeighbourForOutputSignal(otherPos, otherBlockState.getBlock());
+                }
+
+                level.invalidateCapabilities(otherPos);
+            }
+        });
+
+        level.invalidateCapabilities(worldPos);
+    }
+
     static Rotation rotation(Direction facing) {
         return switch (facing) {
             case Direction.NORTH -> Rotation.CLOCKWISE_90;
