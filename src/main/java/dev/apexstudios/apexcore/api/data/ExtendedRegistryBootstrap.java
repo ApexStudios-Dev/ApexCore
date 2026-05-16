@@ -57,5 +57,5 @@ public interface ExtendedRegistryBootstrap<TRegistry> extends HolderGetter<TRegi
 
     <TOther> HolderGetter<TOther> lookup(ResourceKey<? extends Registry<? extends TOther>> registryType);
 
-    <TOther> Optional<HolderLookup.RegistryLookup<TOther>> registryLookup(ResourceKey<? extends Registry<? extends TOther>> registryType);
+    <TOther> Optional<HolderLookup<TOther>> holderLookup(ResourceKey<? extends Registry<? extends TOther>> registryType);
 }
