@@ -16,6 +16,14 @@ neoForge {
     }
 }
 
+repositories {
+    maven("https://prmaven.neoforged.net/NeoForge/pr3073") {
+        content {
+            includeModule("net.neoforged", "neoforge")
+        }
+    }
+}
+
 dependencies {
     implementation(libs.registree)
     "dataImplementation"(libs.registree)
