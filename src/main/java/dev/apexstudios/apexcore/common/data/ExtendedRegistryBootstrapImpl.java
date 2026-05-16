@@ -55,8 +55,8 @@ public final class ExtendedRegistryBootstrapImpl<TRegistry> implements ExtendedR
     }
 
     @Override
-    public <TOther> Optional<HolderLookup.RegistryLookup<TOther>> registryLookup(ResourceKey<? extends Registry<? extends TOther>> registryType) {
-        return delegate.registryLookup(registryType);
+    public <TOther> Optional<HolderLookup<TOther>> holderLookup(ResourceKey<? extends Registry<? extends TOther>> registryType) {
+        return delegate.holderLookup(registryType);
     }
 
     @Override
