@@ -5,6 +5,7 @@ import dev.apexstudios.apexcore.api.placement.BlockItemPlacementEvent;
 import dev.apexstudios.apexcore.api.placement.PlacementRenderTypes;
 import dev.apexstudios.apexcore.common.ApexCore;
 import dev.apexstudios.apexcore.mixin.BlockItemAccessor;
+import dev.apexstudios.apexcore.testing.TestMultiBlock;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -163,7 +164,9 @@ public interface PlacementVisualizerClient {
 
         // block does not have required tag, move onto next arm
         if(!block.builtInRegistryHolder().is(BlockItemPlacementEvent.RENDERABLES)) {
-            return false;
+            if(!(block instanceof TestMultiBlock)) {
+                return false;
+            }
         }
 
         // placement should fail if block is disabled

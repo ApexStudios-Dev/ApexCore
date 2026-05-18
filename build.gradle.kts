@@ -14,6 +14,11 @@ neoForge {
         from(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg"))
         publish(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg"))
     }
+
+    runs.create("clientAuth") {
+        client()
+        devLogin = true
+    }
 }
 
 dependencies {
