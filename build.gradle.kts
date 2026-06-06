@@ -16,6 +16,21 @@ neoForge {
     }
 }
 
+repositories {
+    maven("https://prmaven.neoforged.net/NeoForge/pr3198") {
+        content {
+            includeModule("net.neoforged", "neoforge")
+            includeModule("net.neoforged", "testframework")
+        }
+    }
+
+    maven("https://maven.apexmodder.com/prs/Registree/pr29") {
+        content {
+            includeModule("dev.apexstudios", "registree")
+        }
+    }
+}
+
 dependencies {
     implementation(libs.registree)
     "dataImplementation"(libs.registree)

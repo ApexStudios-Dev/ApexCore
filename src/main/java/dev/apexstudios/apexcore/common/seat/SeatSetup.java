@@ -5,7 +5,7 @@ import dev.apexstudios.apexcore.common.ApexCore;
 import dev.apexstudios.registree.api.holder.DeferredEntity;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.player.Player;
@@ -22,8 +22,8 @@ public interface SeatSetup {
         modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event -> event.registerEntityRenderer(ENTITY.value(), NoopRenderer::new));
 
         modBus.addListener(RegisterCapabilitiesEvent.class, event -> {
-            Seat.registerCapabilities(event, EntityType.CAMEL, (camel, pos, blockState) -> camel.sitDown(), (camel, pos, blockState) -> camel.standUp());
-            Seat.registerCapabilities(event, EntityType.FOX, (fox, pos, blockState) -> fox.setSitting(true), (fox, pos, blockState) -> fox.setSitting(false));
+            Seat.registerCapabilities(event, EntityTypes.CAMEL, (camel, pos, blockState) -> camel.sitDown(), (camel, pos, blockState) -> camel.standUp());
+            Seat.registerCapabilities(event, EntityTypes.FOX, (fox, pos, blockState) -> fox.setSitting(true), (fox, pos, blockState) -> fox.setSitting(false));
 
             Seat.registerCapabilities(
                     event,
@@ -35,10 +35,10 @@ public interface SeatSetup {
                         tameable.setOrderedToSit(false);
                         tameable.setInSittingPose(false);
                     },
-                    EntityType.CAT, EntityType.PARROT, EntityType.WOLF
+                    EntityTypes.CAT, EntityTypes.PARROT, EntityTypes.WOLF
             );
 
-            event.registerEntity(Seat.MAY_SIT_CAPABILITY, EntityType.VILLAGER, (villager, context) -> () -> {
+            event.registerEntity(Seat.MAY_SIT_CAPABILITY, EntityTypes.VILLAGER, (villager, context) -> () -> {
                 if(villager.level().isDarkOutside())
                     return !villager.getBrain().hasMemoryValue(MemoryModuleType.HOME);
                 return true;

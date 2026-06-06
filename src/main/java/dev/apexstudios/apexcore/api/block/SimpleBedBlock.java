@@ -3,10 +3,8 @@ package dev.apexstudios.apexcore.api.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BedBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.Nullable;
 
@@ -19,12 +17,7 @@ public class SimpleBedBlock extends BedBlock {
         this(null, properties);
     }
 
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState blockState) {
-        return null;
-    }
-
+    // TODO: Is this still needed with bouncyness being on block property now
     protected boolean isBouncy(BlockState blockState) {
         return true;
     }
@@ -40,7 +33,8 @@ public class SimpleBedBlock extends BedBlock {
         }
     }
 
-    @Override
+    //TODO: See above
+   /* @Override
     public void updateEntityMovementAfterFallOn(BlockGetter level, Entity entity) {
         // same code as to how Entity gets the BlockState
         var effectPos = entity.getOnPosLegacy();
@@ -53,5 +47,5 @@ public class SimpleBedBlock extends BedBlock {
             // must match code in Block (super.super.updateEntityMovementAfterFallOn)
             entity.setDeltaMovement(entity.getDeltaMovement().multiply(1D, 0D, 1D));
         }
-    }
+    }*/
 }

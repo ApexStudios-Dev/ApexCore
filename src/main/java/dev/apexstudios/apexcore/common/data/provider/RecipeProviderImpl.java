@@ -7,36 +7,24 @@ import dev.apexstudios.apexcore.api.data.provider.RecipeProvider;
 import dev.apexstudios.apexcore.api.data.provider.context.ProviderListenerContext;
 import dev.apexstudios.apexcore.api.data.provider.context.ProviderOutputContext;
 import dev.apexstudios.apexcore.common.ApexCore;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.criterion.InventoryChangeTrigger;
-import net.minecraft.advancements.criterion.MinMaxBounds;
+import net.minecraft.advancements.predicates.MinMaxBounds;
+import net.minecraft.advancements.triggers.Criterion;
+import net.minecraft.advancements.triggers.InventoryChangeTrigger;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.BlockFamily;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.RecipeBuilder;
-import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.crafting.AbstractCookingRecipe;
-import net.minecraft.world.item.crafting.CookingBookCategory;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
@@ -44,6 +32,10 @@ import net.minecraft.world.level.block.SuspiciousEffectHolder;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import org.jspecify.annotations.Nullable;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public final class RecipeProviderImpl implements BaseProvider, RecipeProvider {
     public static final ProviderType<RecipeProvider> PROVIDER_TYPE = ProviderType.register(ApexCore.identifier("recipes"), RecipeProviderImpl::new);
@@ -219,8 +211,8 @@ public final class RecipeProviderImpl implements BaseProvider, RecipeProvider {
     }
 
     @Override
-    public void hangingSign(ItemLike sign, ItemLike material) {
-        delegate.hangingSign(sign, material);
+    public RecipeBuilder hangingSignBuilder(ItemLike result, Ingredient ingredient) {
+        return delegate.hangingSignBuilder(result, ingredient);
     }
 
     @Override
