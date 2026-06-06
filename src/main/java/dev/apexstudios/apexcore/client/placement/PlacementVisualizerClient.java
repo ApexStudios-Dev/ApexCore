@@ -290,7 +290,8 @@ public interface PlacementVisualizerClient {
 
                 collector.submitMovingBlock(
                         poseStack,
-                        blockState
+                        blockState,
+                        0
                 );
 
                 poseStack.popPose();

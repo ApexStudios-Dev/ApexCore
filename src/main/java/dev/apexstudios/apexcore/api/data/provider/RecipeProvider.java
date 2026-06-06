@@ -4,11 +4,11 @@ import dev.apexstudios.apexcore.api.data.ProviderType;
 import dev.apexstudios.apexcore.common.data.provider.RecipeProviderImpl;
 import java.util.List;
 import java.util.Objects;
-import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.criterion.EnterBlockTrigger;
-import net.minecraft.advancements.criterion.InventoryChangeTrigger;
-import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.advancements.criterion.MinMaxBounds;
+import net.minecraft.advancements.predicates.ItemPredicate;
+import net.minecraft.advancements.predicates.MinMaxBounds;
+import net.minecraft.advancements.triggers.Criterion;
+import net.minecraft.advancements.triggers.EnterBlockTrigger;
+import net.minecraft.advancements.triggers.InventoryChangeTrigger;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.BlockFamily;
@@ -92,7 +92,7 @@ public interface RecipeProvider {
 
     RecipeBuilder signBuilder(ItemLike sign, Ingredient material);
 
-    void hangingSign(ItemLike sign, ItemLike material);
+    RecipeBuilder hangingSignBuilder(ItemLike result, Ingredient ingredient);
 
     void colorItemWithDye(List<Item> p_289675_, List<Item> p_289672_, String p_289641_, RecipeCategory p_423651_);
 

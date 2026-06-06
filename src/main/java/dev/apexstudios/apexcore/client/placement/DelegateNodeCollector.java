@@ -4,23 +4,24 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.List;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.model.Model;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.OrderedSubmitNodeCollector;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.MovingBlockRenderState;
-import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.gizmos.DrawableGizmoPrimitives;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Quaternionf;
 import org.jspecify.annotations.Nullable;
 
@@ -43,8 +44,8 @@ public class DelegateNodeCollector implements SubmitNodeCollector {
     }
 
     @Override
-    public void submitNameTag(PoseStack poseStack, @Nullable Vec3 pos, int yOffset, Component text, boolean seethrough, int packedLight, double distanceToCameraSq, CameraRenderState cameraRenderState) {
-        delegate.submitNameTag(poseStack, pos, yOffset, text, seethrough, packedLight, distanceToCameraSq, cameraRenderState);
+    public void submitNameTag(PoseStack poseStack, @Nullable Vec3 pos, int yOffset, Component text, boolean seethrough, int packedLight, CameraRenderState cameraRenderState) {
+        delegate.submitNameTag(poseStack, pos, yOffset, text, seethrough, packedLight, cameraRenderState);
     }
 
     @Override
@@ -63,8 +64,8 @@ public class DelegateNodeCollector implements SubmitNodeCollector {
     }
 
     @Override
-    public void submitMovingBlock(PoseStack poseStack, MovingBlockRenderState renderState) {
-        delegate.submitMovingBlock(poseStack, renderState);
+    public void submitMovingBlock(PoseStack poseStack, MovingBlockRenderState renderState, int outlineColor) {
+        delegate.submitMovingBlock(poseStack, renderState, outlineColor);
     }
 
     @Override
@@ -73,8 +74,8 @@ public class DelegateNodeCollector implements SubmitNodeCollector {
     }
 
     @Override
-    public void submitBreakingBlockModel(PoseStack poseStack, BlockStateModel blockStateModel, long l, int i) {
-        delegate.submitBreakingBlockModel(poseStack, blockStateModel, l, i);
+    public void submitBreakingBlockModel(PoseStack poseStack, List<BlockStateModelPart> parts, int progress) {
+        delegate.submitBreakingBlockModel(poseStack, parts, progress);
     }
 
     @Override
@@ -88,8 +89,8 @@ public class DelegateNodeCollector implements SubmitNodeCollector {
     }
 
     @Override
-    public void submitParticleGroup(SubmitNodeCollector.ParticleGroupRenderer renderer) {
-        delegate.submitParticleGroup(renderer);
+    public void submitQuadParticleGroup(QuadParticleRenderState renderState) {
+        delegate.submitQuadParticleGroup(renderState);
     }
 
     @Override
@@ -98,8 +99,13 @@ public class DelegateNodeCollector implements SubmitNodeCollector {
     }
 
     @Override
-    public void submitModelPart(ModelPart modelPart, PoseStack poseStack, RenderType renderType, int packedLight, int packedOverlay, @Nullable TextureAtlasSprite sprite, boolean sheeted, boolean hasFoil, int tintColor, ModelFeatureRenderer.@Nullable CrumblingOverlay crumblingOverlay, int outlineColor) {
-        delegate.submitModelPart(modelPart, poseStack, renderType, packedLight, packedOverlay, sprite);
+    public void submitShapeOutline(PoseStack poseStack, VoxelShape shape, RenderType renderType, int color, float width, boolean afterTerrain) {
+        delegate.submitShapeOutline(poseStack, shape, renderType, color, width, afterTerrain);
+    }
+
+    @Override
+    public void submitGizmoPrimitives(DrawableGizmoPrimitives.Group group, CameraRenderState camera, boolean onTop) {
+        delegate.submitGizmoPrimitives(group, camera, onTop);
     }
 
     public static SubmitNodeCollector get(SubmitNodeCollector collector) {

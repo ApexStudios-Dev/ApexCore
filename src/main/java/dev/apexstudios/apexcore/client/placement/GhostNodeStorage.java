@@ -73,7 +73,7 @@ public class GhostNodeStorage extends DelegateNodeCollector {
     }
 
     @Override
-    public void submitMovingBlock(PoseStack poseStack, MovingBlockRenderState renderState) {
+    public void submitMovingBlock(PoseStack poseStack, MovingBlockRenderState renderState, int outlineColor) {
         submitBlock(
                 poseStack,
                 RenderTypes.translucentMovingBlock(),
@@ -93,12 +93,12 @@ public class GhostNodeStorage extends DelegateNodeCollector {
     }
 
     @Override
-    public void submitModelPart(ModelPart modelPart, PoseStack poseStack, RenderType renderType, int packedLight, int packedOverlay, @Nullable TextureAtlasSprite sprite, boolean sheeted, boolean hasFoil, int tintColor, ModelFeatureRenderer.@Nullable CrumblingOverlay crumblingOverlay, int outlineColor) {
+    public void submitModelPart(ModelPart modelPart, PoseStack poseStack, RenderType renderType, int lightCoords, int overlayCoords, @Nullable TextureAtlasSprite sprite, int tintedColor, ModelFeatureRenderer.@Nullable CrumblingOverlay crumblingOverlay, int outlineColor) {
         submitCustomGeometry(
                 poseStack,
                 renderType,
                 sprite,
-                (pose, consumer) -> modelPart.render(toStack(pose), wrap(sprite, consumer), packedLight, overlayCoords(packedOverlay), tintColor)
+                (pose, consumer) -> modelPart.render(toStack(pose), wrap(sprite, consumer), lightCoords, overlayCoords(overlayCoords), tintedColor)
         );
     }
 

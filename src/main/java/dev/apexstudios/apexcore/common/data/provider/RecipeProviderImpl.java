@@ -13,9 +13,9 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.criterion.InventoryChangeTrigger;
-import net.minecraft.advancements.criterion.MinMaxBounds;
+import net.minecraft.advancements.predicates.MinMaxBounds;
+import net.minecraft.advancements.triggers.Criterion;
+import net.minecraft.advancements.triggers.InventoryChangeTrigger;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.BlockFamily;
@@ -219,8 +219,8 @@ public final class RecipeProviderImpl implements BaseProvider, RecipeProvider {
     }
 
     @Override
-    public void hangingSign(ItemLike sign, ItemLike material) {
-        delegate.hangingSign(sign, material);
+    public RecipeBuilder hangingSignBuilder(ItemLike result, Ingredient ingredient) {
+        return delegate.hangingSignBuilder(result, ingredient);
     }
 
     @Override
