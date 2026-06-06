@@ -2,6 +2,8 @@ package dev.apexstudios.apexcore.api.data.provider;
 
 import dev.apexstudios.apexcore.api.data.ProviderType;
 import dev.apexstudios.apexcore.common.data.provider.RecipeProviderImpl;
+import java.util.List;
+import java.util.Objects;
 import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.advancements.predicates.MinMaxBounds;
 import net.minecraft.advancements.triggers.Criterion;
@@ -10,7 +12,11 @@ import net.minecraft.advancements.triggers.InventoryChangeTrigger;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.BlockFamily;
-import net.minecraft.data.recipes.*;
+import net.minecraft.data.recipes.RecipeBuilder;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
@@ -26,8 +32,6 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SuspiciousEffectHolder;
 import org.jspecify.annotations.Nullable;
-import java.util.List;
-import java.util.Objects;
 
 public interface RecipeProvider {
     ProviderType<RecipeProvider> PROVIDER_TYPE = RecipeProviderImpl.PROVIDER_TYPE;

@@ -1,5 +1,6 @@
 package dev.apexstudios.apexcore.api.data.provider.loot;
 
+import java.util.function.Supplier;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.resources.ResourceKey;
@@ -10,7 +11,6 @@ import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.predicates.AnyOfCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import java.util.function.Supplier;
 
 public interface EntityLootSubProvider extends LootTableSubProvider {
     default void accept(Holder<EntityType<?>> entityType, Supplier<LootTable.Builder> lootTable) {

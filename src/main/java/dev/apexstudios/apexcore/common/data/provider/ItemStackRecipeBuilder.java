@@ -2,6 +2,7 @@ package dev.apexstudios.apexcore.common.data.provider;
 
 import com.google.common.collect.Maps;
 import com.google.errorprone.annotations.DoNotCall;
+import java.util.Map;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.triggers.Criterion;
@@ -16,7 +17,6 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.SingleItemRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import org.jspecify.annotations.Nullable;
-import java.util.Map;
 
 public class ItemStackRecipeBuilder implements RecipeBuilder {
     private final RecipeCategory category;

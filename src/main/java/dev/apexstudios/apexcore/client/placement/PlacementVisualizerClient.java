@@ -8,6 +8,7 @@ import dev.apexstudios.apexcore.mixin.BlockItemAccessor;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugEntryNoop;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -37,7 +38,6 @@ import net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import java.util.List;
 
 public interface PlacementVisualizerClient {
     Identifier DEBUG_KEY = ApexCore.identifier("placement_renderer/force_render");
