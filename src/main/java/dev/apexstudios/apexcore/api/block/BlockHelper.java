@@ -1,6 +1,5 @@
 package dev.apexstudios.apexcore.api.block;
 
-import dev.apexstudios.apexcore.extension.EntityExtension;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -15,6 +14,6 @@ public interface BlockHelper {
             return false;
         }
 
-        return ((EntityExtension) entity).getBlockBounciness(blockState) > 0D;
+        return entity.getBlockBounciness(blockState) > 0D;
     }
 }
