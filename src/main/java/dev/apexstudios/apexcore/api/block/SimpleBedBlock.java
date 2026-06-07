@@ -19,7 +19,7 @@ public class SimpleBedBlock extends BedBlock {
 
     @Override
     public void fallOn(Level level, BlockState blockState, BlockPos pos, Entity entity, double fallDistance) {
-        if(BlockHelper.shouldBounceOnBlock(entity, blockState)) {
+        if(BlockHelper.shouldBounceOnBlock(pos, blockState, entity)) {
             super.fallOn(level, blockState, pos, entity, fallDistance);
         } else {
             // apply damage ignoring the bounce negation
