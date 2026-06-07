@@ -6,7 +6,10 @@
     "BedBlockMixin",
     "BlockItemAccessor",
     "PlayerMixin",
-    "ServerPlayerGameModeMixin"
+    "ServerPlayerGameModeMixin",
+    "EntityMixin",
+    "BlockMixin",
+    "BlockStateMixin"
   ],
   "client": [
     "client.MultiPlayerGameModeMixin"
