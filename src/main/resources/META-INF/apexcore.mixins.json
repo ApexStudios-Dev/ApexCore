@@ -10,8 +10,7 @@
   ],
   "client": [
     "client.MultiPlayerGameModeMixin",
-    "client.BlockModelRenderStateAccessor",
-    "client.BlockModelRenderStateMixin"
+    "client.BlockModelRenderStateAccessor"
   ],
   "server": [],
   "minVersion": "0.8"

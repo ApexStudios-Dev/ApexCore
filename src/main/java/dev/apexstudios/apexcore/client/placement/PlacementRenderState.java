@@ -28,7 +28,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jspecify.annotations.Nullable;
 
 public final class PlacementRenderState {
-    public static boolean EXTRACTING_PLACEMENT = false;
     static final ContextKey<PlacementRenderState> KEY = new ContextKey<>(ApexCore.identifier("placment_renderer"));
     private static final BlockDisplayContext BLOCK_DISPLAY_CONTEXT = BlockDisplayContext.create();
 
@@ -104,9 +103,7 @@ public final class PlacementRenderState {
         blockState = stack.getOrDefault(DataComponents.BLOCK_STATE, BlockItemStateProperties.EMPTY).apply(blockState);
 
         var placementRenderState = new PlacementRenderState();
-        EXTRACTING_PLACEMENT = true;
         blockModelResolver.update(placementRenderState.blockRenderState, blockState, BLOCK_DISPLAY_CONTEXT);
-        EXTRACTING_PLACEMENT = false;
         placementRenderState.pos = pos.immutable();
         placementRenderState.valid = valid;
         return placementRenderState;
