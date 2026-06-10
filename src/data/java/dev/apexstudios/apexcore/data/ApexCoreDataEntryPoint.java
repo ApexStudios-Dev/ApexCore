@@ -2,12 +2,8 @@ package dev.apexstudios.apexcore.data;
 
 import dev.apexstudios.apexcore.api.data.ProviderTypes;
 import dev.apexstudios.apexcore.api.data.ResourceGenerator;
-import dev.apexstudios.apexcore.api.placement.BlockItemPlacementEvent;
 import dev.apexstudios.apexcore.common.ApexCore;
 import dev.apexstudios.apexcore.common.seat.SeatSetup;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.BlockItem;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -22,18 +18,6 @@ public final class ApexCoreDataEntryPoint {
                     .providing(ProviderTypes.ENTITY_TYPE_TAGS, (context, provider) -> {
                         provider.tag(Tags.EntityTypes.CAPTURING_NOT_SUPPORTED).withElement(SeatSetup.ENTITY);
                         provider.tag(Tags.EntityTypes.TELEPORTING_NOT_SUPPORTED).withElement(SeatSetup.ENTITY);
-                    });
-
-            // 'vanilla vanilla' data pack enables the visualizer for all vanilla blocks
-            generator.pack("visual_vanilla")
-                    .description("Visual Vanilla")
-                    .providing(ProviderTypes.BLOCK_TAGS, (context, provider) -> {
-                        context.registries()
-                                .lookupOrThrow(Registries.BLOCK)
-                                .listElements()
-                                .map(Holder::value)
-                                .filter(block -> block.asItem() instanceof BlockItem)
-                                .forEach(block -> provider.tag(BlockItemPlacementEvent.RENDERABLES).withElement(block));
                     });
         });
     }
