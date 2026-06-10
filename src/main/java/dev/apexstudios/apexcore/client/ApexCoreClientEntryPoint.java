@@ -2,6 +2,7 @@ package dev.apexstudios.apexcore.client;
 
 import com.google.common.collect.Lists;
 import dev.apexstudios.apexcore.api.multiblock.MultiBlock;
+import dev.apexstudios.apexcore.client.placement.PlacementRenderer;
 import dev.apexstudios.apexcore.common.ApexCore;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.state.level.BlockBreakingRenderState;
@@ -16,6 +17,8 @@ import net.neoforged.neoforge.common.NeoForge;
 @Mod(value = ApexCore.ID, dist = Dist.CLIENT)
 public final class ApexCoreClientEntryPoint {
     public ApexCoreClientEntryPoint(IEventBus modBus) {
+        PlacementRenderer.register();
+
         modBus.addListener(RegisterColorHandlersEvent.ItemTintSources.class, event -> event.register(ApexCore.identifier("dye_color"), DyeColorItemTintSource.MAP_CODEC));
 
         NeoForge.EVENT_BUS.addListener(ExtractLevelRenderStateEvent.class, event -> {

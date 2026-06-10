@@ -9,7 +9,9 @@
     "ServerPlayerGameModeMixin"
   ],
   "client": [
-    "client.MultiPlayerGameModeMixin"
+    "client.MultiPlayerGameModeMixin",
+    "client.BlockModelRenderStateAccessor",
+    "client.BlockModelRenderStateMixin"
   ],
   "server": [],
   "minVersion": "0.8"
