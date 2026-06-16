@@ -2,7 +2,7 @@ package dev.apexstudios.apexcore.common;
 
 import dev.apexstudios.apexcore.api.util.ApexTags;
 import dev.apexstudios.apexcore.common.seat.SeatSetup;
-import dev.apexstudios.registree.api.Registree;
+import dev.apexstudios.registree.Registree;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
@@ -18,10 +18,10 @@ public final class ApexCore {
     public static final Registree REGISTREE = Registree.create(ID);
 
     public ApexCore(IEventBus modBus) {
-        REGISTREE.registerEvents(modBus);
+        REGISTREE.register(modBus);
 
         ApexTags.register();
-        SeatSetup.register(modBus);
+        SeatSetup.register();
 
         modBus.addListener(AddPackFindersEvent.class, event ->  event.addPackFinders(
                 identifier("packs/visual_vanilla"),

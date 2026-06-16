@@ -32,7 +32,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
 import net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
@@ -43,14 +42,14 @@ public interface PlacementVisualizerClient {
     Identifier DEBUG_KEY = ApexCore.identifier("placement_renderer/force_render");
     ContextKey<State> KEY = new ContextKey<>(ApexCore.identifier("placement_renderer"));
 
-    static void register(IEventBus modBus) {
-        addRequiredListeners(modBus);
+    static void register() {
+        addRequiredListeners();
         addBlockItemListeners();
     }
 
-    private static void addRequiredListeners(IEventBus modBus) {
-        modBus.addListener(RegisterRenderPipelinesEvent.class, event -> event.registerPipeline(PlacementRenderTypes.Pipelines.TRANSLUCENT_NO_DEPTH));
-        modBus.addListener(RegisterDebugEntriesEvent.class, event -> event.register(DEBUG_KEY, new DebugEntryNoop()));
+    private static void addRequiredListeners() {
+        ApexCore.REGISTREE.event(RegisterRenderPipelinesEvent.class, event -> event.registerPipeline(PlacementRenderTypes.Pipelines.TRANSLUCENT_NO_DEPTH));
+        ApexCore.REGISTREE.event(RegisterDebugEntriesEvent.class, event -> event.register(DEBUG_KEY, new DebugEntryNoop()));
 
         NeoForge.EVENT_BUS.addListener(ExtractLevelRenderStateEvent.class, PlacementVisualizerClient::extract);
         NeoForge.EVENT_BUS.addListener(SubmitCustomGeometryEvent.class, event -> submit(event.getLevelRenderState(), event.getPoseStack(), event.getSubmitNodeCollector()));
