@@ -24,7 +24,7 @@ repositories {
         }
     }*/
 
-    maven("https://maven.apexmodder.com/prs/Registree/pr30") {
+    maven("https://maven.apexmodder.com/prs/Registree/pr33") {
         content {
             includeModule("dev.apexstudios", "registree")
         }
