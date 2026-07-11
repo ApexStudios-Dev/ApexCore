@@ -24,11 +24,11 @@ repositories {
         }
     }*/
 
-    /*maven("https://maven.apexmodder.com/prs/Registree/pr29") {
+    maven("https://maven.apexmodder.com/prs/Registree/pr30") {
         content {
             includeModule("dev.apexstudios", "registree")
         }
-    }*/
+    }
 }
 
 dependencies {

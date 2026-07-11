@@ -1,6 +1,6 @@
 package dev.apexstudios.apexcore.api.data.provider.model;
 
-import dev.apexstudios.registree.api.Registree;
+import dev.apexstudios.registree.BaseRegistree;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -34,16 +34,16 @@ public interface ModelProvider {
         return knownBlocks(Stream::empty);
     }
 
-    default ModelProvider fromRegistree(Registree registree) {
+    default ModelProvider fromRegistree(BaseRegistree<?> registree) {
         return itemsFromRegistree(registree).blocksFromRegistree(registree);
     }
 
-    default ModelProvider itemsFromRegistree(Registree registree) {
-        return knownItems(() -> registree.listElements(Registries.ITEM));
+    default ModelProvider itemsFromRegistree(BaseRegistree<?> registree) {
+        return knownItems(() -> registree.holders(Registries.ITEM));
     }
 
-    default ModelProvider blocksFromRegistree(Registree registree) {
-        return knownBlocks(() -> registree.listElements(Registries.BLOCK));
+    default ModelProvider blocksFromRegistree(BaseRegistree<?> registree) {
+        return knownBlocks(() -> registree.holders(Registries.BLOCK));
     }
 
     default ModelProvider knownItems(DeferredHolder<Item, ?>... items) {

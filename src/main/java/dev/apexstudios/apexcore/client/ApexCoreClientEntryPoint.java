@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.state.level.BlockBreakingRenderState;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
@@ -20,10 +19,10 @@ import net.neoforged.neoforge.common.NeoForge;
 
 @Mod(value = ApexCore.ID, dist = Dist.CLIENT)
 public final class ApexCoreClientEntryPoint {
-    public ApexCoreClientEntryPoint(IEventBus modBus) {
-        PlacementVisualizerClient.register(modBus);
+    public ApexCoreClientEntryPoint() {
+        PlacementVisualizerClient.register();
 
-        modBus.addListener(RegisterColorHandlersEvent.ItemTintSources.class, event -> event.register(ApexCore.identifier("dye_color"), DyeColorItemTintSource.MAP_CODEC));
+        ApexCore.REGISTREE.event(RegisterColorHandlersEvent.ItemTintSources.class, event -> event.register(ApexCore.identifier("dye_color"), DyeColorItemTintSource.MAP_CODEC));
 
         NeoForge.EVENT_BUS.addListener(ExtractLevelRenderStateEvent.class, event -> {
             var renderState = event.getRenderState();

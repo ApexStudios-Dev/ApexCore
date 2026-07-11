@@ -1,7 +1,7 @@
 package dev.apexstudios.apexcore.api.block;
 
 import com.mojang.serialization.Codec;
-import dev.apexstudios.registree.api.Registree;
+import dev.apexstudios.registree.BaseRegistree;
 import java.util.List;
 import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;
@@ -100,11 +100,11 @@ public interface Dyeable {
         }
     }
 
-    static Stream<Block> dyeableBlocks(Registree registree) {
-        return registree.stream(Registries.BLOCK).filter(Dyeable.class::isInstance);
+    static Stream<Block> dyeableBlocks(BaseRegistree<?> registree) {
+        return registree.values(Registries.BLOCK).filter(Dyeable.class::isInstance);
     }
 
-    static Stream<Item> dyeableItems(Registree registree) {
+    static Stream<Item> dyeableItems(BaseRegistree<?> registree) {
         return dyeableBlocks(registree).map(ItemLike::asItem);
     }
 
@@ -117,7 +117,7 @@ public interface Dyeable {
         return CommonColors.WHITE;
     }
 
-    static void registerBlockColor(Registree registree, RegisterColorHandlersEvent.BlockTintSources event) {
+    static void registerBlockColor(BaseRegistree<?> registree, RegisterColorHandlersEvent.BlockTintSources event) {
         event.register(List.of(Dyeable::tintSource), dyeableBlocks(registree).toArray(Block[]::new));
     }
 
