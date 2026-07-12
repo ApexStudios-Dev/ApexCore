@@ -26,11 +26,11 @@ public interface TagProvider<TRegistry, TBuilder extends TagBuilder<TRegistry, T
         return SimpleTagProvider.register(namespace, registryType);
     }
 
-    static <TRegistry> ProviderType<IntrusiveTagProvider<TRegistry>> registerIntrusive(String namespace, ResourceKey<? extends Registry<TRegistry>> registryType, Function<TRegistry, ResourceKey<TRegistry>> keyLookup) {
-        return IntrusiveTagProvider.register(namespace, registryType, keyLookup);
+    static <TRegistry> ProviderType<SimpleIntrusiveTagProvider<TRegistry>> registerIntrusive(String namespace, ResourceKey<? extends Registry<TRegistry>> registryType, Function<TRegistry, ResourceKey<TRegistry>> keyLookup) {
+        return SimpleIntrusiveTagProvider.register(namespace, registryType, keyLookup);
     }
 
-    static <TRegistry> ProviderType<IntrusiveTagProvider<TRegistry>> registerIntrusiveForHolder(String namespace, ResourceKey<? extends Registry<TRegistry>> registryType, Function<TRegistry, Holder.Reference<TRegistry>> holderLookup) {
-        return IntrusiveTagProvider.registerForHolder(namespace, registryType, holderLookup);
+    static <TRegistry> ProviderType<SimpleIntrusiveTagProvider<TRegistry>> registerIntrusiveForHolder(String namespace, ResourceKey<? extends Registry<TRegistry>> registryType, Function<TRegistry, Holder.Reference<TRegistry>> holderLookup) {
+        return SimpleIntrusiveTagProvider.registerForHolder(namespace, registryType, holderLookup);
     }
 }

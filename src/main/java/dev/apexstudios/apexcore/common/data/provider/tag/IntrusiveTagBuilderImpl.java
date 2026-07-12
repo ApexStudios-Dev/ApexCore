@@ -1,31 +1,28 @@
 package dev.apexstudios.apexcore.common.data.provider.tag;
 
 import dev.apexstudios.apexcore.api.data.provider.tag.IntrusiveTagBuilder;
-import java.util.function.Function;
 import net.minecraft.resources.ResourceKey;
 
-final class IntrusiveTagBuilderImpl<TRegistry> extends TagBuilderImpl<TRegistry, IntrusiveTagBuilder<TRegistry>> implements IntrusiveTagBuilder<TRegistry> {
-    private final Function<TRegistry, ResourceKey<TRegistry>> keyLookup;
-
-    IntrusiveTagBuilderImpl(String namespace, Function<TRegistry, ResourceKey<TRegistry>> keyLookup) {
+public sealed abstract class IntrusiveTagBuilderImpl<TRegistry, TSelf extends IntrusiveTagBuilder<TRegistry, TSelf>> extends TagBuilderImpl<TRegistry, TSelf> implements IntrusiveTagBuilder<TRegistry, TSelf> permits BlockTagBuilderImpl, ItemTagBuilderImpl, SimpleIntrusiveTagBuilderImpl {
+    protected IntrusiveTagBuilderImpl(String namespace) {
         super(namespace);
-
-        this.keyLookup = keyLookup;
     }
+
+    protected abstract ResourceKey<TRegistry> getKey(TRegistry value);
 
     // region: Add
     // region: Element
     // region: Required
     @Override
-    public IntrusiveTagBuilder<TRegistry> withElement(TRegistry value) {
-        return withElement(keyLookup.apply(value));
+    public TSelf withElement(TRegistry value) {
+        return withElement(getKey(value));
     }
     // endregion
 
     // region: Optional
     @Override
-    public IntrusiveTagBuilder<TRegistry> withOptionalElement(TRegistry value) {
-        return withOptionalElement(keyLookup.apply(value));
+    public TSelf withOptionalElement(TRegistry value) {
+        return withOptionalElement(getKey(value));
     }
     // endregion
     // endregion
@@ -35,15 +32,15 @@ final class IntrusiveTagBuilderImpl<TRegistry> extends TagBuilderImpl<TRegistry,
     // region: Element
     // region: Required
     @Override
-    public IntrusiveTagBuilder<TRegistry> removeElement(TRegistry value) {
-        return removeElement(keyLookup.apply(value));
+    public TSelf removeElement(TRegistry value) {
+        return removeElement(getKey(value));
     }
     // endregion
 
     // region: Optional
     @Override
-    public IntrusiveTagBuilder<TRegistry> removeOptionalElement(TRegistry value) {
-        return removeOptionalElement(keyLookup.apply(value));
+    public TSelf removeOptionalElement(TRegistry value) {
+        return removeOptionalElement(getKey(value));
     }
     // endregion
     // endregion

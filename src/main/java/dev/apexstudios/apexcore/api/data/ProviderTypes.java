@@ -6,7 +6,9 @@ import dev.apexstudios.apexcore.api.data.provider.RecipeProvider;
 import dev.apexstudios.apexcore.api.data.provider.datamap.DataMapProvider;
 import dev.apexstudios.apexcore.api.data.provider.loot.LootTableProvider;
 import dev.apexstudios.apexcore.api.data.provider.model.ModelProvider;
-import dev.apexstudios.apexcore.api.data.provider.tag.IntrusiveTagProvider;
+import dev.apexstudios.apexcore.api.data.provider.tag.BlockTagProvider;
+import dev.apexstudios.apexcore.api.data.provider.tag.ItemTagProvider;
+import dev.apexstudios.apexcore.api.data.provider.tag.SimpleIntrusiveTagProvider;
 import dev.apexstudios.apexcore.api.data.provider.tag.SimpleTagProvider;
 import dev.apexstudios.apexcore.api.data.provider.tag.TagProvider;
 import dev.apexstudios.apexcore.common.ApexCore;
@@ -14,11 +16,9 @@ import dev.apexstudios.apexcore.common.data.provider.ModelProviderImpl;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.api.distmarker.Dist;
@@ -29,10 +29,10 @@ public interface ProviderTypes {
     ProviderType<RecipeProvider> RECIPES = RecipeProvider.PROVIDER_TYPE;
     ProviderType<ParticleProvider> PARTICLES = ParticleProvider.PROVIDER_TYPE;
 
-    ProviderType<IntrusiveTagProvider<Item>> ITEM_TAGS = TagProvider.registerIntrusiveForHolder(ApexCore.ID, Registries.ITEM, Item::builtInRegistryHolder);
-    ProviderType<IntrusiveTagProvider<Block>> BLOCK_TAGS = TagProvider.registerIntrusiveForHolder(ApexCore.ID, Registries.BLOCK, Block::builtInRegistryHolder);
-    ProviderType<IntrusiveTagProvider<EntityType<?>>> ENTITY_TYPE_TAGS = TagProvider.registerIntrusiveForHolder(ApexCore.ID, Registries.ENTITY_TYPE, EntityType::builtInRegistryHolder);
-    ProviderType<IntrusiveTagProvider<Fluid>> FLUID_TAGS = TagProvider.registerIntrusiveForHolder(ApexCore.ID, Registries.FLUID, Fluid::builtInRegistryHolder);
+    ProviderType<ItemTagProvider> ITEM_TAGS = ItemTagProvider.PROVIDER_TYPE;
+    ProviderType<BlockTagProvider> BLOCK_TAGS = BlockTagProvider.PROVIDER_TYPE;
+    ProviderType<SimpleIntrusiveTagProvider<EntityType<?>>> ENTITY_TYPE_TAGS = TagProvider.registerIntrusiveForHolder(ApexCore.ID, Registries.ENTITY_TYPE, EntityType::builtInRegistryHolder);
+    ProviderType<SimpleIntrusiveTagProvider<Fluid>> FLUID_TAGS = TagProvider.registerIntrusiveForHolder(ApexCore.ID, Registries.FLUID, Fluid::builtInRegistryHolder);
 
     ProviderType<SimpleTagProvider<Enchantment>> ENCHANTMENT_TAGS = TagProvider.registerSimple(ApexCore.ID, Registries.ENCHANTMENT);
     ProviderType<SimpleTagProvider<Biome>> BIOME_TAGS = TagProvider.registerSimple(ApexCore.ID, Registries.BIOME);

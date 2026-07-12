@@ -9,7 +9,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagFile;
 
-sealed class TagBuilderImpl<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf>> implements TagBuilder<TRegistry, TSelf> permits SimpleTagBuilderImpl, IntrusiveTagBuilderImpl {
+sealed class TagBuilderImpl<TRegistry, TSelf extends TagBuilder<TRegistry, TSelf>> implements TagBuilder<TRegistry, TSelf> permits IntrusiveTagBuilderImpl, SimpleTagBuilderImpl {
     private final List<TagEntry> elements = Lists.newArrayList();
     private final List<TagEntry> removals = Lists.newArrayList();
     private final String namespace;
