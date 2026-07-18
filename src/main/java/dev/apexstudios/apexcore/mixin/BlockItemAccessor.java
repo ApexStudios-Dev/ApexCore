@@ -11,5 +11,8 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface BlockItemAccessor {
     @Invoker("getPlacementState")
     @Nullable
-    BlockState PlacementVisualizer$getPlacementState(BlockPlaceContext placeContext);
+    BlockState ApexCore$getPlacementState(BlockPlaceContext placeContext);
+
+    @Invoker("canPlace")
+    boolean ApexCore$canPlace(BlockPlaceContext placeContext, BlockState blockState);
 }
