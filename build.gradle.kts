@@ -6,15 +6,7 @@ plugins {
 }
 
 group = "dev.apexstudios"
-
-neoForge {
-    version = libs.versions.neoforge.get()
-
-    accessTransformers {
-        from(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg"))
-        publish(file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-dev.cfg"))
-    }
-}
+neoForge.version = libs.versions.neoforge.get()
 
 repositories {
     /*maven("https://prmaven.neoforged.net/NeoForge/pr3198") {
