@@ -1,7 +1,6 @@
 package dev.apexstudios.apexcore.common.data;
 
 import dev.apexstudios.apexcore.api.data.ExtendedRegistryBootstrap;
-import dev.apexstudios.apexcore.common.data.pack.ConditionalRegistrar;
 import java.util.Optional;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -12,40 +11,34 @@ import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-import net.neoforged.neoforge.common.conditions.ICondition;
 
 public final class ExtendedRegistryBootstrapImpl<TRegistry> implements ExtendedRegistryBootstrap<TRegistry> {
     private final BootstrapContext<TRegistry> delegate;
     private final ResourceKey<? extends Registry<TRegistry>> registryType;
     private final String modId;
-    private final ConditionalRegistrar<TRegistry> conditionsConsumer;
     private final HolderGetter<TRegistry> lookup;
 
-    public ExtendedRegistryBootstrapImpl(BootstrapContext<TRegistry> delegate, ResourceKey<? extends Registry<TRegistry>> registryType, String modId, ConditionalRegistrar<TRegistry> conditionsConsumer) {
+    public ExtendedRegistryBootstrapImpl(BootstrapContext<TRegistry> delegate, ResourceKey<? extends Registry<TRegistry>> registryType, String modId) {
         this.delegate = delegate;
         this.registryType = registryType;
         this.modId = modId;
-        this.conditionsConsumer = conditionsConsumer;
 
         lookup = delegate.lookup(registryType);
     }
 
     @Override
-    public Holder.Reference<TRegistry> register(ResourceKey<TRegistry> registryKey, TRegistry value, ICondition... conditions) {
-        if(conditions.length > 0)
-            conditionsConsumer.accept(registryKey, conditions);
-
+    public Holder.Reference<TRegistry> register(ResourceKey<TRegistry> registryKey, TRegistry value) {
         return delegate.register(registryKey, value);
     }
 
     @Override
-    public Holder.Reference<TRegistry> register(Identifier registryName, TRegistry value, ICondition... conditions) {
-        return register(ResourceKey.create(registryType, registryName), value, conditions);
+    public Holder.Reference<TRegistry> register(Identifier registryName, TRegistry value) {
+        return register(ResourceKey.create(registryType, registryName), value);
     }
 
     @Override
-    public Holder.Reference<TRegistry> register(String identifier, TRegistry value, ICondition... conditions) {
-        return register(Identifier.fromNamespaceAndPath(modId, identifier), value, conditions);
+    public Holder.Reference<TRegistry> register(String identifier, TRegistry value) {
+        return register(Identifier.fromNamespaceAndPath(modId, identifier), value);
     }
 
     @Override

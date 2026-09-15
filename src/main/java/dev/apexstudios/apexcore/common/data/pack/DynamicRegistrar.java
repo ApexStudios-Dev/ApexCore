@@ -7,5 +7,5 @@ import net.minecraft.resources.ResourceKey;
 
 @FunctionalInterface
 public interface DynamicRegistrar {
-    <TRegistry> void accept(ResourceKey<? extends Registry<TRegistry>> registryType, String modId, BootstrapRegistrar<TRegistry> consumer, ConditionalRegistrar<TRegistry> conditionConsumer, Iterable<Consumer<? extends ExtendedRegistryBootstrap<?>>> listeners);
+    <TRegistry> void accept(ResourceKey<? extends Registry<TRegistry>> registryType, String modId, BootstrapRegistrar<TRegistry> consumer, Iterable<Consumer<? extends ExtendedRegistryBootstrap<?>>> listeners);
 }

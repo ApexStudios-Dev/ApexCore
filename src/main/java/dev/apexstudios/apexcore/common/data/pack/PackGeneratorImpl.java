@@ -82,7 +82,7 @@ public sealed abstract class PackGeneratorImpl<TSelf extends PackGenerator<TSelf
     public ModdedRegistries generate(String modId, Function<PackType, ResourceManager> resourceManagerGetter, CompletableFuture<HolderLookup.Provider> vanillaWorldRegistries, CompletableFuture<HolderLookup.Provider> vanillaReloadableRegistries, Path outputDir, Consumer<DataProvider> providerConsumer) {
         var context = ProviderContext.of(modId, resourceManagerGetter, enabledFeatures());
         var output = createPackOutput(outputDir);
-        var moddedRegistries = ModdedRegistries.create(modId, vanillaWorldRegistries, vanillaReloadableRegistries, worldListeners, reloadableListeners);
+        var moddedRegistries = ModdedRegistries.create(modId, output, vanillaWorldRegistries, vanillaReloadableRegistries, worldListeners, reloadableListeners, providerConsumer);
         registerProviders(context, output, moddedRegistries, providerConsumer);
         return moddedRegistries;
     }
@@ -113,7 +113,7 @@ public sealed abstract class PackGeneratorImpl<TSelf extends PackGenerator<TSelf
         providerConsumer.accept(new DataProvider() {
             @Override
             public CompletableFuture<?> run(CachedOutput cache) {
-                return registries.world().thenCombine(registries.reloadable(), (world, reloadable) -> {
+                return registries.apply((world, reloadable) -> {
                     var listenerContext = ProviderListenerContext.of(context, world, reloadable);
                     var provider = providerType.create(listenerContext);
 
