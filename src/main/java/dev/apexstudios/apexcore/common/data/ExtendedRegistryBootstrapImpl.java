@@ -1,9 +1,8 @@
 package dev.apexstudios.apexcore.common.data;
 
-import com.mojang.serialization.Lifecycle;
 import dev.apexstudios.apexcore.api.data.ExtendedRegistryBootstrap;
+import dev.apexstudios.apexcore.common.data.pack.ConditionalRegistrar;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
@@ -19,10 +18,10 @@ public final class ExtendedRegistryBootstrapImpl<TRegistry> implements ExtendedR
     private final BootstrapContext<TRegistry> delegate;
     private final ResourceKey<? extends Registry<TRegistry>> registryType;
     private final String modId;
-    private final BiConsumer<ResourceKey<TRegistry>, ICondition[]> conditionsConsumer;
+    private final ConditionalRegistrar<TRegistry> conditionsConsumer;
     private final HolderGetter<TRegistry> lookup;
 
-    public ExtendedRegistryBootstrapImpl(BootstrapContext<TRegistry> delegate, ResourceKey<? extends Registry<TRegistry>> registryType, String modId, BiConsumer<ResourceKey<TRegistry>, ICondition[]> conditionsConsumer) {
+    public ExtendedRegistryBootstrapImpl(BootstrapContext<TRegistry> delegate, ResourceKey<? extends Registry<TRegistry>> registryType, String modId, ConditionalRegistrar<TRegistry> conditionsConsumer) {
         this.delegate = delegate;
         this.registryType = registryType;
         this.modId = modId;
@@ -32,21 +31,21 @@ public final class ExtendedRegistryBootstrapImpl<TRegistry> implements ExtendedR
     }
 
     @Override
-    public Holder.Reference<TRegistry> register(ResourceKey<TRegistry> registryKey, Lifecycle lifecycle, TRegistry value, ICondition... conditions) {
+    public Holder.Reference<TRegistry> register(ResourceKey<TRegistry> registryKey, TRegistry value, ICondition... conditions) {
         if(conditions.length > 0)
             conditionsConsumer.accept(registryKey, conditions);
 
-        return delegate.register(registryKey, value, lifecycle);
+        return delegate.register(registryKey, value);
     }
 
     @Override
-    public Holder.Reference<TRegistry> register(Identifier registryName, Lifecycle lifecycle, TRegistry value, ICondition... conditions) {
-        return register(ResourceKey.create(registryType, registryName), lifecycle, value, conditions);
+    public Holder.Reference<TRegistry> register(Identifier registryName, TRegistry value, ICondition... conditions) {
+        return register(ResourceKey.create(registryType, registryName), value, conditions);
     }
 
     @Override
-    public Holder.Reference<TRegistry> register(String identifier, Lifecycle lifecycle, TRegistry value, ICondition... conditions) {
-        return register(Identifier.fromNamespaceAndPath(modId, identifier), lifecycle, value, conditions);
+    public Holder.Reference<TRegistry> register(String identifier, TRegistry value, ICondition... conditions) {
+        return register(Identifier.fromNamespaceAndPath(modId, identifier), value, conditions);
     }
 
     @Override

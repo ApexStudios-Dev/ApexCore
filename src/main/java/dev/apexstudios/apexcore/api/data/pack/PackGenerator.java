@@ -19,4 +19,6 @@ public interface PackGenerator<TSelf extends PackGenerator<TSelf>> {
     <TProvider> TSelf providing(ProviderType<TProvider> providerType, BiConsumer<ProviderListenerContext, TProvider> listener);
 
     <TRegistry> TSelf registering(ResourceKey<? extends Registry<TRegistry>> registryType, Consumer<ExtendedRegistryBootstrap<TRegistry>> bootstrap);
+
+    <TRegistry> TSelf reloading(ResourceKey<? extends Registry<TRegistry>> registryType, Consumer<ExtendedRegistryBootstrap<TRegistry>> bootstrap);
 }

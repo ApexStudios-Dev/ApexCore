@@ -35,16 +35,16 @@ public final class ResourceGeneration implements ResourceGenerator {
         return featurePacks.computeIfAbsent(packId, FeaturePackGeneratorImpl::new);
     }
 
-    public void generate(ModContainer mod, Function<PackType, ResourceManager> resourceManagerGetter, CompletableFuture<HolderLookup.Provider> vanillaRegistries, DataGenerator generator) {
+    public void generate(ModContainer mod, Function<PackType, ResourceManager> resourceManagerGetter, CompletableFuture<HolderLookup.Provider> vanillaWorldRegistries, CompletableFuture<HolderLookup.Provider> vanillaReloadableRegistries, DataGenerator generator) {
         var outputDir = generator.getPackOutput().getOutputFolder();
         var modId = mod.getModId();
 
         pack.defaultDescription(() -> Component.literal(mod.getModInfo().getDisplayName()));
-        var moddedRegistries = pack.generate(modId, resourceManagerGetter, vanillaRegistries, outputDir, addProvider(null, generator));
+        var moddedRegistries = pack.generate(modId, resourceManagerGetter, vanillaWorldRegistries, vanillaReloadableRegistries, outputDir, addProvider(null, generator));
 
         featurePacks.forEach((packId, pack) -> {
             pack.defaultDescription(() -> Component.literal(StringHelper.toEnglishName(packId)));
-            pack.generate(modId, resourceManagerGetter, moddedRegistries, outputDir, addProvider(packId, generator));
+            pack.generate(modId, resourceManagerGetter, moddedRegistries.world(), moddedRegistries.reloadable(), outputDir, addProvider(packId, generator));
         });
     }
 

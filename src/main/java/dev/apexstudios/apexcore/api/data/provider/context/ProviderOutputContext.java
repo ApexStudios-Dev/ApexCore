@@ -68,8 +68,13 @@ public interface ProviderOutputContext extends ProviderListenerContext {
             }
 
             @Override
-            public HolderLookup.Provider registries() {
-                return context.registries();
+            public HolderLookup.Provider worldRegistries() {
+                return context.worldRegistries();
+            }
+
+            @Override
+            public HolderLookup.Provider reloadableRegistries() {
+                return context.reloadableRegistries();
             }
         };
     }

@@ -6,9 +6,11 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.flag.FeatureFlagSet;
 
 public interface ProviderListenerContext extends ProviderContext {
-    HolderLookup.Provider registries();
+    HolderLookup.Provider worldRegistries();
 
-    static ProviderListenerContext of(ProviderContext context, HolderLookup.Provider registries) {
+    HolderLookup.Provider reloadableRegistries();
+
+    static ProviderListenerContext of(ProviderContext context, HolderLookup.Provider worldRegistries, HolderLookup.Provider reloadableRegistries) {
         return new ProviderListenerContext() {
             @Override
             public String modId() {
@@ -26,8 +28,13 @@ public interface ProviderListenerContext extends ProviderContext {
             }
 
             @Override
-            public HolderLookup.Provider registries() {
-                return registries;
+            public HolderLookup.Provider worldRegistries() {
+                return worldRegistries;
+            }
+
+            @Override
+            public HolderLookup.Provider reloadableRegistries() {
+                return reloadableRegistries;
             }
         };
     }

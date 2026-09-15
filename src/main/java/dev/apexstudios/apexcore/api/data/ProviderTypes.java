@@ -2,9 +2,6 @@ package dev.apexstudios.apexcore.api.data;
 
 import dev.apexstudios.apexcore.api.data.provider.LanguageProvider;
 import dev.apexstudios.apexcore.api.data.provider.ParticleProvider;
-import dev.apexstudios.apexcore.api.data.provider.RecipeProvider;
-import dev.apexstudios.apexcore.api.data.provider.datamap.DataMapProvider;
-import dev.apexstudios.apexcore.api.data.provider.loot.LootTableProvider;
 import dev.apexstudios.apexcore.api.data.provider.model.ModelProvider;
 import dev.apexstudios.apexcore.api.data.provider.tag.IntrusiveTagProvider;
 import dev.apexstudios.apexcore.api.data.provider.tag.SimpleTagProvider;
@@ -26,7 +23,6 @@ import net.neoforged.api.distmarker.Dist;
 public interface ProviderTypes {
     ProviderType<LanguageProvider> LANGUAGE = LanguageProvider.PROVIDER_TYPE;
     ProviderType<ModelProvider> MODELS = ProviderType.registerForDist(ApexCore.identifier("models"), Dist.CLIENT, () -> ModelProviderImpl::new);
-    ProviderType<RecipeProvider> RECIPES = RecipeProvider.PROVIDER_TYPE;
     ProviderType<ParticleProvider> PARTICLES = ParticleProvider.PROVIDER_TYPE;
 
     ProviderType<IntrusiveTagProvider<Item>> ITEM_TAGS = TagProvider.registerIntrusiveForHolder(ApexCore.ID, Registries.ITEM, Item::builtInRegistryHolder);
@@ -39,7 +35,4 @@ public interface ProviderTypes {
     ProviderType<SimpleTagProvider<Structure>> STRUCTURE_TAGS = TagProvider.registerSimple(ApexCore.ID, Registries.STRUCTURE);
     ProviderType<SimpleTagProvider<DamageType>> DAMAGE_TYPE_TAGS = TagProvider.registerSimple(ApexCore.ID, Registries.DAMAGE_TYPE);
     ProviderType<SimpleTagProvider<Potion>> POTION_TAGS = TagProvider.registerSimple(ApexCore.ID, Registries.POTION);
-
-    ProviderType<DataMapProvider> DATA_MAP = DataMapProvider.PROVIDER_TYPE;
-    ProviderType<LootTableProvider> LOOT_TABLE = LootTableProvider.PROVIDER_TYPE;
 }

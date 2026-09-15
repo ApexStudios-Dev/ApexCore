@@ -16,7 +16,7 @@ public interface ResourceGenerator {
     static void of(GatherDataEvent event, Consumer<ResourceGenerator> consumer) {
         var generator = new ResourceGeneration();
         consumer.accept(generator);
-        generator.generate(event.getModContainer(), event::getResourceManager, event.getLookupProvider(), event.getGenerator());
+        generator.generate(event.getModContainer(), event::getResourceManager, event.getWorldLookupProvider(), event.getReloadableLookupProvider(), event.getGenerator());
     }
 
     static void of(IEventBus modBus, Consumer<ResourceGenerator> consumer) {
