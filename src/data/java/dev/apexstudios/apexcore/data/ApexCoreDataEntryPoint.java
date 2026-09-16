@@ -1,40 +1,21 @@
 package dev.apexstudios.apexcore.data;
 
-import dev.apexstudios.apexcore.api.data.ProviderTypes;
-import dev.apexstudios.apexcore.api.data.ResourceGenerator;
-import dev.apexstudios.apexcore.api.placement.BlockItemPlacementEvent;
+import dev.apexstudios.apexcore.api.util.ApexUtil;
 import dev.apexstudios.apexcore.common.ApexCore;
-import dev.apexstudios.apexcore.common.seat.SeatSetup;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.BlockItem;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 @Mod(value = ApexCore.ID, dist = Dist.CLIENT)
 public final class ApexCoreDataEntryPoint {
     public ApexCoreDataEntryPoint(IEventBus modBus) {
-        ResourceGenerator.of(modBus, generator -> {
-            generator.pack()
-                    .providing(ProviderTypes.LANGUAGE, (context, provider) -> provider.addEntityType(SeatSetup.ENTITY, "Seat"))
-                    .providing(ProviderTypes.ENTITY_TYPE_TAGS, (context, provider) -> {
-                        provider.tag(Tags.EntityTypes.CAPTURING_NOT_SUPPORTED).withElement(SeatSetup.ENTITY);
-                        provider.tag(Tags.EntityTypes.TELEPORTING_NOT_SUPPORTED).withElement(SeatSetup.ENTITY);
-                    });
-
-            // 'vanilla vanilla' data pack enables the visualizer for all vanilla blocks
-            generator.pack("visual_vanilla")
-                    .description("Visual Vanilla")
-                    .providing(ProviderTypes.BLOCK_TAGS, (context, provider) -> {
-                        context.registries()
-                                .lookupOrThrow(Registries.BLOCK)
-                                .listElements()
-                                .map(Holder::value)
-                                .filter(block -> block.asItem() instanceof BlockItem)
-                                .forEach(block -> provider.tag(BlockItemPlacementEvent.RENDERABLES).withElement(block));
-                    });
+        modBus.addListener(GatherDataEvent.Client.class, event -> {
+            event.createProvider(ACLanguageProvider::new);
+            event.createProvider(ACEntityTypeTagsProvider::new);
+            event.createProvider(output -> ApexUtil.createMetadataProvider(output, Component.literal("ApexCore resources"), PackType.SERVER_DATA));
         });
     }
 }
