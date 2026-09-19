@@ -16,11 +16,11 @@ repositories {
         }
     }*/
 
-    maven("https://maven.apexmodder.com/prs/Registree/pr37") {
+    /*maven("https://maven.apexmodder.com/prs/Registree/pr37") {
         content {
             includeModule("dev.apexstudios", "registree")
         }
-    }
+    }*/
 }
 
 dependencies {
