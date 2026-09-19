@@ -1,5 +1,5 @@
 license = "AllRightsReserved"
-issueTrackerURL = "https://github.com/ApexStudios-Dev/Issues/issues"
+issueTrackerURL = "https://github.com/ApexStudios-Dev/ApexCore/issues"
 
 [[mods]]
 modId = "apexcore"
@@ -15,13 +15,13 @@ displayURL = "https://modrinth.com/mod/apexcore"
 [[dependencies.apexcore]]
 modId = "minecraft"
 type = "required"
-versionRange = "[26.2,26.3)"
+versionRange = "[26.3,26.4)"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.apexcore]]
 modId = "neoforge"
 type = "required"
-versionRange = "[26.2-alpha,26.3)"
+versionRange = "[26.3-alpha,26.4)"
 ordering = "NONE"
 side = "BOTH"
 

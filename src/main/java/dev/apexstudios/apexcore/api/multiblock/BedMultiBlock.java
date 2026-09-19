@@ -84,17 +84,4 @@ public abstract class BedMultiBlock extends SimpleBedBlock implements MultiBlock
         // simply return what ever block state is passed in
         return blockState;
     }
-
-    @Override
-    public void setBedOccupied(BlockState blockState, Level level, BlockPos pos, LivingEntity sleeper, boolean occupied) {
-        super.setBedOccupied(blockState, level, pos, sleeper, occupied);
-
-        // update connected blocks occupied state
-        var direction = getConnectedDirection(blockState);
-        var otherPos = pos.relative(direction);
-        var otherBlockState = level.getBlockState(otherPos);
-
-        if(otherBlockState.is(blockState.getBlock()))
-            super.setBedOccupied(otherBlockState, level, otherPos, sleeper, occupied);
-    }
 }

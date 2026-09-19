@@ -1,6 +1,5 @@
 package dev.apexstudios.apexcore.api.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
@@ -9,8 +8,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 
 public class SimpleHorizontalDirectionalBlock extends HorizontalDirectionalBlock {
-    public static final MapCodec<SimpleHorizontalDirectionalBlock> CODEC = simpleCodec(SimpleHorizontalDirectionalBlock::new);
-
     public SimpleHorizontalDirectionalBlock(Properties properties) {
         super(properties);
 
@@ -26,10 +23,5 @@ public class SimpleHorizontalDirectionalBlock extends HorizontalDirectionalBlock
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
-    }
-
-    @Override
-    protected MapCodec<? extends SimpleHorizontalDirectionalBlock> codec() {
-        return CODEC;
     }
 }
