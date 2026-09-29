@@ -6,6 +6,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -16,6 +18,7 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
@@ -47,8 +50,10 @@ public final class SeatEntity extends Entity {
 
     @Override
     public void onRemoval(RemovalReason reason) {
-        if(reason.shouldDestroy())
+        if(reason.shouldDestroy()) {
+            playSound(SoundEvents.CUSHION_BREAK, 1F, 1F);
             Seat.setOccupied(level(), blockPosition(), false);
+        }
     }
 
     @Override
@@ -83,6 +88,7 @@ public final class SeatEntity extends Entity {
 
     @Override
     protected void addPassenger(Entity passenger) {
+        playSound(SoundEvents.CUSHION_SIT, 1F, 1F);
         passenger.setPose(Pose.SITTING);
         Seat.notifyCapabilityListeners(passenger, blockPosition(), getInBlockState(), true);
         super.addPassenger(passenger);
@@ -90,6 +96,7 @@ public final class SeatEntity extends Entity {
 
     @Override
     protected void removePassenger(Entity passenger) {
+        playSound(SoundEvents.CUSHION_GET_UP, 1F, 1F);
         passenger.setPose(Pose.STANDING);
         Seat.notifyCapabilityListeners(passenger, blockPosition(), getInBlockState(), false);
         super.removePassenger(passenger);
@@ -111,14 +118,16 @@ public final class SeatEntity extends Entity {
     public static boolean sit(Level level, BlockPos pos, LivingEntity sitter) {
         var blockState = level.getBlockState(pos);
 
-        if(Seat.isOccupied(blockState))
+        if(Seat.isOccupied(blockState)) {
             return false;
+        }
 
         if(!level.isClientSide()) {
             var entity = SeatSetup.ENTITY.value().create(level, EntitySpawnReason.SPAWN_ITEM_USE);
 
-            if(entity == null)
+            if(entity == null) {
                 return false;
+            }
 
             entity.setPos(Seat.getPosition(level, pos, blockState));
 
@@ -129,20 +138,12 @@ public final class SeatEntity extends Entity {
             );
 
             for(var toSit : leashed) {
-                if(toSit.startRiding(entity)) {
-                    Seat.setOccupied(level, pos, true);
-                    level.addFreshEntity(entity);
+                if(sit(level, entity, toSit)) {
                     return true;
                 }
             }
 
-            if(sitter.startRiding(entity)) {
-                Seat.setOccupied(level, pos, true);
-                level.addFreshEntity(entity);
-                return true;
-            }
-
-            return false;
+            return sit(level, entity, sitter);
         }
 
         return true;
@@ -151,8 +152,9 @@ public final class SeatEntity extends Entity {
     public static boolean unsit(Level level, BlockPos pos) {
         var blockState = level.getBlockState(pos);
 
-        if(!Seat.isOccupied(blockState))
+        if(!Seat.isOccupied(blockState)) {
             return false;
+        }
 
         if(!level.isClientSide()) {
             var seats = level.getEntities(SeatSetup.ENTITY.value(), new AABB(pos).inflate(.5D), Predicates.alwaysTrue());
@@ -167,6 +169,18 @@ public final class SeatEntity extends Entity {
             return false;
         }
 
+        return true;
+    }
+
+    private static boolean sit(Level level, SeatEntity seat, LivingEntity sitter) {
+        if(!sitter.startRiding(seat)) {
+            return false;
+        }
+
+        Seat.setOccupied(level, seat.blockPosition(), true);
+        level.addFreshEntity(seat);
+        level.playSound(null, seat.getX(), seat.getY(), seat.getZ(), SoundEvents.CUSHION_PLACE, SoundSource.BLOCKS, .75F, .8F);
+        seat.gameEvent(GameEvent.ENTITY_PLACE, sitter);
         return true;
     }
 }
