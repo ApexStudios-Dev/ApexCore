@@ -17,7 +17,7 @@ public abstract class ItemTagsProvider extends BlockTagCopyingItemTagProvider {
         super(output, lookupProvider, blockTags, modId);
     }
 
-    // TODO: Remove once https://github.com/neoforged/NeoForge/pull/3609 is merged
+    @Override
     public void copy(@Nullable BlockItemTagId tag) {
         if(tag != null) {
             copy(tag.block(), tag.item());
@@ -25,7 +25,7 @@ public abstract class ItemTagsProvider extends BlockTagCopyingItemTagProvider {
     }
 
     @Override
-    protected void copy(@Nullable TagKey<Block> blockTag, @Nullable TagKey<Item> itemTag) {
+    public void copy(@Nullable TagKey<Block> blockTag, @Nullable TagKey<Item> itemTag) {
         if(blockTag != null && itemTag != null) {
             super.copy(blockTag, itemTag);
         }
