@@ -21,7 +21,7 @@ side = "BOTH"
 [[dependencies.apexcore]]
 modId = "neoforge"
 type = "required"
-versionRange = "[26.3.0.47-beta,26.4)"
+versionRange = "[26.3.0.64-beta,26.4)"
 ordering = "NONE"
 side = "BOTH"
 

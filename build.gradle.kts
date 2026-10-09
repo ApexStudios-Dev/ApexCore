@@ -9,7 +9,7 @@ group = "dev.apexstudios"
 neoForge.version = libs.versions.neoforge.get()
 
 repositories {
-    /*maven("https://prmaven.neoforged.net/NeoForge/pr3492") {
+    /*maven("https://prmaven.neoforged.net/NeoForge/pr3611") {
         content {
             includeModule("net.neoforged", "neoforge")
             includeModule("net.neoforged", "testframework")
