@@ -1,2 +1,2 @@
 @org.jspecify.annotations.NullMarked
-package dev.apexstudios.apexcore.api;
+package dev.apexstudios.apexcore;
