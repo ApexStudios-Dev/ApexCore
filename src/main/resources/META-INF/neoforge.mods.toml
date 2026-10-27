@@ -25,7 +25,7 @@ versionRange = "[26.3.0.64-beta,26.4)"
 ordering = "NONE"
 side = "BOTH"
 
-[[accessTransformers]]
-file = "META-INF/accesstransformer.cfg"
-[[mixins]]
-config = "META-INF/apexcore.mixins.json"
+#[[accessTransformers]]
+#file = "META-INF/accesstransformer.cfg"
+#[[mixins]]
+#config = "META-INF/apexcore.mixins.json"
