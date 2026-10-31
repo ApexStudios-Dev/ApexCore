@@ -12,5 +12,6 @@ final class LangProvider extends LanguageProvider {
     @Override
     protected void addTranslations() {
         addTranslatableComponent(ApexCoreDataEntryPoint.PACK_DESC, "ApexCore resources");
+        addEntityType(ApexCore.FAKE_ITEM, "Fake Item");
     }
 }

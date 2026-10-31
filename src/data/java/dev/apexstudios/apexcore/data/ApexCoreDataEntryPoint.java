@@ -17,6 +17,7 @@ public final class ApexCoreDataEntryPoint {
         modBus.addListener(GatherDataEvent.Client.class, event -> {
             event.createProvider(output -> DataGenUtil.metadata(output, PACK_DESC, PackType.SERVER_DATA));
             event.createProvider(LangProvider::new);
+            event.createProvider(EntityTypeTagProvider::new);
         });
     }
 }
