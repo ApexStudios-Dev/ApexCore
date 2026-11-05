@@ -1,5 +1,6 @@
 package dev.apexstudios.apexcore.api.multiblock;
 
+import dev.apexstudios.apexcore.api.BlockHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -19,7 +20,9 @@ import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.neoforged.neoforge.common.util.BlockRelocability;
 import org.jspecify.annotations.Nullable;
 
 public abstract class AbstractDoorMultiBlock extends DoorBlock implements IMultiBlock {
@@ -45,6 +48,7 @@ public abstract class AbstractDoorMultiBlock extends DoorBlock implements IMulti
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState blockState, @Nullable LivingEntity placer, ItemStack stack) {
         // NOOP - Skip vanillas placement
+        System.out.println("boop");
     }
 
     @Override
@@ -72,33 +76,37 @@ public abstract class AbstractDoorMultiBlock extends DoorBlock implements IMulti
 
     @Override
     protected void affectNeighborsAfterRemoval(BlockState blockState, ServerLevel level, BlockPos pos, boolean movedByPiston) {
-        if(level.getBlockState(pos).is(blockState.getBlock())) {
+        if(!level.getBlockState(pos).is(blockState.getBlock())) {
             IMultiBlock.destroy(level, pos, blockState, null, this, false);
         }
     }
 
     @Override
     protected BlockState updateShape(BlockState blockState, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourBlockState, RandomSource random) {
-        if(neighbourBlockState.is(blockState.getBlock()) && directionToNeighbour.getAxis() == Direction.Axis.Y) {
-            return blockState.setValue(OPEN, neighbourBlockState.getValue(OPEN))
-                    .setValue(POWERED, neighbourBlockState.getValue(POWERED))
-                    .setValue(HINGE, neighbourBlockState.getValue(HINGE));
+        if(!IMultiBlock.isSameMultiblock(pos, blockState, neighbourPos, neighbourBlockState, this)) {
+            return blockState;
         }
 
-        return IMultiBlock.asOrigin(
-                level,
-                pos,
-                blockState,
-                this,
-                (targetPos, targetBlockState) -> {
-                    if(targetBlockState.is(this)) {
-                        return blockState;
-                    }
+        if(directionToNeighbour.getAxis() != Direction.Axis.Y) {
+            return Blocks.AIR.defaultBlockState();
+        }
 
-                    return Blocks.AIR.defaultBlockState();
-                },
-                Blocks.AIR::defaultBlockState
+        if(blockState.getValue(HALF) == DoubleBlockHalf.LOWER && directionToNeighbour == Direction.DOWN && !blockState.canSurvive(level, pos)) {
+            return Blocks.AIR.defaultBlockState();
+        }
+
+        return BlockHelper.copyProperties(
+                neighbourBlockState,
+                blockState,
+                OPEN,
+                POWERED,
+                HINGE
         );
+    }
+
+    @Override
+    public BlockRelocability getRelocability(LevelReader level, BlockPos pos, BlockState state) {
+        return IMultiBlock.getRelocability(pos, defaultBlockState(), this);
     }
     // endregion
 }

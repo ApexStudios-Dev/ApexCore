@@ -10,26 +10,23 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.extensions.IBlockExtension;
 import net.neoforged.neoforge.common.util.BlockRelocability;
 import org.jspecify.annotations.Nullable;
 
-public interface IMultiBlock extends IBlockExtension {
+public interface IMultiBlock {
     int MULTI_BLOCK_ORIGIN_INDEX = 0;
 
     MultiBlockInfo multiBlockInfo();
 
-    @Override
-    default BlockRelocability getRelocability(LevelReader level, BlockPos pos, BlockState blockState) {
+    static BlockRelocability getRelocability(BlockPos pos, BlockState blockState, IMultiBlock multiBlock) {
         if(blockState.is(Tags.Blocks.RELOCATION_NOT_SUPPORTED)) {
             return BlockRelocability.No.INSTANCE;
         }
 
-        var info = multiBlockInfo();
+        var info = multiBlock.multiBlockInfo();
         var transformedLocal = info.getTransformed(blockState);
         var originPos = MultiBlockInfo.toOrigin(pos, transformedLocal);
         var positions = new HashSet<BlockPos>();
@@ -122,6 +119,33 @@ public interface IMultiBlock extends IBlockExtension {
         }
 
         return result;
+    }
+
+    static boolean isSameMultiblock(
+            BlockPos pos,
+            BlockState blockState,
+            BlockPos neighborPos,
+            BlockState neighborBlockState,
+            IMultiBlock multiBlock
+    ) {
+        if(!neighborBlockState.is(blockState.getBlock())) {
+            return false;
+        }
+
+        var origin = pos;
+        var neighborOrigin = neighborPos;
+
+        if(!isOrigin(blockState, multiBlock)) {
+            var transformedLocal = multiBlock.multiBlockInfo().getTransformed(blockState);
+            origin = MultiBlockInfo.toOrigin(pos, transformedLocal);
+        }
+
+        if(!isOrigin(neighborBlockState, multiBlock)) {
+            var transformedLocal = multiBlock.multiBlockInfo().getTransformed(neighborBlockState);
+            neighborOrigin = MultiBlockInfo.toOrigin(neighborPos, transformedLocal);
+        }
+
+        return origin.equals(neighborOrigin);
     }
 
     static boolean isOrigin(BlockState blockState, IMultiBlock multiBlock) {

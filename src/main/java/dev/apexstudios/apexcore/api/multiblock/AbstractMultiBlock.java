@@ -10,9 +10,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.neoforged.neoforge.common.util.BlockRelocability;
 import org.jspecify.annotations.Nullable;
 
 public abstract class AbstractMultiBlock extends Block implements IMultiBlock {
@@ -56,21 +56,17 @@ public abstract class AbstractMultiBlock extends Block implements IMultiBlock {
 
     @Override
     protected BlockState updateShape(BlockState blockState, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourBlockState, RandomSource random) {
-        // check other properties (bed copies over occupied here)
+        if(!IMultiBlock.isSameMultiblock(pos, blockState, neighbourPos, neighbourBlockState, this)) {
+            return blockState;
+        }
 
-        return IMultiBlock.asOrigin(
-                level,
-                pos,
-                blockState,
-                this,
-                (targetPos, targetBlockState) -> {
-                    if(targetBlockState.is(this)) {
-                        return blockState;
-                    }
+        // validate block may exist at position
+        // sync block states, copy neighbor properties to this block state
+        return blockState;
+    }
 
-                    return Blocks.AIR.defaultBlockState();
-                },
-                Blocks.AIR::defaultBlockState
-        );
+    @Override
+    public BlockRelocability getRelocability(LevelReader level, BlockPos pos, BlockState state) {
+        return IMultiBlock.getRelocability(pos, defaultBlockState(), this);
     }
 }

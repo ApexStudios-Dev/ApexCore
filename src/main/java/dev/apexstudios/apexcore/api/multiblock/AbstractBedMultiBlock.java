@@ -20,11 +20,11 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.AbstractBedBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.util.BlockRelocability;
 import org.jspecify.annotations.Nullable;
 
 public abstract class AbstractBedMultiBlock extends AbstractBedBlock implements IMultiBlock {
@@ -107,36 +107,27 @@ public abstract class AbstractBedMultiBlock extends AbstractBedBlock implements 
 
     @Override
     protected void affectNeighborsAfterRemoval(BlockState blockState, ServerLevel level, BlockPos pos, boolean movedByPiston) {
-        if(level.getBlockState(pos).is(blockState.getBlock())) {
+        if(!level.getBlockState(pos).is(blockState.getBlock())) {
             IMultiBlock.destroy(level, pos, blockState, null, this, false);
         }
     }
 
     @Override
     protected BlockState updateShape(BlockState blockState, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourBlockState, RandomSource random) {
-        if(neighbourBlockState.is(blockState.getBlock())) {
-            var facing = blockState.getValue(FACING);
-
-            if(facing.getAxis() == directionToNeighbour.getAxis()) {
-                var occupied = neighbourBlockState.getValue(OCCUPIED);
-                return blockState.setValue(OCCUPIED, occupied);
-            }
+        if(directionToNeighbour != getConnectedDirection(blockState)) {
+            return blockState;
         }
 
-        return IMultiBlock.asOrigin(
-                level,
-                pos,
-                blockState,
-                this,
-                (targetPos, targetBlockState) -> {
-                    if(targetBlockState.is(this)) {
-                        return blockState;
-                    }
+        if(!IMultiBlock.isSameMultiblock(pos, blockState, neighbourPos, neighbourBlockState, this)) {
+            return blockState;
+        }
 
-                    return Blocks.AIR.defaultBlockState();
-                },
-                Blocks.AIR::defaultBlockState
-        );
+        return BlockState.copyProperty(neighbourBlockState, blockState, OCCUPIED);
+    }
+
+    @Override
+    public BlockRelocability getRelocability(LevelReader level, BlockPos pos, BlockState state) {
+        return IMultiBlock.getRelocability(pos, defaultBlockState(), this);
     }
     // endregion
 }
