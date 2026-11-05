@@ -6,7 +6,17 @@ plugins {
 }
 
 group = "dev.apexstudios"
-neoForge.version = libs.versions.neoforge.get()
+
+neoForge {
+    version = libs.versions.neoforge.get()
+
+    accessTransformers {
+        val atFile = file("src/${SourceSet.MAIN_SOURCE_SET_NAME}/resources/META-INF/accesstransformer-datagen.cfg")
+
+        from(atFile)
+        publish(atFile)
+    }
+}
 
 repositories {
     /*maven("https://prmaven.neoforged.net/NeoForge/pr3611") {
@@ -16,11 +26,11 @@ repositories {
         }
     }*/
 
-    /*maven("https://maven.apexmodder.com/prs/Registree/pr37") {
+    maven("https://maven.apexmodder.com/prs/Registree/pr41") {
         content {
             includeModule("dev.apexstudios", "registree")
         }
-    }*/
+    }
 }
 
 dependencies {
