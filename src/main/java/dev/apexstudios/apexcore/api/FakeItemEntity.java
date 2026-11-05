@@ -126,23 +126,19 @@ public final class FakeItemEntity extends Entity implements TraceableEntity {
 
         var oldMovement = getDeltaMovement();
         var fluidType = getMaxHeightFluidType();
-        var applyVanillaMovement = true;
 
         if(!fluidType.isAir() && !fluidType.isVanilla() && getFluidTypeHeight(fluidType) > ItemEntity.FLOAT_HEIGHT) {
             if(fluidType instanceof FluidTypeExtensions extension) {
                 extension.setItemMovement(this);
-                applyVanillaMovement = false;
-            }
-        }
-
-        if(applyVanillaMovement) {
-            if(isInWater() && getFluidHeight(FluidTags.WATER) > ItemEntity.FLOAT_HEIGHT) {
-                setUnderwaterMovement();
-            } else if(isInLava() && getFluidHeight(FluidTags.LAVA) > ItemEntity.FLOAT_HEIGHT) {
-                setUnderLavaMovement();
             } else {
-                applyGravity();
+                setUnderwaterMovement();
             }
+        } else if(isInWater() && getFluidHeight(FluidTags.WATER) > ItemEntity.FLOAT_HEIGHT) {
+            setUnderwaterMovement();
+        } else if(isInLava() && getFluidHeight(FluidTags.LAVA) > ItemEntity.FLOAT_HEIGHT) {
+            setUnderLavaMovement();
+        } else {
+            applyGravity();
         }
 
         if(level().isClientSide()) {
