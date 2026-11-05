@@ -1,5 +1,6 @@
 package dev.apexstudios.apexcore.api.multiblock;
 
+import java.util.HashSet;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
@@ -9,20 +10,44 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.extensions.IBlockExtension;
+import net.neoforged.neoforge.common.util.BlockRelocability;
 import org.jspecify.annotations.Nullable;
 
-public interface IMultiBlock {
-    int MAX_MULTI_BLOCK_SIZE = 255;
-    IntegerProperty MULTI_BLOCK_INDEX = IntegerProperty.create("multi_block_index", 0, MAX_MULTI_BLOCK_SIZE);
+public interface IMultiBlock extends IBlockExtension {
     int MULTI_BLOCK_ORIGIN_INDEX = 0;
 
     MultiBlockInfo multiBlockInfo();
 
+    @Override
+    default BlockRelocability getRelocability(LevelReader level, BlockPos pos, BlockState blockState) {
+        if(blockState.is(Tags.Blocks.RELOCATION_NOT_SUPPORTED)) {
+            return BlockRelocability.No.INSTANCE;
+        }
+
+        var info = multiBlockInfo();
+        var transformedLocal = info.getTransformed(blockState);
+        var originPos = MultiBlockInfo.toOrigin(pos, transformedLocal);
+        var positions = new HashSet<BlockPos>();
+        var size = info.size();
+
+        for(var i = 0; i < size; i++) {
+            var targetBlockState = info.applyBlockState(blockState, i);
+            transformedLocal = info.getTransformed(targetBlockState);
+            var targetPos = MultiBlockInfo.fromOrigin(originPos, transformedLocal);
+
+            positions.add(targetPos);
+        }
+
+        return new BlockRelocability.Multiblock(positions);
+    }
+
     static void place(Level level, BlockPos pos, BlockState blockState, @Nullable LivingEntity placer, IMultiBlock multiBlock) {
-        if(!isOrigin(blockState)) {
+        if(!isOrigin(blockState, multiBlock)) {
             return;
         }
 
@@ -32,9 +57,8 @@ public interface IMultiBlock {
 
         for(var i = 1; i < size; i++) {
             var targetBlockState = info.applyBlockState(blockState, i);
-            var transformedLocal = info.getTransformed(targetBlockState, i);
+            var transformedLocal = info.getTransformed(targetBlockState);
             var targetPos = MultiBlockInfo.fromOrigin(pos, transformedLocal);
-            var existingBlockState = level.getBlockState(targetPos);
 
             if(!level.getBlockState(targetPos).is(block)) {
                 level.destroyBlock(targetPos, true, placer);
@@ -48,26 +72,25 @@ public interface IMultiBlock {
         var block = blockState.getBlock();
         var info = multiBlock.multiBlockInfo();
 
-        if(isOrigin(blockState)) {
+        if(isOrigin(blockState, multiBlock)) {
             var size = info.size();
 
             for(var i = 1; i < size; i++) {
                 var targetBlockState = info.applyBlockState(blockState, i);
-                var transformedLocal = info.getTransformed(targetBlockState, i);
+                var transformedLocal = info.getTransformed(targetBlockState);
                 var targetPos = MultiBlockInfo.fromOrigin(pos, transformedLocal);
                 var existingBlockState = level.getBlockState(targetPos);
 
-                if(existingBlockState.is(block) && existingBlockState.getValue(MULTI_BLOCK_INDEX) == i) {
+                if(existingBlockState.is(block) && info.indexOf(existingBlockState) == i) {
                     level.removeBlock(targetPos, false);
                 }
             }
         } else {
-            var index = blockState.getValue(MULTI_BLOCK_INDEX);
-            var transformedLocal = info.getTransformed(blockState, index);
+            var transformedLocal = info.getTransformed(blockState);
             var targetPos = MultiBlockInfo.toOrigin(pos, transformedLocal);
             var existingBlockState = level.getBlockState(targetPos);
 
-            if(existingBlockState.is(block) && isOrigin(existingBlockState)) {
+            if(existingBlockState.is(block) && isOrigin(existingBlockState, multiBlock)) {
                 if((!(breaker instanceof Player player) || !player.preventsBlockDrops()) && dropBlocks) {
                     Block.dropResources(existingBlockState, level, targetPos, level.getBlockEntity(targetPos));
                 }
@@ -90,7 +113,7 @@ public interface IMultiBlock {
 
         for(var i = 0; i < size; i++) {
             var targetBlockState = info.applyBlockState(result, i);
-            var transformedLocal = info.getTransformed(targetBlockState, i);
+            var transformedLocal = info.getTransformed(targetBlockState);
             var targetPos = MultiBlockInfo.fromOrigin(pos, transformedLocal);
 
             if(!level.getBlockState(targetPos).canBeReplaced(context)) {
@@ -101,8 +124,16 @@ public interface IMultiBlock {
         return result;
     }
 
+    static boolean isOrigin(BlockState blockState, IMultiBlock multiBlock) {
+        return multiBlock.multiBlockInfo().indexOf(blockState) == MULTI_BLOCK_ORIGIN_INDEX;
+    }
+
     static boolean isOrigin(BlockState blockState) {
-        return blockState.getValue(MULTI_BLOCK_INDEX) == MULTI_BLOCK_ORIGIN_INDEX;
+        if(blockState.getBlock() instanceof IMultiBlock multiBlock) {
+            return isOrigin(blockState, multiBlock);
+        }
+
+        return false;
     }
 
     static <TResult> TResult asOrigin(
@@ -113,16 +144,15 @@ public interface IMultiBlock {
             BiFunction<BlockPos, BlockState, TResult> mapper,
             Supplier<TResult> invalidValue
     ) {
-        if(isOrigin(blockState)) {
+        if(isOrigin(blockState, multiBlock)) {
             return mapper.apply(pos, blockState);
         }
 
-        var index = blockState.getValue(MULTI_BLOCK_INDEX);
-        var transformedLocal = multiBlock.multiBlockInfo().getTransformed(blockState, index);
+        var transformedLocal = multiBlock.multiBlockInfo().getTransformed(blockState);
         var targetPos = MultiBlockInfo.toOrigin(pos, transformedLocal);
         var existingBlockState = level.getBlockState(targetPos);
 
-        if(!existingBlockState.is(blockState.getBlock()) || !isOrigin(existingBlockState)) {
+        if(!existingBlockState.is(blockState.getBlock()) || !isOrigin(existingBlockState, multiBlock)) {
             return invalidValue.get();
         }
 
@@ -141,6 +171,16 @@ public interface IMultiBlock {
         }
 
         return invalidValue.get();
+    }
+
+    static <TResult extends @Nullable Object> TResult asOrigin(
+            BlockGetter level,
+            BlockPos pos,
+            BlockState blockState,
+            IMultiBlock multiBlock,
+            BiFunction<BlockPos, BlockState, TResult> mapper
+    ) {
+        return asOrigin(level, pos, blockState, multiBlock, mapper, null);
     }
 
     static <TResult extends @Nullable Object> TResult asOrigin(

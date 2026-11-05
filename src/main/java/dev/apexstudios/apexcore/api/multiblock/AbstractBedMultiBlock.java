@@ -24,7 +24,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
@@ -32,7 +31,7 @@ public abstract class AbstractBedMultiBlock extends AbstractBedBlock implements 
     public AbstractBedMultiBlock(Properties properties) {
         super(properties);
 
-        registerDefaultState(defaultBlockState().setValue(MULTI_BLOCK_INDEX, MULTI_BLOCK_ORIGIN_INDEX));
+        registerDefaultState(multiBlockInfo().setIndex(defaultBlockState(), MULTI_BLOCK_ORIGIN_INDEX));
     }
 
     @Override
@@ -53,7 +52,6 @@ public abstract class AbstractBedMultiBlock extends AbstractBedBlock implements 
     protected void destroyOnLeave(Level level, BlockPos pos) {
     }
 
-    // region Patches
     @Override
     public OptionalDouble getSleepHeight(BlockState blockState, Level level, BlockPos pos) {
         return IMultiBlock.asOrigin(
@@ -66,10 +64,11 @@ public abstract class AbstractBedMultiBlock extends AbstractBedBlock implements 
         );
     }
 
+    // region Patches
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(MULTI_BLOCK_INDEX);
+        builder.add(multiBlockInfo().property());
     }
 
     @Override
@@ -114,11 +113,6 @@ public abstract class AbstractBedMultiBlock extends AbstractBedBlock implements 
     }
 
     @Override
-    protected boolean isPathfindable(BlockState blockState, PathComputationType type) {
-        return false;
-    }
-
-    @Override
     protected BlockState updateShape(BlockState blockState, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourBlockState, RandomSource random) {
         if(neighbourBlockState.is(blockState.getBlock())) {
             var facing = blockState.getValue(FACING);
@@ -141,7 +135,7 @@ public abstract class AbstractBedMultiBlock extends AbstractBedBlock implements 
 
                     return Blocks.AIR.defaultBlockState();
                 },
-                () -> Blocks.AIR.defaultBlockState()
+                Blocks.AIR::defaultBlockState
         );
     }
     // endregion

@@ -13,20 +13,19 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.pathfinder.PathComputationType;
 import org.jspecify.annotations.Nullable;
 
 public abstract class AbstractMultiBlock extends Block implements IMultiBlock {
     public AbstractMultiBlock(Properties properties) {
         super(properties);
 
-        registerDefaultState(defaultBlockState().setValue(MULTI_BLOCK_INDEX, MULTI_BLOCK_ORIGIN_INDEX));
+        registerDefaultState(multiBlockInfo().setIndex(defaultBlockState(), MULTI_BLOCK_ORIGIN_INDEX));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(MULTI_BLOCK_INDEX);
+        builder.add(multiBlockInfo().property());
     }
 
     @Override
@@ -56,11 +55,6 @@ public abstract class AbstractMultiBlock extends Block implements IMultiBlock {
     }
 
     @Override
-    protected boolean isPathfindable(BlockState blockState, PathComputationType type) {
-        return false;
-    }
-
-    @Override
     protected BlockState updateShape(BlockState blockState, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourBlockState, RandomSource random) {
         // check other properties (bed copies over occupied here)
 
@@ -76,7 +70,7 @@ public abstract class AbstractMultiBlock extends Block implements IMultiBlock {
 
                     return Blocks.AIR.defaultBlockState();
                 },
-                () -> Blocks.AIR.defaultBlockState()
+                Blocks.AIR::defaultBlockState
         );
     }
 }
