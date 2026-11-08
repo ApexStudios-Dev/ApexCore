@@ -27,5 +27,5 @@ side = "BOTH"
 
 [[accessTransformers]]
 file = "META-INF/accesstransformer.cfg"
-[[mixins]]
-config = "META-INF/apexcore.mixins.json"
+#[[mixins]]
+#config = "META-INF/apexcore.mixins.json"

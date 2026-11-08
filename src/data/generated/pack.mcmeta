@@ -1,6 +1,8 @@
 {
   "pack": {
-    "description": "ApexCore resources",
+    "description": {
+      "translate": "pack.apexcore.desc"
+    },
     "max_format": 121,
     "min_format": 121
   }
